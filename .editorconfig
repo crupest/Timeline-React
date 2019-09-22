@@ -1,5 +1,8 @@
 root = true
 
+[*.ts]
+tab_width = 2
+
 [*.tsx]
 tab_width = 2
 
