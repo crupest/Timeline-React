@@ -1,0 +1,96 @@
+@keyframes loading-animation-container-animation {
+  0% {
+    transform: rotate(0);
+  }
+  16.66% {
+    transform: rotate(0);
+  }
+  33.33% {
+    transform: rotate(120deg);
+  }
+  50% {
+    transform: rotate(120deg);
+  }
+  66.66% {
+    transform: rotate(240deg);
+  }
+  83.33% {
+    transform: rotate(240deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-animation-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  animation: loading-animation-container-animation 9s infinite;
+  transform-origin: center;
+}
+
+.loading-animation-part {
+  position: absolute;
+  left: 15%;
+  top: 15%;
+  width: 70%;
+  height: 70%;
+}
+
+@keyframes loading-animation-part1-animation {
+  0% {
+    transform: translate(0,0);
+  }
+  25% {
+    transform: translate(-12.99%,-7.5%);
+  }
+  50% {
+    transform: translate(0,0);
+  }
+  100% {
+    transform: translate(0,0);
+  }
+}
+
+.loading-animation-part-1 {
+  animation: loading-animation-part1-animation 3s infinite
+}
+
+@keyframes loading-animation-part2-animation {
+  0% {
+    transform: translate(0,0);
+  }
+  25% {
+    transform: translate(12.99%,-7.5%);
+  }
+  50% {
+    transform: translate(0,0);
+  }
+  100% {
+    transform: translate(0,0);
+  }
+}
+
+.loading-animation-part-2 {
+  animation: loading-animation-part2-animation 3s infinite
+}
+
+@keyframes loading-animation-part3-animation {
+  0% {
+    transform: translate(0,0);
+  }
+  25% {
+    transform: translate(0,15%);
+  }
+  50% {
+    transform: translate(0,0);
+  }
+  100% {
+    transform: translate(0,0);
+  }
+}
+
+.loading-animation-part-3 {
+  animation: loading-animation-part3-animation 3s infinite
+}

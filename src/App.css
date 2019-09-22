@@ -1,0 +1,21 @@
+nav {
+  display: flex;
+  background: dodgerblue;
+}
+
+nav a {
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration-line: none; 
+  margin: 0 10px;
+  padding: 5px;
+}
+
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+.no-display {
+  display: none;
+}
