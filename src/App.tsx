@@ -27,17 +27,21 @@ interface AppState {
 }
 
 class App extends React.Component<{}, AppState> {
-  private userSubscription! : Subscription;
+  private userSubscription!: Subscription;
 
   constructor(props: {}) {
     super(props);
+    this.state = {
+      user: undefined
+    };
 
     UserService.getInstance().checkSavedLoginState();
   }
 
   public componentDidMount() {
-    this.userSubscription = UserService.getInstance().user$.subscribe(u => this.setState({user: u}));
-
+    this.userSubscription = UserService.getInstance().user$.subscribe(u =>
+      this.setState({ user: u })
+    );
   }
 
   public componentWillUnmount() {
@@ -48,7 +52,7 @@ class App extends React.Component<{}, AppState> {
     let userArea: React.ReactNode;
     const user = this.state.user;
     if (user === undefined) {
-      userArea = <Loading size={20} />;
+      userArea = <Loading size={40} />;
     } else if (user === null) {
       userArea = (
         <NavLink to="/login" activeClassName="no-display">

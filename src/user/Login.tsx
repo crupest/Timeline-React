@@ -46,14 +46,31 @@ class Login extends React.Component<{}, LoginState> {
           <div className="login-input-box">
             <div className="login-item">
               <label className="login-label">username</label>
-              <input name="username" disabled={this.state.process} className="login-input" onChange={this.onInput} value={this.state.username} />
+              <input
+                name="username"
+                disabled={this.state.process}
+                className="login-input"
+                onChange={this.onInput}
+                value={this.state.username}
+              />
             </div>
             <div className="login-item">
               <label className="login-label">password</label>
-              <input name="password" disabled={this.state.process} className="login-input" type="password" onChange={this.onInput} value={this.state.password} />
+              <input
+                name="password"
+                disabled={this.state.process}
+                className="login-input"
+                type="password"
+                onChange={this.onInput}
+                value={this.state.password}
+              />
             </div>
             <div>
-              <input id="rememberMe" type="checkbox" disabled={this.state.process} />
+              <input
+                id="rememberMe"
+                type="checkbox"
+                disabled={this.state.process}
+              />
               <label htmlFor="rememberMe">Remember me!</label>
             </div>
           </div>

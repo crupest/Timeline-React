@@ -20,10 +20,9 @@ export type User = User;
 export type LoginCredentials = CreateTokenRequest;
 
 export class UserService {
-
   private static instance: UserService;
 
-  public static getInstance() : UserService {
+  public static getInstance(): UserService {
     if (!UserService.instance) {
       UserService.instance = new UserService();
     }
@@ -61,7 +60,6 @@ export class UserService {
   }
 
   public async checkSavedLoginState(): Promise<void> {
-    // TODO: Mock this and develop
     if (this.currentUser !== undefined) {
       throw Error("Already checked saved login state.");
     }
