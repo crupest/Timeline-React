@@ -10,8 +10,6 @@
 }
 
 .login-body {
-  border: lightseagreen 2px solid;
-  border-radius: 8px;
   padding: 10px 20px;
   margin-top: 20px;
   flex-grow: 1;
@@ -51,9 +49,13 @@
   box-shadow: 0 0 2px 2px darkseagreen;
 }
 
+.login-error-message {
+  color: red;
+}
+
 .login-submit-box {
   width: 100%;
   display: flex;
-  justify-content: right;
+  justify-content: flex-end;
   margin-top: 10px;
 }

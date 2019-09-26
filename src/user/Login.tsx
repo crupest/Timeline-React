@@ -2,20 +2,26 @@ import React from "react";
 import "./Login.css";
 
 import Loading from "../common/Loading";
+import { UserService } from "./user-service";
+import { withRouter, RouteComponentProps } from "react-router";
 
 interface LoginState {
   username: string;
   password: string;
+  rememberMe: boolean;
   process: boolean;
+  error: object | string | undefined;
 }
 
-class Login extends React.Component<{}, LoginState> {
-  constructor(props: {}) {
+class Login extends React.Component<RouteComponentProps, LoginState> {
+  constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
       username: "",
       password: "",
-      process: false
+      rememberMe: false,
+      process: false,
+      error: undefined
     };
 
     this.onInput = this.onInput.bind(this);
@@ -35,6 +41,25 @@ class Login extends React.Component<{}, LoginState> {
     this.setState({
       process: true
     });
+    UserService.getInstance()
+      .login(
+        {
+          username: this.state.username,
+          password: this.state.password
+        },
+        this.state.rememberMe
+      )
+      .then(
+        _ => {
+          this.props.history.goBack();
+        },
+        e => {
+          this.setState({
+            error: e,
+            process: false
+          });
+        }
+      );
     event.preventDefault();
   }
 
@@ -68,12 +93,19 @@ class Login extends React.Component<{}, LoginState> {
             <div>
               <input
                 id="rememberMe"
+                name="rememberMe"
                 type="checkbox"
+                onChange={this.onInput}
                 disabled={this.state.process}
               />
               <label htmlFor="rememberMe">Remember me!</label>
             </div>
           </div>
+          {this.state.error ? (
+            <div className="login-error-message">
+              {this.state.error.toString()}
+            </div>
+          ) : null}
           <div className="login-submit-box">
             {this.state.process ? (
               <Loading size={50} />
@@ -89,4 +121,4 @@ class Login extends React.Component<{}, LoginState> {
   }
 }
 
-export default Login;
+export default withRouter(Login);

@@ -36,7 +36,7 @@ export class UserService {
     return apiBaseUrl + kVerifyTokenUrl;
   }
 
-  private token: string | null = null;
+  private _token: string | null = null;
   private userSubject = new BehaviorSubject<User | null | undefined>(undefined);
 
   public readonly user$: Observable<User | null> = this.userSubject.pipe(
@@ -45,6 +45,10 @@ export class UserService {
 
   public get currentUser(): User | null | undefined {
     return this.userSubject.value;
+  }
+
+  public get token(): string | null {
+    return this._token;
   }
 
   private checkLogin() {
@@ -70,7 +74,7 @@ export class UserService {
     } else {
       try {
         const user = await this.verifyToken(savedToken);
-        this.token = savedToken;
+        this._token = savedToken;
         this.userSubject.next(user);
       } catch (e) {
         window.localStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -80,7 +84,10 @@ export class UserService {
     }
   }
 
-  public async login(credentials: LoginCredentials): Promise<User> {
+  public async login(
+    credentials: LoginCredentials,
+    rememberMe: boolean
+  ): Promise<User> {
     if (this.token) {
       throw Error("Already login!");
     }
@@ -90,7 +97,10 @@ export class UserService {
       credentials as CreateTokenRequest
     );
     const body = res.data as CreateTokenResponse;
-    this.token = body.token;
+    this._token = body.token;
+    if (rememberMe) {
+      window.localStorage.setItem(TOKEN_STORAGE_KEY, body.token);
+    }
     this.userSubject.next(body.user);
     return body.user;
   }
@@ -102,7 +112,7 @@ export class UserService {
     }
 
     window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-    this.token = null;
+    this._token = null;
     this.userSubject.next(null);
   }
 

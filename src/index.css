@@ -12,6 +12,10 @@ code {
     monospace;
 }
 
+input:focus {
+  outline: none;
+}
+
 .cru-button {
   border-radius: 5px;
   cursor: pointer;
