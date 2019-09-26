@@ -25,6 +25,7 @@ class NavUser extends React.Component<NavUserProps, NavUserState> {
 
     this.onClick = this.onClick.bind(this);
     this.onClose = this.onClose.bind(this);
+    this.onLogout = this.onLogout.bind(this);
   }
 
   onClick(event: React.SyntheticEvent) {
@@ -37,6 +38,10 @@ class NavUser extends React.Component<NavUserProps, NavUserState> {
     this.setState({
       anchorEl: null
     });
+  }
+
+  onLogout(_: React.MouseEvent) {
+    UserService.getInstance().logout();
   }
 
   render(): React.ReactNode {
@@ -62,7 +67,7 @@ class NavUser extends React.Component<NavUserProps, NavUserState> {
         >
           <MenuList>
             <MenuItem dense={true}>
-              <Typography color="error">Logout</Typography>
+              <Typography color="error" onClick={this.onLogout}>Logout</Typography>
             </MenuItem>
           </MenuList>
         </Popover>

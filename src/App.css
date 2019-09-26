@@ -2,7 +2,7 @@
   display: flex;
 }
 
-.app-bar-link {
+.app-bar-body a {
   display: flex;
   align-items: center;
   color: white;
