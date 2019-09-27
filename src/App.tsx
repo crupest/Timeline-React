@@ -21,7 +21,7 @@ import { User, UserService } from "./user/user-service";
 import Login from "./user/Login";
 import Loading from "./common/Loading";
 import NavUser from "./NavUser";
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider, StylesProvider } from "@material-ui/styles";
 
 const Home: React.FC = () => {
   return <div> Home Page!</div>;
@@ -102,26 +102,28 @@ class App extends React.Component<{}, AppState> {
     }
 
     return (
-      <ThemeProvider theme={theme}>
-        <Router>
-          <AppBar>
-            <div className="app-bar-body">
-              <LinkButton to="/">
-                <img className="nav-logo" src={logo} alt="logo" />
-                Timeline
-              </LinkButton>
-              <span className="fill-remaining-space"></span>
-              {userArea}
-            </div>
-          </AppBar>
-          <div style={{ height: 50 }}></div>
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/login" component={Login} />
-            <Route component={NoMatch} />
-          </Switch>
-        </Router>
-      </ThemeProvider>
+      <StylesProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <Router>
+            <AppBar>
+              <div className="app-bar-body">
+                <LinkButton to="/">
+                  <img className="nav-logo" src={logo} alt="logo" />
+                  Timeline
+                </LinkButton>
+                <span className="fill-remaining-space"></span>
+                {userArea}
+              </div>
+            </AppBar>
+            <div style={{ height: 56 }}></div>
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route exact path="/login" component={Login} />
+              <Route component={NoMatch} />
+            </Switch>
+          </Router>
+        </ThemeProvider>
+      </StylesProvider>
     );
   }
 }

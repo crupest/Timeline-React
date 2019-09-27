@@ -67,7 +67,10 @@ class NavUser extends React.Component<NavUserProps, NavUserState> {
     const user = this.props.user;
     let popupContent;
     if (user) {
-      popupContent = <div></div>;
+      popupContent = (
+      <Fragment>
+        
+      </Fragment>);
     } else {
       popupContent = (
         <Fragment>
