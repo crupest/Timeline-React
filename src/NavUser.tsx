@@ -5,10 +5,19 @@ import "./NavUser.css";
 import { User } from "./user/http-entity";
 import { UserService } from "./user/user-service";
 import { apiBaseUrl } from "./config";
-import { Popover, MenuList, MenuItem, Typography } from "@material-ui/core";
+import {
+  Popover,
+  MenuList,
+  MenuItem,
+  Typography,
+  Icon,
+  IconButton,
+  Button
+} from "@material-ui/core";
+import { withRouter, RouteComponentProps } from "react-router";
 
-interface NavUserProps {
-  user: User;
+interface NavUserProps extends RouteComponentProps {
+  user: User | null;
 }
 
 interface NavUserState {
@@ -25,6 +34,7 @@ class NavUser extends React.Component<NavUserProps, NavUserState> {
 
     this.onClick = this.onClick.bind(this);
     this.onClose = this.onClose.bind(this);
+    this.onLogin = this.onLogin.bind(this);
     this.onLogout = this.onLogout.bind(this);
   }
 
@@ -40,22 +50,38 @@ class NavUser extends React.Component<NavUserProps, NavUserState> {
     });
   }
 
+  onLogin(_: React.SyntheticEvent) {
+    this.props.history.push('/login');
+    this.onClose({});
+  }
+
   onLogout(_: React.MouseEvent) {
     UserService.getInstance().logout();
   }
 
   render(): React.ReactNode {
-    const token = UserService.getInstance().token;
+    // const token = UserService.getInstance().token;
+    // const user = this.props.user;
+    // const avatarUrl = `${apiBaseUrl}/users/${user.username}/avatar?token=${token}`;
+
     const user = this.props.user;
-    const avatarUrl = `${apiBaseUrl}/users/${user.username}/avatar?token=${token}`;
+    let popupContent;
+    if (user) {
+      popupContent = <div></div>;
+    } else {
+      popupContent = (
+        <Fragment>
+          <Typography variant="body1">You haven't login.</Typography>
+          <Button color="primary" onClick={this.onLogin}>Login</Button>
+        </Fragment>
+      );
+    }
+
     return (
       <Fragment>
-        <img
-          onClick={this.onClick}
-          className="nav-user-avatar"
-          src={avatarUrl}
-          alt="avatar"
-        ></img>
+        <IconButton onClick={this.onClick} style={{ color: "white" }}>
+          <Icon>account_circle</Icon>
+        </IconButton>
         <Popover
           open={Boolean(this.state.anchorEl)}
           anchorEl={this.state.anchorEl}
@@ -64,16 +90,15 @@ class NavUser extends React.Component<NavUserProps, NavUserState> {
             horizontal: "left"
           }}
           onClose={this.onClose}
+          classes={{
+            paper: "nav-user-popup-container"
+          }}
         >
-          <MenuList>
-            <MenuItem dense={true}>
-              <Typography color="error" onClick={this.onLogout}>Logout</Typography>
-            </MenuItem>
-          </MenuList>
+          {popupContent}
         </Popover>
       </Fragment>
     );
   }
 }
 
-export default NavUser;
+export default withRouter(NavUser);

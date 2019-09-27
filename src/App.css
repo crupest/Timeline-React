@@ -1,16 +1,12 @@
 .app-bar-body{
   display: flex;
-}
-
-.app-bar-body a {
-  display: flex;
+  height: 56px;
   align-items: center;
-  color: white;
-  text-decoration-line: none; 
-  margin: 0 10px;
-  padding: 5px;
 }
 
+.nav-logo {
+  height: 30px;
+}
 
 .fill-remaining-space {
   flex: 1 1 auto;
