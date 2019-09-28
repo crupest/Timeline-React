@@ -10,6 +10,7 @@ import {
   RouteProps
 } from "react-router-dom";
 import { Subscription } from "rxjs";
+import { hot } from "react-hot-loader/root";
 
 import { AppBar, Button, createMuiTheme, withStyles } from "@material-ui/core";
 
@@ -128,4 +129,4 @@ class App extends React.Component<{}, AppState> {
   }
 }
 
-export default App;
+export default hot(App);
