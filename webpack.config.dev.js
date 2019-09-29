@@ -1,5 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 module.exports = {
   entry: ["react-hot-loader/patch", "./src/index.tsx"],
@@ -23,6 +25,9 @@ module.exports = {
         use: [
           {
             loader: "file-loader"
+          },
+          {
+            loader: "image-webpack-loader"
           }
         ]
       }
@@ -36,14 +41,42 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "dist/"),
-    publicPath: "/dist/",
     filename: "bundle.js"
   },
   devServer: {
     contentBase: path.join(__dirname, "public/"),
     port: 3000,
-    publicPath: "http://localhost:3000/dist/",
+    publicPath: "http://localhost:3000/",
+    historyApiFallback: true,
     hotOnly: true
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()]
+  plugins: [
+    new HtmlWebpackPlugin({
+      inject: false,
+      template: require('html-webpack-template'),
+
+      appMountId: 'app',
+      devServer: 'http://localhost:3000',
+      mobile: true,
+      lang: 'en-US',
+      links: [
+        'https://fonts.googleapis.com/icon?family=Material+Icons',
+        {
+          href: '/manifest.json',
+          rel: 'manifest',
+        },
+        {
+          href: '/logo192.png',
+          rel: 'apple-touch-icon',
+        },
+        {
+          href: '/favicon.ico',
+          rel: 'shortcut icon',
+        }
+      ],
+      title: 'Timeline',
+    }),
+    new ForkTsCheckerWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin()
+  ]
 };
