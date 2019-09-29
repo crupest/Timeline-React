@@ -24,6 +24,7 @@ import { User, UserService } from "./services/user";
 
 import NavUser from "./NavUser";
 import Login from "./user/Login";
+import Admin from "./admin/Admin";
 
 const Home: React.FC = () => {
   return <div> Home Page!</div>;
@@ -113,6 +114,9 @@ class App extends React.Component<{}, AppState> {
                   <img className="nav-logo" src={logo} alt="logo" />
                   Timeline
                 </LinkButton>
+                {user && user.administrator && (
+                  <LinkButton to="/admin">Admin</LinkButton>
+                )}
                 <span className="fill-remaining-space"></span>
                 {userArea}
               </div>
@@ -121,6 +125,7 @@ class App extends React.Component<{}, AppState> {
             <Switch>
               <Route exact path="/" component={Home} />
               <Route exact path="/login" component={Login} />
+              <Route exact path="/admin" component={Admin} />
               <Route component={NoMatch} />
             </Switch>
           </Router>
