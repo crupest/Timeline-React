@@ -1,22 +1,37 @@
 import { BehaviorSubject, Observable } from "rxjs";
 import { filter } from "rxjs/operators";
-
 import axios from "axios";
 
 import { apiBaseUrl } from "../config";
-import {
-  kCreateTokenUrl,
-  kVerifyTokenUrl,
-  User,
-  VerifyTokenRequest,
-  VerifyTokenResponse,
-  CreateTokenRequest,
-  CreateTokenResponse
-} from "./http-entity";
 
 const TOKEN_STORAGE_KEY = "token";
 
-export type User = User;
+const kCreateTokenUrl = "/token/create";
+const kVerifyTokenUrl = "/token/verify";
+
+export interface User {
+  username: string;
+  administrator: boolean;
+}
+
+interface CreateTokenRequest {
+  username: string;
+  password: string;
+}
+
+interface CreateTokenResponse {
+  token: string;
+  user: User;
+}
+
+interface VerifyTokenRequest {
+  token: string;
+}
+
+interface VerifyTokenResponse {
+  user: User;
+}
+
 export type LoginCredentials = CreateTokenRequest;
 
 export class UserService {
@@ -65,7 +80,10 @@ export class UserService {
 
   public async checkSavedLoginState(): Promise<void> {
     if (this.currentUser !== undefined) {
-      throw Error("Already checked saved login state.");
+      console.log(
+        "Already checked login state. If you are using hot state reload, you may safely ignore this!"
+      );
+      return;
     }
 
     const savedToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);

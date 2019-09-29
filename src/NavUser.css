@@ -1,13 +1,13 @@
-.nav-user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: white;
-  margin: 5px;
-}
-
 .nav-user-popup-container {
   display: flex;
   flex-direction: column;
   padding: 20px;
+  align-items: center;
+}
+
+.nav-user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: white;
 }

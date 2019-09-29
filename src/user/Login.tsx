@@ -1,7 +1,4 @@
-import React, { Fragment } from "react";
-import "./Login.css";
-
-import { UserService } from "./user-service";
+import React from "react";
 import { withRouter, RouteComponentProps } from "react-router";
 import {
   TextField,
@@ -10,7 +7,10 @@ import {
   CircularProgress,
   Typography
 } from "@material-ui/core";
-import { makeStyles, withStyles } from "@material-ui/styles";
+
+import "./Login.css";
+
+import { UserService } from "../services/user";
 
 interface LoginForm {
   username: string;
@@ -70,25 +70,25 @@ class Login extends React.Component<RouteComponentProps, LoginState> {
     this.setState({
       process: true
     });
-    // UserService.getInstance()
-    //   .login(
-    //     {
-    //       username: this.state.username,
-    //       password: this.state.password
-    //     },
-    //     this.state.rememberMe
-    //   )
-    //   .then(
-    //     _ => {
-    //       this.props.history.goBack();
-    //     },
-    //     e => {
-    //       this.setState({
-    //         error: e,
-    //         process: false
-    //       });
-    //     }
-    //   );
+    UserService.getInstance()
+      .login(
+        {
+          username: this.state.username,
+          password: this.state.password
+        },
+        this.state.rememberMe
+      )
+      .then(
+        _ => {
+          this.props.history.goBack();
+        },
+        e => {
+          this.setState({
+            error: e,
+            process: false
+          });
+        }
+      );
     event.preventDefault();
   }
 

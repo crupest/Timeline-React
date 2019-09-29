@@ -1,28 +1,29 @@
-import React, { ComponentProps } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Route,
-  Link,
   Switch,
-  NavLink,
   withRouter,
-  RouteComponentProps,
-  RouteProps
+  RouteComponentProps
 } from "react-router-dom";
 import { Subscription } from "rxjs";
 import { hot } from "react-hot-loader/root";
-
-import { AppBar, Button, createMuiTheme, withStyles } from "@material-ui/core";
-
-import logo from "./logo.svg";
-import "./App.css";
-
-import { User, UserService } from "./user/user-service";
-
-import Login from "./user/Login";
-import Loading from "./common/Loading";
-import NavUser from "./NavUser";
+import {
+  AppBar,
+  Button,
+  createMuiTheme,
+  withStyles,
+  CircularProgress
+} from "@material-ui/core";
 import { ThemeProvider, StylesProvider } from "@material-ui/styles";
+
+import "./App.css";
+import logo from "./logo.svg";
+
+import { User, UserService } from "./services/user";
+
+import NavUser from "./NavUser";
+import Login from "./user/Login";
 
 const Home: React.FC = () => {
   return <div> Home Page!</div>;
@@ -97,7 +98,7 @@ class App extends React.Component<{}, AppState> {
     let userArea: React.ReactNode;
     const user = this.state.user;
     if (user === undefined) {
-      userArea = <Loading size={50} />;
+      userArea = <CircularProgress size={50} />;
     } else {
       userArea = <NavUser user={user} />;
     }
