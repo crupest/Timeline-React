@@ -123,6 +123,9 @@ interface LinkButtonProps extends RouteComponentProps {
 }
 
 const LinkButtonInternalButton = withStyles({
+  root: {
+    margin: "0 10px"
+  },
   label: {
     color: "white"
   }

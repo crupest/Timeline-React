@@ -77,7 +77,7 @@ class App extends React.Component<{}, AppState> {
             <Route exact path="/login">
               <Login />
             </Route>
-            <Route exact path="/admin">
+            <Route path="/admin">
               <Admin user={user} />
             </Route>
             <Route>

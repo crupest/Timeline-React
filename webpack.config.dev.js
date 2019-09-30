@@ -56,7 +56,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "dist/"),
-    filename: "[name].[hash].js"
+    filename: "[name].[hash].js",
+    publicPath: '/',
   },
   devServer: {
     contentBase: path.join(__dirname, "public/"),
@@ -78,15 +79,15 @@ module.exports = {
       links: [
         'https://fonts.googleapis.com/icon?family=Material+Icons',
         {
-          href: 'manifest.json',
+          href: '/manifest.json',
           rel: 'manifest',
         },
         {
-          href: 'logo192.png',
+          href: '/logo192.png',
           rel: 'apple-touch-icon',
         },
         {
-          href: 'favicon.ico',
+          href: '/favicon.ico',
           rel: 'shortcut icon',
         }
       ],
