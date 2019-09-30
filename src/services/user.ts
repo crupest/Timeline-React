@@ -14,6 +14,10 @@ export interface User {
   administrator: boolean;
 }
 
+export interface UserWithToken extends User {
+  token: string;
+}
+
 interface CreateTokenRequest {
   username: string;
   password: string;
@@ -51,23 +55,21 @@ export class UserService {
     return apiBaseUrl + kVerifyTokenUrl;
   }
 
-  private _token: string | null = null;
-  private userSubject = new BehaviorSubject<User | null | undefined>(undefined);
+  private userSubject = new BehaviorSubject<UserWithToken | null | undefined>(
+    undefined
+  );
 
-  public readonly user$: Observable<User | null> = this.userSubject.pipe(
+  public readonly user$: Observable<UserWithToken | null> = this.userSubject.pipe(
     filter(value => value !== undefined)
-  ) as Observable<User | null>;
+  ) as Observable<UserWithToken | null>;
 
-  public get currentUser(): User | null | undefined {
+  public get currentUser(): UserWithToken | null | undefined {
     return this.userSubject.value;
   }
 
   public get token(): string | null {
-    return this._token;
-  }
-
-  private checkLogin() {
-    if (!this.token) throw Error("Can't do this when not login.");
+    const user = this.currentUser;
+    return user ? user.token : null;
   }
 
   private async verifyToken(token: string): Promise<User> {
@@ -92,8 +94,10 @@ export class UserService {
     } else {
       try {
         const user = await this.verifyToken(savedToken);
-        this._token = savedToken;
-        this.userSubject.next(user);
+        this.userSubject.next({
+          ...user,
+          token: savedToken
+        });
       } catch (e) {
         window.localStorage.removeItem(TOKEN_STORAGE_KEY);
         this.userSubject.next(null);
@@ -106,7 +110,7 @@ export class UserService {
     credentials: LoginCredentials,
     rememberMe: boolean
   ): Promise<User> {
-    if (this.token) {
+    if (this.currentUser) {
       throw Error("Already login!");
     }
 
@@ -115,27 +119,28 @@ export class UserService {
       credentials as CreateTokenRequest
     );
     const body = res.data as CreateTokenResponse;
-    this._token = body.token;
+    const token = body.token;
     if (rememberMe) {
-      window.localStorage.setItem(TOKEN_STORAGE_KEY, body.token);
+      window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
     }
-    this.userSubject.next(body.user);
+    this.userSubject.next({
+      ...body.user,
+      token
+    });
     return body.user;
   }
 
   public logout(): void {
-    if (!this.token) {
+    if (!this.currentUser) {
       console.warn("Try to logout when not login.");
       return;
     }
 
     window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-    this._token = null;
     this.userSubject.next(null);
   }
+}
 
-  public generateAvartarUrl(username: string): string {
-    this.checkLogin();
-    return `${apiBaseUrl}/users/${username}/avatar?token=${this.token}`;
-  }
+export function generateAvartarUrl(username: string, token: string): string {
+  return `${apiBaseUrl}/users/${username}/avatar?token=${token}`;
 }

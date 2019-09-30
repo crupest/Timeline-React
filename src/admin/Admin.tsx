@@ -1,8 +1,20 @@
 import React from "react";
 
-class Admin extends React.Component {
+import { AppBar } from "../common/AppBar";
+import { PageProps } from "../PageProps";
+
+class Admin extends React.Component<PageProps> {
+  constructor(props: PageProps) {
+    super(props);
+  }
+
   render() {
-    return <div>Admin Page Work!</div>;
+    return (
+      <div>
+        <AppBar user={this.props.user}></AppBar>
+        <div>Admin Page Work!</div>
+      </div>
+    );
   }
 }
 

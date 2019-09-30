@@ -22,7 +22,10 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)$/i,
         use: [
           {
-            loader: "file-loader"
+            loader: "url-loader",
+            options: {
+              limit: 8192
+            }
           },
           {
             loader: "image-webpack-loader"
@@ -34,9 +37,20 @@ module.exports = {
   resolve: {
     extensions: ["*", ".js", ".jsx", ".ts", ".tsx"]
   },
+  optimization: {
+    runtimeChunk: "single",
+    splitChunks: {
+      chunks: "all",
+      cacheGroups: {
+        vendors: {
+          name: "venders"
+        }
+      }
+    }
+  },
   output: {
     path: path.resolve(__dirname, "dist/"),
-    filename: "bundle.js"
+    filename: "[name].[hash].js"
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -51,15 +65,15 @@ module.exports = {
       links: [
         "https://fonts.googleapis.com/icon?family=Material+Icons",
         {
-          href: "/manifest.json",
+          href: "manifest.json",
           rel: "manifest"
         },
         {
-          href: "/logo192.png",
+          href: "logo192.png",
           rel: "apple-touch-icon"
         },
         {
-          href: "/favicon.ico",
+          href: "favicon.ico",
           rel: "shortcut icon"
         }
       ],

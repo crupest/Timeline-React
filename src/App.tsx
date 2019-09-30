@@ -1,68 +1,24 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  withRouter,
-  RouteComponentProps
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Subscription } from "rxjs";
 import { hot } from "react-hot-loader/root";
-import {
-  AppBar,
-  Button,
-  createMuiTheme,
-  withStyles,
-  CircularProgress
-} from "@material-ui/core";
+import { createMuiTheme, CircularProgress } from "@material-ui/core";
 import { ThemeProvider, StylesProvider } from "@material-ui/styles";
 
 import "./App.css";
-import logo from "./logo.svg";
 
-import { User, UserService } from "./services/user";
+import { UserService, UserWithToken } from "./services/user";
 
-import NavUser from "./NavUser";
 import Login from "./user/Login";
 import Admin from "./admin/Admin";
+import { withDefaultAppBar, AppBar } from "./common/AppBar";
 
-const Home: React.FC = () => {
+const Home = withDefaultAppBar(() => {
   return <div> Home Page!</div>;
-};
+});
 
-const NoMatch: React.FC = () => {
+const NoMatch = withDefaultAppBar(() => {
   return <div>Ah-oh, 404!</div>;
-};
-
-interface AppState {
-  user: User | null | undefined;
-}
-
-interface LinkButtonProps extends RouteComponentProps {
-  to?: string;
-  children?: React.ReactNode;
-}
-
-const LinkButtonInternalButton = withStyles({
-  label: {
-    color: "white"
-  }
-})(Button);
-
-const LinkButton = withRouter((props: LinkButtonProps) => {
-  return (
-    <LinkButtonInternalButton
-      onClick={
-        props.to
-          ? () => {
-              props.history.push(props.to!);
-            }
-          : undefined
-      }
-    >
-      {props.children}
-    </LinkButtonInternalButton>
-  );
 });
 
 const theme = createMuiTheme({
@@ -72,6 +28,10 @@ const theme = createMuiTheme({
     }
   }
 });
+
+interface AppState {
+  user: UserWithToken | null | undefined;
+}
 
 class App extends React.Component<{}, AppState> {
   private userSubscription!: Subscription;
@@ -96,39 +56,42 @@ class App extends React.Component<{}, AppState> {
   }
 
   public render(): React.ReactNode {
-    let userArea: React.ReactNode;
     const user = this.state.user;
+
+    let body;
     if (user === undefined) {
-      userArea = <CircularProgress size={50} />;
+      body = (
+        <div>
+          <AppBar user={undefined} />
+          <CircularProgress />
+        </div>
+      );
     } else {
-      userArea = <NavUser user={user} />;
+      body = (
+        <>
+          <div style={{ height: 56 }}></div>
+          <Switch>
+            <Route exact path="/">
+              <Home user={user} />
+            </Route>
+            <Route exact path="/login">
+              <Login />
+            </Route>
+            <Route exact path="/admin">
+              <Admin user={user} />
+            </Route>
+            <Route>
+              <NoMatch user={user} />
+            </Route>
+          </Switch>
+        </>
+      );
     }
 
     return (
       <StylesProvider injectFirst>
         <ThemeProvider theme={theme}>
-          <Router>
-            <AppBar>
-              <div className="app-bar-body">
-                <LinkButton to="/">
-                  <img className="nav-logo" src={logo} alt="logo" />
-                  Timeline
-                </LinkButton>
-                {user && user.administrator && (
-                  <LinkButton to="/admin">Admin</LinkButton>
-                )}
-                <span className="fill-remaining-space"></span>
-                {userArea}
-              </div>
-            </AppBar>
-            <div style={{ height: 56 }}></div>
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/admin" component={Admin} />
-              <Route component={NoMatch} />
-            </Switch>
-          </Router>
+          <Router>{body}</Router>
         </ThemeProvider>
       </StylesProvider>
     );

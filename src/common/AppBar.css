@@ -11,3 +11,13 @@
   border-radius: 50%;
   background: white;
 }
+
+.app-bar-body{
+  display: flex;
+  height: 56px;
+  align-items: center;
+}
+
+.nav-logo {
+  height: 30px;
+}

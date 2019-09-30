@@ -11,6 +11,7 @@ import {
 import "./Login.css";
 
 import { UserService } from "../services/user";
+import { AppBar } from "../common/AppBar";
 
 interface LoginForm {
   username: string;
@@ -94,55 +95,58 @@ class Login extends React.Component<RouteComponentProps, LoginState> {
 
   render(): React.ReactNode {
     return (
-      <div className="login-page">
-        <Typography className="login-welcome" variant="h4">
-          Welcome to Timeline!
-        </Typography>
-        <form className="login-form">
-          <div className="login-body">
-            <TextField
-              label="username"
-              disabled={this.state.process}
-              onChange={this.onInputHandlers.username}
-              value={this.state.username}
-              fullWidth
-            />
-            <TextField
-              label="password"
-              disabled={this.state.process}
-              type="password"
-              onChange={this.onInputHandlers.password}
-              value={this.state.password}
-              fullWidth
-            />
-            <div className="login-rememberme-box">
-              <Checkbox
-                id="rememberMe"
-                onChange={this.onInputHandlers.rememberMe}
+      <div>
+        <AppBar user={null} />
+        <div className="login-page">
+          <Typography className="login-welcome" variant="h4">
+            Welcome to Timeline!
+          </Typography>
+          <form className="login-form">
+            <div className="login-body">
+              <TextField
+                label="username"
                 disabled={this.state.process}
+                onChange={this.onInputHandlers.username}
+                value={this.state.username}
+                fullWidth
               />
-              <label htmlFor="rememberMe">Remember me!</label>
-            </div>
-            {this.state.error ? (
-              <div className="login-error-message">
-                {this.state.error.toString()}
+              <TextField
+                label="password"
+                disabled={this.state.process}
+                type="password"
+                onChange={this.onInputHandlers.password}
+                value={this.state.password}
+                fullWidth
+              />
+              <div className="login-rememberme-box">
+                <Checkbox
+                  id="rememberMe"
+                  onChange={this.onInputHandlers.rememberMe}
+                  disabled={this.state.process}
+                />
+                <label htmlFor="rememberMe">Remember me!</label>
               </div>
-            ) : null}
-            <div className="login-submit-box">
-              {this.state.process ? (
-                <CircularProgress size={50} />
-              ) : (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={this.onSubmit}
-                >
-                  Login
-                </Button>
-              )}
+              {this.state.error ? (
+                <div className="login-error-message">
+                  {this.state.error.toString()}
+                </div>
+              ) : null}
+              <div className="login-submit-box">
+                {this.state.process ? (
+                  <CircularProgress size={50} />
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={this.onSubmit}
+                  >
+                    Login
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     );
   }
