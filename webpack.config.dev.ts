@@ -1,9 +1,9 @@
-const path = require("path");
-const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+import path from "path";
+import webpack from "webpack";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 
-module.exports = {
+const config: webpack.Configuration = {
   entry: ["react-hot-loader/patch", "./src/index.tsx"],
   mode: "development",
   devtool: "eval-source-map",
@@ -48,8 +48,10 @@ module.exports = {
     splitChunks: {
       chunks: "all",
       cacheGroups: {
-        vendors: {
-          name: "venders"
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all"
         }
       }
     }
@@ -57,11 +59,12 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist/"),
     filename: "[name].[hash].js",
-    publicPath: '/',
+    chunkFilename: "[name].[hash].js",
+    publicPath: "/"
   },
   devServer: {
     contentBase: path.join(__dirname, "public/"),
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     port: 3000,
     publicPath: "http://localhost:3000/",
     historyApiFallback: true,
@@ -70,30 +73,32 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       inject: false,
-      template: require('html-webpack-template'),
+      template: require("html-webpack-template"),
 
-      appMountId: 'app',
-      devServer: 'http://localhost:3000',
+      appMountId: "app",
+      devServer: "http://localhost:3000",
       mobile: true,
-      lang: 'en-US',
+      lang: "en-US",
       links: [
-        'https://fonts.googleapis.com/icon?family=Material+Icons',
+        "https://fonts.googleapis.com/icon?family=Material+Icons",
         {
-          href: '/manifest.json',
-          rel: 'manifest',
+          href: "/manifest.json",
+          rel: "manifest"
         },
         {
-          href: '/logo192.png',
-          rel: 'apple-touch-icon',
+          href: "/logo192.png",
+          rel: "apple-touch-icon"
         },
         {
-          href: '/favicon.ico',
-          rel: 'shortcut icon',
+          href: "/favicon.ico",
+          rel: "shortcut icon"
         }
       ],
-      title: 'Timeline',
+      title: "Timeline"
     }),
     new ForkTsCheckerWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin()
   ]
 };
+
+export default config;

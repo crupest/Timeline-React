@@ -10,7 +10,6 @@ import "./App.css";
 import { UserService, UserWithToken } from "./services/user";
 
 import Login from "./user/Login";
-import Admin from "./admin/Admin";
 import { withDefaultAppBar, AppBar } from "./common/AppBar";
 
 const Home = withDefaultAppBar(() => {
@@ -28,6 +27,8 @@ const theme = createMuiTheme({
     }
   }
 });
+
+const LazyAdmin = React.lazy(() => import(/* webpackChunkName: "admin" */ "./admin/Admin"));
 
 interface AppState {
   user: UserWithToken | null | undefined;
@@ -77,9 +78,13 @@ class App extends React.Component<{}, AppState> {
             <Route exact path="/login">
               <Login />
             </Route>
-            <Route path="/admin">
-              <Admin user={user} />
-            </Route>
+            {user && user.administrator && (
+              <Route path="/admin">
+                <React.Suspense fallback={<CircularProgress />}>
+                  <LazyAdmin user={user} />
+                </React.Suspense>
+              </Route>
+            )}
             <Route>
               <NoMatch user={user} />
             </Route>

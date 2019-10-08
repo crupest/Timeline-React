@@ -1,9 +1,10 @@
-const path = require("path");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+import path from "path";
+import webpack from "webpack";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 
-module.exports = {
+const config: webpack.Configuration = {
   entry: ["./src/index.tsx"],
   mode: "production",
   devtool: "source-map",
@@ -42,8 +43,10 @@ module.exports = {
     splitChunks: {
       chunks: "all",
       cacheGroups: {
-        vendors: {
-          name: "venders"
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all"
         }
       }
     }
@@ -51,7 +54,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist/"),
     filename: "[name].[hash].js",
-    publicPath: '/',
+    chunkFilename: "[name].[hash].js",
+    publicPath: "/"
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -83,3 +87,5 @@ module.exports = {
     new ForkTsCheckerWebpackPlugin()
   ]
 };
+
+export default config;
