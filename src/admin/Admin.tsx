@@ -49,12 +49,12 @@ class Admin extends React.Component<AdminProps> {
 
     return (
       <Fragment>
-        <Redirect
-          from={this.props.match.path}
-          to={`${this.props.match.path}/users`}
-          exact
-        />
         <Switch>
+          <Redirect
+            from={this.props.match.path}
+            to={`${this.props.match.path}/users`}
+            exact
+          />
           {createRoute("users", <UserAdmin user={this.props.user} />)}
           {createRoute("more", <div>More Page Works</div>)}
         </Switch>
