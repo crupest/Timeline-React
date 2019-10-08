@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Subscription } from "rxjs";
 import { hot } from "react-hot-loader/root";
@@ -28,7 +28,9 @@ const theme = createMuiTheme({
   }
 });
 
-const LazyAdmin = React.lazy(() => import(/* webpackChunkName: "admin" */ "./admin/Admin"));
+const LazyAdmin = React.lazy(() =>
+  import(/* webpackChunkName: "admin" */ "./admin/Admin")
+);
 
 interface AppState {
   user: UserWithToken | null | undefined;
@@ -62,34 +64,31 @@ class App extends React.Component<{}, AppState> {
     let body;
     if (user === undefined) {
       body = (
-        <div>
+        <Fragment>
           <AppBar user={undefined} />
           <CircularProgress />
-        </div>
+        </Fragment>
       );
     } else {
       body = (
-        <>
-          <div style={{ height: 56 }}></div>
-          <Switch>
-            <Route exact path="/">
-              <Home user={user} />
+        <Switch>
+          <Route exact path="/">
+            <Home user={user} />
+          </Route>
+          <Route exact path="/login">
+            <Login />
+          </Route>
+          {user && user.administrator && (
+            <Route path="/admin">
+              <React.Suspense fallback={<CircularProgress />}>
+                <LazyAdmin user={user} />
+              </React.Suspense>
             </Route>
-            <Route exact path="/login">
-              <Login />
-            </Route>
-            {user && user.administrator && (
-              <Route path="/admin">
-                <React.Suspense fallback={<CircularProgress />}>
-                  <LazyAdmin user={user} />
-                </React.Suspense>
-              </Route>
-            )}
-            <Route>
-              <NoMatch user={user} />
-            </Route>
-          </Switch>
-        </>
+          )}
+          <Route>
+            <NoMatch user={user} />
+          </Route>
+        </Switch>
       );
     }
 

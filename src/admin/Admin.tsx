@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Tabs, Tab } from "@material-ui/core";
 import {
   withRouter,
@@ -8,10 +8,14 @@ import {
   Switch
 } from "react-router";
 
-import { AppBar } from "../common/AppBar";
-import { PageProps } from "../PageProps";
+import { UserWithToken } from "../services/user";
 
-interface AdminProps extends PageProps, RouteComponentProps {}
+import { AppBar } from "../common/AppBar";
+import UserAdmin from "./UserAdmin";
+
+interface AdminProps extends RouteComponentProps {
+  user: UserWithToken;
+}
 
 class Admin extends React.Component<AdminProps> {
   constructor(props: AdminProps) {
@@ -30,30 +34,31 @@ class Admin extends React.Component<AdminProps> {
       body: React.ReactNode
     ): React.ReactNode => {
       return (
-        <Route path={`${this.props.match.path}/${name}`} exact>
+        <Route path={`${this.props.match.path}/${name}`}>
           <AppBar user={this.props.user}>
             <Tabs value={name} onChange={this.onTabChange}>
               <Tab label="Users" value="users" />
               <Tab label="More" value="more" />
             </Tabs>
           </AppBar>
+          <div style={{ height: 104 }} />
           {body}
         </Route>
       );
     };
 
     return (
-      <div>
+      <Fragment>
         <Redirect
           from={this.props.match.path}
           to={`${this.props.match.path}/users`}
           exact
         />
         <Switch>
-          {createRoute("users", <div>Users Page Works</div>)}
+          {createRoute("users", <UserAdmin user={this.props.user} />)}
           {createRoute("more", <div>More Page Works</div>)}
         </Switch>
-      </div>
+      </Fragment>
     );
   }
 }

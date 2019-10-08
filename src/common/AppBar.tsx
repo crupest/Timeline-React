@@ -186,10 +186,10 @@ export function withDefaultAppBar(
 ): React.FC<PageProps> {
   return (props: PageProps) => {
     return (
-      <div>
+      <Fragment>
         <AppBar user={props.user} />
         <C />
-      </div>
+      </Fragment>
     );
   };
 }

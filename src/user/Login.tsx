@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { withRouter, RouteComponentProps } from "react-router";
 import {
   TextField,
@@ -95,7 +95,7 @@ class Login extends React.Component<RouteComponentProps, LoginState> {
 
   render(): React.ReactNode {
     return (
-      <div>
+      <Fragment>
         <AppBar user={null} />
         <div className="login-page">
           <Typography className="login-welcome" variant="h4">
@@ -147,7 +147,7 @@ class Login extends React.Component<RouteComponentProps, LoginState> {
             </div>
           </form>
         </div>
-      </div>
+      </Fragment>
     );
   }
 }
