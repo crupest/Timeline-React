@@ -8,4 +8,8 @@ import "./index.css";
 
 import App from "./App";
 
+import { checkUserLoginState } from "./data/user";
+
+checkUserLoginState();
+
 ReactDOM.render(<App />, document.getElementById("app"));

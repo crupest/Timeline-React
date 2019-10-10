@@ -10,8 +10,8 @@ import {
 
 import "./Login.css";
 
-import { UserService } from "../services/user";
 import { AppBar } from "../common/AppBar";
+import { userLogin } from "../data/user";
 
 interface LoginForm {
   username: string;
@@ -71,32 +71,31 @@ class Login extends React.Component<RouteComponentProps, LoginState> {
     this.setState({
       process: true
     });
-    UserService.getInstance()
-      .login(
-        {
-          username: this.state.username,
-          password: this.state.password
-        },
-        this.state.rememberMe
-      )
-      .then(
-        _ => {
-          this.props.history.goBack();
-        },
-        e => {
-          this.setState({
-            error: e,
-            process: false
-          });
-        }
-      );
+    userLogin(
+      {
+        username: this.state.username,
+        password: this.state.password
+      },
+      this.state.rememberMe
+    ).then(
+      _ => {
+        this.props.history.goBack();
+      },
+      e => {
+        this.setState({
+          error: e,
+          process: false
+        });
+      }
+    );
     event.preventDefault();
   }
 
   render(): React.ReactNode {
     return (
       <Fragment>
-        <AppBar user={null} />
+        <AppBar />
+        <div style={{ height: 56 }}></div>
         <div className="login-page">
           <Typography className="login-welcome" variant="h4">
             Welcome to Timeline!

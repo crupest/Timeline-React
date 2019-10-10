@@ -7,18 +7,28 @@ import { ThemeProvider, StylesProvider } from "@material-ui/styles";
 
 import "./App.css";
 
-import { UserService, UserWithToken } from "./services/user";
-
 import Login from "./user/Login";
-import { withDefaultAppBar, AppBar } from "./common/AppBar";
+import { AppBar } from "./common/AppBar";
 
-const Home = withDefaultAppBar(() => {
-  return <div> Home Page!</div>;
-});
+import { withUser, UserComponentProps } from "./data/user";
 
-const NoMatch = withDefaultAppBar(() => {
-  return <div>Ah-oh, 404!</div>;
-});
+const Home: React.FC = () => {
+  return (
+    <>
+      <AppBar />
+      <div> Home Page!</div>
+    </>
+  );
+};
+
+const NoMatch: React.FC = () => {
+  return (
+    <>
+      <AppBar />
+      <div>Ah-oh, 404!</div>
+    </>
+  );
+};
 
 const theme = createMuiTheme({
   typography: {
@@ -32,40 +42,20 @@ const LazyAdmin = React.lazy(() =>
   import(/* webpackChunkName: "admin" */ "./admin/Admin")
 );
 
-interface AppState {
-  user: UserWithToken | null | undefined;
-}
-
-class App extends React.Component<{}, AppState> {
+class App extends React.Component<UserComponentProps> {
   private userSubscription!: Subscription;
 
-  constructor(props: {}) {
+  constructor(props: UserComponentProps) {
     super(props);
-    this.state = {
-      user: undefined
-    };
-
-    UserService.getInstance().checkSavedLoginState();
-  }
-
-  public componentDidMount() {
-    this.userSubscription = UserService.getInstance().user$.subscribe(u =>
-      this.setState({ user: u })
-    );
-  }
-
-  public componentWillUnmount() {
-    this.userSubscription.unsubscribe();
   }
 
   public render(): React.ReactNode {
-    const user = this.state.user;
-
+    const user = this.props.user;
     let body;
     if (user === undefined) {
       body = (
         <Fragment>
-          <AppBar user={undefined} />
+          <AppBar />
           <CircularProgress />
         </Fragment>
       );
@@ -73,7 +63,7 @@ class App extends React.Component<{}, AppState> {
       body = (
         <Switch>
           <Route exact path="/">
-            <Home user={user} />
+            <Home />
           </Route>
           <Route exact path="/login">
             <Login />
@@ -86,7 +76,7 @@ class App extends React.Component<{}, AppState> {
             </Route>
           )}
           <Route>
-            <NoMatch user={user} />
+            <NoMatch />
           </Route>
         </Switch>
       );
@@ -102,4 +92,4 @@ class App extends React.Component<{}, AppState> {
   }
 }
 
-export default hot(App);
+export default hot(withUser(App));

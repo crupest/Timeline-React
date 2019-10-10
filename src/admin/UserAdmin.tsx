@@ -1,15 +1,9 @@
 import React from "react";
-
 import { withStyles, createStyles } from "@material-ui/styles";
-
-import { User, UserWithToken } from "../services/user";
-import {
-  CircularProgress,
-  Typography,
-  Card,
-  CardHeader
-} from "@material-ui/core";
+import { CircularProgress, Typography, Card } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core/styles";
+
+import { User, UserWithToken } from "../data/user";
 
 function fetchUserList(token: string): Promise<User[]> {
   return new Promise((resolve, reject) => {
@@ -39,7 +33,8 @@ const styles = createStyles({
     margin: "0 10px"
   },
   card: {
-    margin: "10px"
+    margin: "10px",
+    padding: "10px"
   }
 });
 
@@ -73,10 +68,10 @@ class UserAdmin extends React.Component<UserAdminProps, UserAdminState> {
       const userComponents = users.map(user => {
         return (
           <Card key={user.username} classes={{ root: classes.card }}>
-            <CardHeader
-              title={user.username}
-              subheader={user.administrator ? "administrator" : "user"}
-            />
+            <Typography variant="body1">{user.username}</Typography>
+            <Typography variant="caption">
+              {user.administrator ? "administrator" : "user"}
+            </Typography>
           </Card>
         );
       });

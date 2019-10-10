@@ -8,10 +8,9 @@ import {
   Switch
 } from "react-router";
 
-import { UserWithToken } from "../services/user";
-
 import { AppBar } from "../common/AppBar";
 import UserAdmin from "./UserAdmin";
+import { UserWithToken } from "../data/user";
 
 interface AdminProps extends RouteComponentProps {
   user: UserWithToken;
@@ -35,7 +34,7 @@ class Admin extends React.Component<AdminProps> {
     ): React.ReactNode => {
       return (
         <Route path={`${this.props.match.path}/${name}`}>
-          <AppBar user={this.props.user}>
+          <AppBar>
             <Tabs value={name} onChange={this.onTabChange}>
               <Tab label="Users" value="users" />
               <Tab label="More" value="more" />

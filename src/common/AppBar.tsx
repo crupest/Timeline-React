@@ -13,17 +13,22 @@ import { withRouter, RouteComponentProps } from "react-router";
 
 import logo from "./logo.svg";
 import "./AppBar.css";
-
 import {
-  UserService,
   UserWithToken,
-  generateAvartarUrl
-} from "../services/user";
-import { PageProps } from "../PageProps";
+  generateAvartarUrl,
+  userLogout,
+  user$,
+  withUser,
+  UserComponentProps
+} from "../data/user";
+import Login from "../user/Login";
+import { Subscription } from "rxjs";
+import { withSubscription } from "../data/withSubscription";
 
 interface UserAreaProps {
   user: UserWithToken | null;
-  history: History;
+  login: () => void;
+  logout: () => void;
 }
 
 interface UserAreaState {
@@ -57,12 +62,12 @@ class UserArea extends React.Component<UserAreaProps, UserAreaState> {
   }
 
   onLogin(_: React.SyntheticEvent) {
-    this.props.history.push("/login");
     this.onClose({});
+    this.props.login();
   }
 
   onLogout(_: React.MouseEvent) {
-    UserService.getInstance().logout();
+    this.props.logout();
     this.onClose({});
   }
 
@@ -148,13 +153,27 @@ const LinkButton = withRouter((props: LinkButtonProps) => {
   );
 });
 
-interface MyAppBarProps extends RouteComponentProps {
+interface MyAppBarProps extends RouteComponentProps, UserComponentProps {
   actions?: React.ReactNode;
   children?: React.ReactNode;
-  user: UserWithToken | null | undefined;
 }
 
 class MyAppBar extends React.Component<MyAppBarProps> {
+  constructor(props: MyAppBarProps) {
+    super(props);
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+  }
+
+  login() {
+    this.props.history.push("/login");
+  }
+
+  logout() {
+    userLogout();
+    this.props.history.push("/");
+  }
+
   render(): React.ReactNode {
     const user = this.props.user;
     return (
@@ -170,7 +189,7 @@ class MyAppBar extends React.Component<MyAppBarProps> {
           <span className="fill-remaining-space"></span>
           {this.props.actions}
           {user !== undefined && (
-            <UserArea history={this.props.history} user={user} />
+            <UserArea user={user} login={this.login} logout={this.logout} />
           )}
         </div>
         {this.props.children}
@@ -179,17 +198,4 @@ class MyAppBar extends React.Component<MyAppBarProps> {
   }
 }
 
-export const AppBar = withRouter(MyAppBar);
-
-export function withDefaultAppBar(
-  C: React.ComponentType<{}>
-): React.FC<PageProps> {
-  return (props: PageProps) => {
-    return (
-      <Fragment>
-        <AppBar user={props.user} />
-        <C />
-      </Fragment>
-    );
-  };
-}
+export const AppBar = withRouter(withUser(MyAppBar));
