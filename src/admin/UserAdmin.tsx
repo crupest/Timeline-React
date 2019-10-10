@@ -7,7 +7,8 @@ import {
   IconButton,
   Icon,
   Menu,
-  MenuItem
+  MenuItem,
+  Fab
 } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core/styles";
 import axios from "axios";
@@ -40,7 +41,7 @@ interface UserCardState {
   anchor: HTMLElement | null;
 }
 
-class _UserCard extends React.Component<UserCardProps> {
+class _UserCard extends React.Component<UserCardProps, UserCardState> {
   state = {
     anchor: null
   };
@@ -83,7 +84,6 @@ class _UserCard extends React.Component<UserCardProps> {
           </IconButton>
           <Menu
             anchorEl={anchor}
-            keepMounted
             open={Boolean(anchor)}
             onClose={this.onMenuClose}
           >
@@ -108,6 +108,11 @@ const styles = createStyles({
   },
   progressBar: {
     margin: "0 10px"
+  },
+  fab: {
+    position: "fixed",
+    right: 26,
+    bottom: 26
   }
 });
 
@@ -144,7 +149,19 @@ class UserAdmin extends React.Component<UserAdminProps, UserAdminState> {
         return <UserCard key={user.username} user={user} />;
       });
 
-      return <div>{userComponents}</div>;
+      return (
+        <div>
+          {userComponents}
+          <Fab
+            color="primary"
+            classes={{
+              root: classes.fab
+            }}
+          >
+            <Icon>add</Icon>
+          </Fab>
+        </div>
+      );
     } else {
       return (
         <div className={classes.loadingArea}>
