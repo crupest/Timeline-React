@@ -8,7 +8,12 @@ import {
   Icon,
   Menu,
   MenuItem,
-  Fab
+  Fab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button
 } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core/styles";
 import axios from "axios";
@@ -99,6 +104,32 @@ class _UserCard extends React.Component<UserCardProps, UserCardState> {
 
 const UserCard = withStyles(cardStyles)(_UserCard);
 
+const addUserDialogStyles = createStyles({
+  title: {
+    color: "green"
+  }
+});
+
+interface AddUserDialogProps extends WithStyles<typeof addUserDialogStyles> {
+  open: boolean;
+  onClose: () => void;
+}
+
+const AddUserDialog = withStyles(addUserDialogStyles)(
+  (props: AddUserDialogProps) => {
+    const classes = props.classes;
+    return (
+      <Dialog open={props.open} onClose={props.onClose} disableBackdropClick>
+        <DialogTitle classes={{ root: classes.title }}>Create!</DialogTitle>
+        <DialogContent>You are creating a new user.</DialogContent>
+        <DialogActions>
+          <Button variant="text" onClick={props.onClose}>Confirm</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+);
+
 const styles = createStyles({
   loadingArea: {
     display: "flex",
@@ -122,16 +153,30 @@ interface UserAdminProps extends WithStyles<typeof styles> {
 
 interface UserAdminState {
   users: User[] | undefined;
+  openAddDialog: boolean;
 }
 
 class UserAdmin extends React.Component<UserAdminProps, UserAdminState> {
   state: UserAdminState = {
-    users: undefined
+    users: undefined,
+    openAddDialog: false
   };
 
   constructor(props: UserAdminProps) {
     super(props);
   }
+
+  onAddButtonClick = () => {
+    this.setState({
+      openAddDialog: true
+    });
+  };
+
+  onAddDialogClose = () => {
+    this.setState({
+      openAddDialog: false
+    });
+  };
 
   componentDidMount() {
     fetchUserList(this.props.user.token).then(users => {
@@ -157,9 +202,14 @@ class UserAdmin extends React.Component<UserAdminProps, UserAdminState> {
             classes={{
               root: classes.fab
             }}
+            onClick={this.onAddButtonClick}
           >
             <Icon>add</Icon>
           </Fab>
+          <AddUserDialog
+            open={this.state.openAddDialog}
+            onClose={this.onAddDialogClose}
+          />
         </div>
       );
     } else {
