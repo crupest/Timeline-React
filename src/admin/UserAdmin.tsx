@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { withStyles, createStyles } from "@material-ui/styles";
 import {
   CircularProgress,
@@ -13,9 +13,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button
+  Button,
+  TextField,
+  Checkbox,
+  FormControlLabel
 } from "@material-ui/core";
-import { WithStyles } from "@material-ui/core/styles";
+import { WithStyles, makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 
 import { User, UserWithToken } from "../data/user";
@@ -24,6 +27,18 @@ import { apiBaseUrl } from "../config";
 async function fetchUserList(token: string): Promise<User[]> {
   const res = await axios.get(`${apiBaseUrl}/users?token=${token}`);
   return res.data;
+}
+
+function createUser(user: {
+  username: string;
+  password: string;
+  administrator: boolean;
+}): Promise<void> {
+  return new Promise((resolve, _) => {
+    setTimeout(() => {
+      resolve();
+    }, 2000);
+  });
 }
 
 const cardStyles = createStyles({
@@ -104,31 +119,108 @@ class _UserCard extends React.Component<UserCardProps, UserCardState> {
 
 const UserCard = withStyles(cardStyles)(_UserCard);
 
-const addUserDialogStyles = createStyles({
+const useUserDialogStyles = makeStyles({
   title: {
     color: "green"
+  },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
   }
 });
 
-interface AddUserDialogProps extends WithStyles<typeof addUserDialogStyles> {
+interface AddUserDialogProps {
   open: boolean;
-  onClose: () => void;
+  close: () => void;
 }
 
-const AddUserDialog = withStyles(addUserDialogStyles)(
-  (props: AddUserDialogProps) => {
-    const classes = props.classes;
-    return (
-      <Dialog open={props.open} onClose={props.onClose} disableBackdropClick>
-        <DialogTitle classes={{ root: classes.title }}>Create!</DialogTitle>
-        <DialogContent>You are creating a new user.</DialogContent>
-        <DialogActions>
-          <Button variant="text" onClick={props.onClose}>Confirm</Button>
-        </DialogActions>
-      </Dialog>
-    );
+const AddUserDialog: React.FC<AddUserDialogProps> = props => {
+  const classes = useUserDialogStyles();
+  const [step, setStep] = useState<"input" | "process" | "finish">("input");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [administrator, setAdministrator] = useState<boolean>(false);
+
+  let content: React.ReactNode;
+  switch (step) {
+    case "input":
+      content = (
+        <>
+          <DialogContent classes={{ root: classes.content }}>
+            You are creating a new user.
+            <TextField
+              label="username"
+              value={username}
+              onChange={e => {
+                setUsername(e.target.value);
+              }}
+            />
+            <TextField
+              label="password"
+              value={password}
+              onChange={e => {
+                setPassword(e.target.value);
+              }}
+            />
+            <FormControlLabel
+              value={administrator}
+              onChange={e => {
+                setAdministrator((e.target as HTMLInputElement).checked);
+              }}
+              control={<Checkbox />}
+              label="administrator"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="text"
+              onClick={() => {
+                setStep("process");
+                createUser({
+                  username: username,
+                  password: password,
+                  administrator: administrator
+                }).then(_ => {
+                  setStep("finish");
+                });
+              }}
+            >
+              Confirm
+            </Button>
+          </DialogActions>
+        </>
+      );
+      break;
+    case "process":
+      content = (
+        <DialogContent classes={{ root: classes.content }}>
+          <div>
+            <CircularProgress style={{ verticalAlign: "middle" }} />
+            <span style={{ verticalAlign: "middle" }}> Processing!</span>
+          </div>
+        </DialogContent>
+      );
+      break;
+    case "finish":
+      content = (
+        <DialogContent classes={{ root: classes.content }}>Ok!</DialogContent>
+      );
+      break;
   }
-);
+
+  return (
+    <Dialog
+      open={props.open}
+      onClose={props.close}
+      disableBackdropClick={step === "process"}
+      disableEscapeKeyDown={step === "process"}
+    >
+      <DialogTitle classes={{ root: classes.title }}>Create!</DialogTitle>
+      {content}
+    </Dialog>
+  );
+};
 
 const styles = createStyles({
   loadingArea: {
@@ -206,10 +298,9 @@ class UserAdmin extends React.Component<UserAdminProps, UserAdminState> {
           >
             <Icon>add</Icon>
           </Fab>
-          <AddUserDialog
-            open={this.state.openAddDialog}
-            onClose={this.onAddDialogClose}
-          />
+          {this.state.openAddDialog && (
+            <AddUserDialog open close={this.onAddDialogClose} />
+          )}
         </div>
       );
     } else {
