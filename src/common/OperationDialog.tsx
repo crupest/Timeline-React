@@ -53,7 +53,7 @@ interface OperationDialogProps {
   title: React.ReactNode;
   titleColor: "default" | "dangerous" | "create";
   input?: React.ReactNode;
-  inputPrompt?: React.ReactNode | string;
+  inputPrompt?: React.ReactNode;
   onConfirm: () => void;
   open: boolean;
   close: () => void;
@@ -67,7 +67,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   let body: React.ReactNode;
   if (step === "input") {
     let inputPrompt = props.inputPrompt;
-    if (typeof inputPrompt === "string") {
+    if (React.isValidElement(inputPrompt)) {
       inputPrompt = <Typography variant="subtitle1">{inputPrompt}</Typography>;
     }
     body = (

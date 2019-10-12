@@ -25,14 +25,13 @@ async function fetchUserList(token: string): Promise<User[]> {
   return res.data;
 }
 
-function createUser(
-  user: {
-    username: string;
-    password: string;
-    administrator: boolean;
-  },
-  token: string
-): Promise<void> {
+interface CreateUserInfo {
+  username: string;
+  password: string;
+  administrator: boolean;
+}
+
+function createUser(user: CreateUserInfo, token: string): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       reject(new Error("Network Error!"));
@@ -41,6 +40,42 @@ function createUser(
 }
 
 function deleteUser(username: string, token: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, 2000);
+  });
+}
+
+function changeUsername(
+  username: string,
+  newUsername: string,
+  token: string
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, 2000);
+  });
+}
+
+function changePassword(
+  username: string,
+  newPassword: string,
+  token: string
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, 2000);
+  });
+}
+
+function changePermission(
+  username: string,
+  newPermission: boolean,
+  token: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve();
@@ -60,8 +95,19 @@ const useCardStyles = makeStyles({
   cardActions: {}
 });
 
+const kChangeUsername = "changeusername";
+const kChangePassword = "changepassword";
+const kChangePermission = "changepermission";
+
+type TChangeUsername = typeof kChangeUsername;
+type TChangePassword = typeof kChangePassword;
+type TChangePermission = typeof kChangePermission;
+
+type ContextMenuItem = TChangeUsername | TChangePassword | TChangePermission;
+
 interface UserCardProps {
   onDelete: () => void;
+  onContextMenu: (item: ContextMenuItem) => void;
   user: User;
 }
 
@@ -98,26 +144,32 @@ const UserCard: React.FC<UserCardProps> = props => {
           open={Boolean(menuAnchor)}
           onClose={() => setMenuAnchor(null)}
         >
-          <MenuItem>Change username</MenuItem>
-          <MenuItem>Change password</MenuItem>
-          <MenuItem>Change permission</MenuItem>
+          <MenuItem onClick={() => props.onContextMenu(kChangeUsername)}>
+            Change username
+          </MenuItem>
+          <MenuItem onClick={() => props.onContextMenu(kChangePassword)}>
+            Change password
+          </MenuItem>
+          <MenuItem onClick={() => props.onContextMenu(kChangePermission)}>
+            Change permission
+          </MenuItem>
         </Menu>
       </div>
     </Card>
   );
 };
 
-interface AddUserDialogProps {
+const UsernameLabel: React.FC = props => {
+  return <span style={{ color: "blue" }}>{props.children}</span>;
+};
+
+interface CreateUserDialogProps {
   open: boolean;
   close: () => void;
-  process: (user: {
-    username: string;
-    password: string;
-    administrator: boolean;
-  }) => Promise<void>;
+  process: (user: CreateUserInfo) => Promise<void>;
 }
 
-const AddUserDialog: React.FC<AddUserDialogProps> = props => {
+const CreateUserDialog: React.FC<CreateUserDialogProps> = props => {
   const [step, setStep] = useState<OperationStep>("input");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -201,7 +253,168 @@ const UserDeleteDialog: React.FC<UserDeleteDialogProps> = props => {
       step={step}
       title="Dangerous"
       titleColor="dangerous"
-      inputPrompt={"You are deleting user " + props.username + " !"}
+      inputPrompt={
+        <>
+          {"You are deleting user "}
+          <UsernameLabel>{props.username}</UsernameLabel>
+          {" !"}
+        </>
+      }
+      onConfirm={() => {
+        setStep("process");
+        props.process().then(
+          _ => {
+            setStep({
+              error: false,
+              content: "Ok!"
+            });
+          },
+          e => {
+            setStep({
+              error: true,
+              content: e.toString()
+            });
+          }
+        );
+      }}
+    />
+  );
+};
+
+interface UserModifyDialogProps<T> {
+  open: boolean;
+  username: string;
+  close: () => void;
+  process: (value: T) => Promise<void>;
+}
+
+const UserChangeUsernameDialog: React.FC<
+  UserModifyDialogProps<string>
+> = props => {
+  const [step, setStep] = useState<OperationStep>("input");
+  const [newUsername, setNewUsername] = useState<string>("");
+
+  return (
+    <OperationDialog
+      open={props.open}
+      close={props.close}
+      step={step}
+      title="Caution"
+      titleColor="dangerous"
+      input={
+        <TextField
+          label="New Username"
+          value={newUsername}
+          onChange={e => setNewUsername(e.target.value)}
+        />
+      }
+      inputPrompt={
+        <>
+          {"You are change the username of user "}
+          <UsernameLabel>{props.username}</UsernameLabel>
+          {" !"}
+        </>
+      }
+      onConfirm={() => {
+        setStep("process");
+        props.process(newUsername).then(
+          _ => {
+            setStep({
+              error: false,
+              content: "Ok!"
+            });
+          },
+          e => {
+            setStep({
+              error: true,
+              content: e.toString()
+            });
+          }
+        );
+      }}
+    />
+  );
+};
+
+const UserChangePasswordDialog: React.FC<
+  UserModifyDialogProps<string>
+> = props => {
+  const [step, setStep] = useState<OperationStep>("input");
+  const [newPassword, setNewPassword] = useState<string>("");
+
+  return (
+    <OperationDialog
+      open={props.open}
+      close={props.close}
+      step={step}
+      title="Caution"
+      titleColor="dangerous"
+      input={
+        <TextField
+          label="New Password"
+          value={newPassword}
+          onChange={e => setNewPassword(e.target.value)}
+        />
+      }
+      inputPrompt={
+        <>
+          {"You are change the password of user "}
+          <UsernameLabel>{props.username}</UsernameLabel>
+          {" !"}
+        </>
+      }
+      onConfirm={() => {
+        setStep("process");
+        props.process(newPassword).then(
+          _ => {
+            setStep({
+              error: false,
+              content: "Ok!"
+            });
+          },
+          e => {
+            setStep({
+              error: true,
+              content: e.toString()
+            });
+          }
+        );
+      }}
+    />
+  );
+};
+
+interface UserChangePermissionDialogProps {
+  open: boolean;
+  username: string;
+  newPermission: boolean;
+  close: () => void;
+  process: () => Promise<void>;
+}
+
+const UserChangePermissionDialog: React.FC<
+  UserChangePermissionDialogProps
+> = props => {
+  const [step, setStep] = useState<OperationStep>("input");
+
+  return (
+    <OperationDialog
+      open={props.open}
+      close={props.close}
+      step={step}
+      title="Caution"
+      titleColor="dangerous"
+      inputPrompt={
+        <>
+          {"You are change user "}
+          <UsernameLabel>{props.username}</UsernameLabel>
+          {" to "}
+          <span style={{ color: "orange" }}>
+            {props.newPermission ? "administrator" : "normal user"}
+          </span>
+          {" !"}
+        </>
+      }
       onConfirm={() => {
         setStep("process");
         props.process().then(
@@ -245,15 +458,29 @@ interface UserAdminProps {
 }
 
 const UserAdmin: React.FC<UserAdminProps> = props => {
-  const classes = useStyles();
-  const [users, setUsers] = useState<User[] | null>(null);
-  const [dialog, setDialog] = useState<
+  type DialogInfo =
     | null
     | {
         type: "create";
       }
     | { type: "delete"; username: string }
-  >(null);
+    | {
+        type: TChangeUsername;
+        username: string;
+      }
+    | {
+        type: TChangePassword;
+        username: string;
+      }
+    | {
+        type: TChangePermission;
+        username: string;
+        newPermission: boolean;
+      };
+
+  const classes = useStyles();
+  const [users, setUsers] = useState<User[] | null>(null);
+  const [dialog, setDialog] = useState<DialogInfo>(null);
 
   const token = props.user.token;
 
@@ -274,7 +501,7 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
     switch (dialog.type) {
       case "create":
         dialogNode = (
-          <AddUserDialog
+          <CreateUserDialog
             open
             close={() => setDialog(null)}
             process={async user => {
@@ -299,6 +526,58 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
           />
         );
         break;
+      case kChangeUsername:
+        dialogNode = (
+          <UserChangeUsernameDialog
+            open
+            close={() => setDialog(null)}
+            username={dialog.username}
+            process={async newUsername => {
+              await changeUsername(dialog.username, newUsername, token);
+              setUsers(oldUsers => {
+                const users = oldUsers!.slice();
+                users.find(
+                  u => u.username === dialog.username
+                )!.username = newUsername;
+                return users;
+              });
+            }}
+          />
+        );
+        break;
+      case kChangePassword:
+        dialogNode = (
+          <UserChangePasswordDialog
+            open
+            close={() => setDialog(null)}
+            username={dialog.username}
+            process={async newPassword => {
+              await changePassword(dialog.username, newPassword, token);
+            }}
+          />
+        );
+        break;
+      case kChangePermission:
+        const newPermission = dialog.newPermission;
+        dialogNode = (
+          <UserChangePermissionDialog
+            open
+            close={() => setDialog(null)}
+            username={dialog.username}
+            newPermission={newPermission}
+            process={async () => {
+              await changePermission(dialog.username, newPermission, token);
+              setUsers(oldUsers => {
+                const users = oldUsers!.slice();
+                users.find(
+                  u => u.username === dialog.username
+                )!.administrator = newPermission;
+                return users;
+              });
+            }}
+          />
+        );
+        break;
     }
 
   if (users) {
@@ -313,6 +592,16 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
               username: user.username
             })
           }
+          onContextMenu={item => {
+            let dialogInfo: any = {
+              type: item,
+              username: user.username
+            };
+            if (item === "changepermission") {
+              dialogInfo.newPermission = !user.administrator;
+            }
+            setDialog(dialogInfo);
+          }}
         />
       );
     });
