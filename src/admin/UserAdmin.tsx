@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { withStyles, createStyles } from "@material-ui/styles";
+import React, { useState, useEffect } from "react";
 import {
   CircularProgress,
   Typography,
@@ -13,7 +12,7 @@ import {
   Checkbox,
   FormControlLabel
 } from "@material-ui/core";
-import { WithStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 
 import OperationDialog, { OperationStep } from "../common/OperationDialog";
@@ -26,7 +25,14 @@ async function fetchUserList(token: string): Promise<User[]> {
   return res.data;
 }
 
-function createUser(): Promise<void> {
+function createUser(
+  user: {
+    username: string;
+    password: string;
+    administrator: boolean;
+  },
+  token: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       reject(new Error("Network Error!"));
@@ -34,7 +40,15 @@ function createUser(): Promise<void> {
   });
 }
 
-const cardStyles = createStyles({
+function deleteUser(username: string, token: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, 2000);
+  });
+}
+
+const useCardStyles = makeStyles({
   card: {
     margin: "10px",
     padding: "10px",
@@ -46,76 +60,61 @@ const cardStyles = createStyles({
   cardActions: {}
 });
 
-interface UserCardProps extends WithStyles<typeof cardStyles> {
+interface UserCardProps {
+  onDelete: () => void;
   user: User;
 }
 
-interface UserCardState {
-  anchor: HTMLElement | null;
-}
+const UserCard: React.FC<UserCardProps> = props => {
+  const classes = useCardStyles();
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
-class _UserCard extends React.Component<UserCardProps, UserCardState> {
-  state = {
-    anchor: null
-  };
+  const user = props.user;
 
-  constructor(props: UserCardProps) {
-    super(props);
-  }
-
-  onMoreClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    this.setState({ anchor: event.currentTarget });
-  };
-
-  onMenuClose = () => {
-    this.setState({ anchor: null });
-  };
-
-  render(): React.ReactNode {
-    const classes = this.props.classes;
-    const user = this.props.user;
-
-    const anchor = this.state.anchor;
-
-    return (
-      <Card key={user.username} classes={{ root: classes.card }}>
-        <div className={classes.cardContent}>
-          <Typography variant="body1">{user.username}</Typography>
-          <Typography
-            variant="caption"
-            color={user.administrator ? "error" : "textPrimary"}
-          >
-            {user.administrator ? "administrator" : "user"}
-          </Typography>
-        </div>
-        <div className={classes.cardActions}>
-          <IconButton>
-            <Icon color="error">delete</Icon>
-          </IconButton>
-          <IconButton onClick={this.onMoreClick}>
-            <Icon>more_vert</Icon>
-          </IconButton>
-          <Menu
-            anchorEl={anchor}
-            open={Boolean(anchor)}
-            onClose={this.onMenuClose}
-          >
-            <MenuItem>Change username</MenuItem>
-            <MenuItem>Change password</MenuItem>
-            <MenuItem>Change permission</MenuItem>
-          </Menu>
-        </div>
-      </Card>
-    );
-  }
-}
-
-const UserCard = withStyles(cardStyles)(_UserCard);
+  return (
+    <Card key={user.username} classes={{ root: classes.card }}>
+      <div className={classes.cardContent}>
+        <Typography variant="body1">{user.username}</Typography>
+        <Typography
+          variant="caption"
+          color={user.administrator ? "error" : "textPrimary"}
+        >
+          {user.administrator ? "administrator" : "user"}
+        </Typography>
+      </div>
+      <div className={classes.cardActions}>
+        <IconButton onClick={props.onDelete}>
+          <Icon color="error">delete</Icon>
+        </IconButton>
+        <IconButton
+          onClick={event => {
+            setMenuAnchor(event.currentTarget);
+          }}
+        >
+          <Icon>more_vert</Icon>
+        </IconButton>
+        <Menu
+          anchorEl={menuAnchor}
+          open={Boolean(menuAnchor)}
+          onClose={() => setMenuAnchor(null)}
+        >
+          <MenuItem>Change username</MenuItem>
+          <MenuItem>Change password</MenuItem>
+          <MenuItem>Change permission</MenuItem>
+        </Menu>
+      </div>
+    </Card>
+  );
+};
 
 interface AddUserDialogProps {
   open: boolean;
   close: () => void;
-  onCreated: (user: User) => void;
+  process: (user: {
+    username: string;
+    password: string;
+    administrator: boolean;
+  }) => Promise<void>;
 }
 
 const AddUserDialog: React.FC<AddUserDialogProps> = props => {
@@ -158,15 +157,58 @@ const AddUserDialog: React.FC<AddUserDialogProps> = props => {
       }
       onConfirm={() => {
         setStep("process");
-        createUser().then(
-          () => {
+        props
+          .process({
+            username,
+            password,
+            administrator
+          })
+          .then(
+            _ => {
+              setStep({
+                error: false,
+                content: "Ok!"
+              });
+            },
+            e => {
+              setStep({
+                error: true,
+                content: e.toString()
+              });
+            }
+          );
+      }}
+      close={props.close}
+      open={props.open}
+    />
+  );
+};
+
+interface UserDeleteDialogProps {
+  open: boolean;
+  username: string;
+  close: () => void;
+  process: () => Promise<void>;
+}
+
+const UserDeleteDialog: React.FC<UserDeleteDialogProps> = props => {
+  const [step, setStep] = useState<OperationStep>("input");
+
+  return (
+    <OperationDialog
+      open={props.open}
+      close={props.close}
+      step={step}
+      title="Dangerous"
+      titleColor="dangerous"
+      inputPrompt={"You are deleting user " + props.username + " !"}
+      onConfirm={() => {
+        setStep("process");
+        props.process().then(
+          _ => {
             setStep({
               error: false,
               content: "Ok!"
-            });
-            props.onCreated({
-              username,
-              administrator
             });
           },
           e => {
@@ -177,13 +219,11 @@ const AddUserDialog: React.FC<AddUserDialogProps> = props => {
           }
         );
       }}
-      close={props.close}
-      open={props.open}
     />
   );
 };
 
-const styles = createStyles({
+const useStyles = makeStyles({
   loadingArea: {
     display: "flex",
     alignItems: "center",
@@ -200,87 +240,110 @@ const styles = createStyles({
   }
 });
 
-interface UserAdminProps extends WithStyles<typeof styles> {
+interface UserAdminProps {
   user: UserWithToken;
 }
 
-interface UserAdminState {
-  users: User[] | undefined;
-  openAddDialog: boolean;
-}
+const UserAdmin: React.FC<UserAdminProps> = props => {
+  const classes = useStyles();
+  const [users, setUsers] = useState<User[] | null>(null);
+  const [dialog, setDialog] = useState<
+    | null
+    | {
+        type: "create";
+      }
+    | { type: "delete"; username: string }
+  >(null);
 
-class UserAdmin extends React.Component<UserAdminProps, UserAdminState> {
-  state: UserAdminState = {
-    users: undefined,
-    openAddDialog: false
-  };
+  const token = props.user.token;
 
-  constructor(props: UserAdminProps) {
-    super(props);
-  }
-
-  onAddButtonClick = () => {
-    this.setState({
-      openAddDialog: true
+  useEffect(() => {
+    let subscribe = true;
+    fetchUserList(props.user.token).then(us => {
+      if (subscribe) {
+        setUsers(us);
+      }
     });
-  };
+    return () => {
+      subscribe = false;
+    };
+  }, []);
 
-  onAddDialogClose = () => {
-    this.setState({
-      openAddDialog: false
-    });
-  };
-
-  componentDidMount() {
-    fetchUserList(this.props.user.token).then(users => {
-      this.setState({
-        users
-      });
-    });
-  }
-
-  render(): React.ReactNode {
-    const classes = this.props.classes;
-    const users = this.state.users;
-    if (users) {
-      const userComponents = users.map(user => {
-        return <UserCard key={user.username} user={user} />;
-      });
-
-      return (
-        <div>
-          {userComponents}
-          <Fab
-            color="primary"
-            classes={{
-              root: classes.fab
+  let dialogNode: React.ReactNode;
+  if (dialog)
+    switch (dialog.type) {
+      case "create":
+        dialogNode = (
+          <AddUserDialog
+            open
+            close={() => setDialog(null)}
+            process={async user => {
+              await createUser(user, token);
+              setUsers(oldUsers => [...oldUsers!, user]);
             }}
-            onClick={this.onAddButtonClick}
-          >
-            <Icon>add</Icon>
-          </Fab>
-          {this.state.openAddDialog && (
-            <AddUserDialog
-              open
-              close={this.onAddDialogClose}
-              onCreated={user => {
-                this.setState(state => ({
-                  users: [...state.users!, user]
-                }));
-              }}
-            />
-          )}
-        </div>
-      );
-    } else {
-      return (
-        <div className={classes.loadingArea}>
-          <CircularProgress className={classes.progressBar} />
-          <Typography variant="body1">Loading user list...</Typography>
-        </div>
-      );
+          />
+        );
+        break;
+      case "delete":
+        dialogNode = (
+          <UserDeleteDialog
+            open
+            close={() => setDialog(null)}
+            username={dialog.username}
+            process={async () => {
+              await deleteUser(dialog.username, token);
+              setUsers(oldUsers =>
+                oldUsers!.filter(u => u.username !== dialog.username)
+              );
+            }}
+          />
+        );
+        break;
     }
-  }
-}
 
-export default withStyles(styles)(UserAdmin);
+  if (users) {
+    const userComponents = users.map(user => {
+      return (
+        <UserCard
+          key={user.username}
+          user={user}
+          onDelete={() =>
+            setDialog({
+              type: "delete",
+              username: user.username
+            })
+          }
+        />
+      );
+    });
+
+    return (
+      <div>
+        {userComponents}
+        <Fab
+          color="primary"
+          classes={{
+            root: classes.fab
+          }}
+          onClick={() =>
+            setDialog({
+              type: "create"
+            })
+          }
+        >
+          <Icon>add</Icon>
+        </Fab>
+        {dialogNode}
+      </div>
+    );
+  } else {
+    return (
+      <div className={classes.loadingArea}>
+        <CircularProgress className={classes.progressBar} />
+        <Typography variant="body1">Loading user list...</Typography>
+      </div>
+    );
+  }
+};
+
+export default UserAdmin;

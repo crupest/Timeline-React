@@ -52,7 +52,7 @@ interface OperationDialogProps {
   step: OperationStep;
   title: React.ReactNode;
   titleColor: "default" | "dangerous" | "create";
-  input: React.ReactNode;
+  input?: React.ReactNode;
   inputPrompt?: React.ReactNode | string;
   onConfirm: () => void;
   open: boolean;
