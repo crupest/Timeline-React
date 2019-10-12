@@ -9,17 +9,14 @@ import {
   Menu,
   MenuItem,
   Fab,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
   TextField,
   Checkbox,
   FormControlLabel
 } from "@material-ui/core";
-import { WithStyles, makeStyles } from "@material-ui/core/styles";
+import { WithStyles } from "@material-ui/core/styles";
 import axios from "axios";
+
+import OperationDialog, { OperationStep } from "../common/OperationDialog";
 
 import { User, UserWithToken } from "../data/user";
 import { apiBaseUrl } from "../config";
@@ -29,11 +26,7 @@ async function fetchUserList(token: string): Promise<User[]> {
   return res.data;
 }
 
-function createUser(user: {
-  username: string;
-  password: string;
-  administrator: boolean;
-}): Promise<void> {
+function createUser(): Promise<void> {
   return new Promise((resolve, _) => {
     setTimeout(() => {
       resolve();
@@ -119,106 +112,58 @@ class _UserCard extends React.Component<UserCardProps, UserCardState> {
 
 const UserCard = withStyles(cardStyles)(_UserCard);
 
-const useUserDialogStyles = makeStyles({
-  title: {
-    color: "green"
-  },
-  content: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  }
-});
-
 interface AddUserDialogProps {
   open: boolean;
   close: () => void;
 }
 
 const AddUserDialog: React.FC<AddUserDialogProps> = props => {
-  const classes = useUserDialogStyles();
-  const [step, setStep] = useState<"input" | "process" | "finish">("input");
+  const [step, setStep] = useState<OperationStep>("input");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [administrator, setAdministrator] = useState<boolean>(false);
 
-  let content: React.ReactNode;
-  switch (step) {
-    case "input":
-      content = (
-        <>
-          <DialogContent classes={{ root: classes.content }}>
-            You are creating a new user.
-            <TextField
-              label="username"
-              value={username}
-              onChange={e => {
-                setUsername(e.target.value);
-              }}
-            />
-            <TextField
-              label="password"
-              value={password}
-              onChange={e => {
-                setPassword(e.target.value);
-              }}
-            />
-            <FormControlLabel
-              value={administrator}
-              onChange={e => {
-                setAdministrator((e.target as HTMLInputElement).checked);
-              }}
-              control={<Checkbox />}
-              label="administrator"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              variant="text"
-              onClick={() => {
-                setStep("process");
-                createUser({
-                  username: username,
-                  password: password,
-                  administrator: administrator
-                }).then(_ => {
-                  setStep("finish");
-                });
-              }}
-            >
-              Confirm
-            </Button>
-          </DialogActions>
-        </>
-      );
-      break;
-    case "process":
-      content = (
-        <DialogContent classes={{ root: classes.content }}>
-          <div>
-            <CircularProgress style={{ verticalAlign: "middle" }} />
-            <span style={{ verticalAlign: "middle" }}> Processing!</span>
-          </div>
-        </DialogContent>
-      );
-      break;
-    case "finish":
-      content = (
-        <DialogContent classes={{ root: classes.content }}>Ok!</DialogContent>
-      );
-      break;
-  }
-
   return (
-    <Dialog
+    <OperationDialog
+      title="Create!"
+      titleColor="create"
+      step={step}
+      input={
+        <>
+          You are creating a new user.
+          <TextField
+            label="username"
+            value={username}
+            onChange={e => {
+              setUsername(e.target.value);
+            }}
+          />
+          <TextField
+            label="password"
+            value={password}
+            onChange={e => {
+              setPassword(e.target.value);
+            }}
+          />
+          <FormControlLabel
+            value={administrator}
+            onChange={e => {
+              setAdministrator((e.target as HTMLInputElement).checked);
+            }}
+            control={<Checkbox />}
+            label="administrator"
+          />
+        </>
+      }
+      onConfirm={() => {
+        setStep("process");
+        createUser().then(() => {
+          setStep("finish");
+        });
+      }}
+      close={props.close}
       open={props.open}
-      onClose={props.close}
-      disableBackdropClick={step === "process"}
-      disableEscapeKeyDown={step === "process"}
-    >
-      <DialogTitle classes={{ root: classes.title }}>Create!</DialogTitle>
-      {content}
-    </Dialog>
+    />
   );
 };
 
