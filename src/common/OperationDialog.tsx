@@ -7,7 +7,8 @@ import {
   DialogActions,
   Button,
   CircularProgress,
-  makeStyles
+  makeStyles,
+  Typography
 } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
@@ -40,13 +41,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export type OperationStep = "input" | "process" | "finish";
+export interface OperationResult {
+  error: boolean;
+  content: React.ReactNode;
+}
+
+export type OperationStep = "input" | "process" | OperationResult;
 
 interface OperationDialogProps {
   step: OperationStep;
   title: React.ReactNode;
   titleColor: "default" | "dangerous" | "create";
   input: React.ReactNode;
+  inputPrompt?: React.ReactNode | string;
   onConfirm: () => void;
   open: boolean;
   close: () => void;
@@ -58,42 +65,69 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   const isProcessing = step === "process";
 
   let body: React.ReactNode;
-  switch (step) {
-    case "input":
-      body = (
-        <>
-          <DialogContent
-            classes={{ root: clsx(classes.content, classes.contentInput) }}
-          >
-            {props.input}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={props.close}>Cancel</Button>
-            <Button color="secondary" onClick={props.onConfirm}>Confirm</Button>
-          </DialogActions>
-        </>
-      );
-      break;
-    case "process":
-      body = (
+  if (step === "input") {
+    let inputPrompt = props.inputPrompt;
+    if (typeof inputPrompt === "string") {
+      inputPrompt = <Typography variant="subtitle1">{inputPrompt}</Typography>;
+    }
+    body = (
+      <>
         <DialogContent
-          classes={{ root: clsx(classes.content, classes.contentProcess) }}
+          classes={{ root: clsx(classes.content, classes.contentInput) }}
         >
-          <CircularProgress />
-          <span className={classes.processText}>Processing!</span>
+          {inputPrompt}
+          {props.input}
         </DialogContent>
-      );
-      break;
-    case "finish":
-      body = (
-        <>
-          <DialogContent classes={{ root: classes.content }}>Ok!</DialogContent>
-          <DialogActions>
-            <Button color="secondary" onClick={props.close}>Ok</Button>
-          </DialogActions>
-        </>
-      );
-      break;
+        <DialogActions>
+          <Button onClick={props.close}>Cancel</Button>
+          <Button color="secondary" onClick={props.onConfirm}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </>
+    );
+  } else if (step === "process") {
+    body = (
+      <DialogContent
+        classes={{ root: clsx(classes.content, classes.contentProcess) }}
+      >
+        <CircularProgress />
+        <span className={classes.processText}>Processing!</span>
+      </DialogContent>
+    );
+  } else {
+    let content: React.ReactNode;
+    const result = step;
+    if (result) {
+      content = result.content;
+      if (result.error) {
+        if (typeof content === "string") {
+          content = (
+            <Typography color="error" variant="body1">
+              {content}
+            </Typography>
+          );
+        }
+      } else {
+        if (typeof content === "string") {
+          content = <Typography variant="body1">{content}</Typography>;
+        }
+      }
+    } else {
+      console.error("OperationDialog: step is finish but result is falsy.");
+    }
+    body = (
+      <>
+        <DialogContent classes={{ root: classes.content }}>
+          {content}
+        </DialogContent>
+        <DialogActions>
+          <Button color="secondary" onClick={props.close}>
+            Ok
+          </Button>
+        </DialogActions>
+      </>
+    );
   }
 
   return (

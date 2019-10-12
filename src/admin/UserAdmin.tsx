@@ -27,9 +27,9 @@ async function fetchUserList(token: string): Promise<User[]> {
 }
 
 function createUser(): Promise<void> {
-  return new Promise((resolve, _) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve();
+      reject(new Error("Network Error!"));
     }, 2000);
   });
 }
@@ -115,6 +115,7 @@ const UserCard = withStyles(cardStyles)(_UserCard);
 interface AddUserDialogProps {
   open: boolean;
   close: () => void;
+  onCreated: (user: User) => void;
 }
 
 const AddUserDialog: React.FC<AddUserDialogProps> = props => {
@@ -125,12 +126,12 @@ const AddUserDialog: React.FC<AddUserDialogProps> = props => {
 
   return (
     <OperationDialog
-      title="Create!"
+      title="Create"
       titleColor="create"
       step={step}
+      inputPrompt="You are creating a new user."
       input={
         <>
-          You are creating a new user.
           <TextField
             label="username"
             value={username}
@@ -157,9 +158,24 @@ const AddUserDialog: React.FC<AddUserDialogProps> = props => {
       }
       onConfirm={() => {
         setStep("process");
-        createUser().then(() => {
-          setStep("finish");
-        });
+        createUser().then(
+          () => {
+            setStep({
+              error: false,
+              content: "Ok!"
+            });
+            props.onCreated({
+              username,
+              administrator
+            });
+          },
+          e => {
+            setStep({
+              error: true,
+              content: e.toString()
+            });
+          }
+        );
       }}
       close={props.close}
       open={props.open}
@@ -244,7 +260,15 @@ class UserAdmin extends React.Component<UserAdminProps, UserAdminState> {
             <Icon>add</Icon>
           </Fab>
           {this.state.openAddDialog && (
-            <AddUserDialog open close={this.onAddDialogClose} />
+            <AddUserDialog
+              open
+              close={this.onAddDialogClose}
+              onCreated={user => {
+                this.setState(state => ({
+                  users: [...state.users!, user]
+                }));
+              }}
+            />
           )}
         </div>
       );
