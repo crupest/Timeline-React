@@ -115,6 +115,8 @@ const UserCard: React.FC<UserCardProps> = props => {
   const classes = useCardStyles();
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
+  const closeMenu = () => setMenuAnchor(null);
+
   const user = props.user;
 
   return (
@@ -144,13 +146,28 @@ const UserCard: React.FC<UserCardProps> = props => {
           open={Boolean(menuAnchor)}
           onClose={() => setMenuAnchor(null)}
         >
-          <MenuItem onClick={() => props.onContextMenu(kChangeUsername)}>
+          <MenuItem
+            onClick={() => {
+              closeMenu();
+              props.onContextMenu(kChangeUsername);
+            }}
+          >
             Change username
           </MenuItem>
-          <MenuItem onClick={() => props.onContextMenu(kChangePassword)}>
+          <MenuItem
+            onClick={() => {
+              closeMenu();
+              props.onContextMenu(kChangePassword);
+            }}
+          >
             Change password
           </MenuItem>
-          <MenuItem onClick={() => props.onContextMenu(kChangePermission)}>
+          <MenuItem
+            onClick={() => {
+              closeMenu();
+              props.onContextMenu(kChangePermission);
+            }}
+          >
             Change permission
           </MenuItem>
         </Menu>
