@@ -15,7 +15,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 
-import OperationDialog, { OperationStep } from "../common/OperationDialog";
+import OperationDialog from "../common/OperationDialog";
 
 import { User, UserWithToken } from "../data/user";
 import { apiBaseUrl } from "../config";
@@ -159,98 +159,53 @@ const UserCard: React.FC<UserCardProps> = props => {
   );
 };
 
-const UsernameLabel: React.FC = props => {
-  return <span style={{ color: "blue" }}>{props.children}</span>;
-};
-
-interface CreateUserDialogProps {
+interface DialogProps {
   open: boolean;
   close: () => void;
+}
+
+interface CreateUserDialogProps extends DialogProps {
   process: (user: CreateUserInfo) => Promise<void>;
 }
 
 const CreateUserDialog: React.FC<CreateUserDialogProps> = props => {
-  const [step, setStep] = useState<OperationStep>("input");
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [administrator, setAdministrator] = useState<boolean>(false);
-
   return (
     <OperationDialog
       title="Create"
       titleColor="create"
-      step={step}
       inputPrompt="You are creating a new user."
-      input={
-        <>
-          <TextField
-            label="username"
-            value={username}
-            onChange={e => {
-              setUsername(e.target.value);
-            }}
-          />
-          <TextField
-            label="password"
-            value={password}
-            onChange={e => {
-              setPassword(e.target.value);
-            }}
-          />
-          <FormControlLabel
-            value={administrator}
-            onChange={e => {
-              setAdministrator((e.target as HTMLInputElement).checked);
-            }}
-            control={<Checkbox />}
-            label="administrator"
-          />
-        </>
+      inputScheme={[
+        { type: "text", label: "Username" },
+        { type: "text", label: "Password" },
+        { type: "bool", label: "Administrator" }
+      ]}
+      onConfirm={([username, password, administrator]) =>
+        props.process({
+          username: username as string,
+          password: password as string,
+          administrator: administrator as boolean
+        })
       }
-      onConfirm={() => {
-        setStep("process");
-        props
-          .process({
-            username,
-            password,
-            administrator
-          })
-          .then(
-            _ => {
-              setStep({
-                error: false,
-                content: "Ok!"
-              });
-            },
-            e => {
-              setStep({
-                error: true,
-                content: e.toString()
-              });
-            }
-          );
-      }}
       close={props.close}
       open={props.open}
     />
   );
 };
 
-interface UserDeleteDialogProps {
-  open: boolean;
+const UsernameLabel: React.FC = props => {
+  return <span style={{ color: "blue" }}>{props.children}</span>;
+};
+
+interface UserDeleteDialogProps extends DialogProps {
   username: string;
-  close: () => void;
   process: () => Promise<void>;
 }
 
 const UserDeleteDialog: React.FC<UserDeleteDialogProps> = props => {
-  const [step, setStep] = useState<OperationStep>("input");
-
   return (
     <OperationDialog
       open={props.open}
       close={props.close}
-      step={step}
       title="Dangerous"
       titleColor="dangerous"
       inputPrompt={
@@ -260,54 +215,25 @@ const UserDeleteDialog: React.FC<UserDeleteDialogProps> = props => {
           {" !"}
         </>
       }
-      onConfirm={() => {
-        setStep("process");
-        props.process().then(
-          _ => {
-            setStep({
-              error: false,
-              content: "Ok!"
-            });
-          },
-          e => {
-            setStep({
-              error: true,
-              content: e.toString()
-            });
-          }
-        );
-      }}
+      onConfirm={props.process}
     />
   );
 };
 
-interface UserModifyDialogProps<T> {
-  open: boolean;
+interface UserModifyDialogProps<T> extends DialogProps {
   username: string;
-  close: () => void;
   process: (value: T) => Promise<void>;
 }
 
 const UserChangeUsernameDialog: React.FC<
   UserModifyDialogProps<string>
 > = props => {
-  const [step, setStep] = useState<OperationStep>("input");
-  const [newUsername, setNewUsername] = useState<string>("");
-
   return (
     <OperationDialog
       open={props.open}
       close={props.close}
-      step={step}
       title="Caution"
       titleColor="dangerous"
-      input={
-        <TextField
-          label="New Username"
-          value={newUsername}
-          onChange={e => setNewUsername(e.target.value)}
-        />
-      }
       inputPrompt={
         <>
           {"You are change the username of user "}
@@ -315,22 +241,9 @@ const UserChangeUsernameDialog: React.FC<
           {" !"}
         </>
       }
-      onConfirm={() => {
-        setStep("process");
-        props.process(newUsername).then(
-          _ => {
-            setStep({
-              error: false,
-              content: "Ok!"
-            });
-          },
-          e => {
-            setStep({
-              error: true,
-              content: e.toString()
-            });
-          }
-        );
+      inputScheme={[{ type: "text", label: "New Username" }]}
+      onConfirm={([newUsername]) => {
+        return props.process(newUsername as string);
       }}
     />
   );
@@ -339,23 +252,12 @@ const UserChangeUsernameDialog: React.FC<
 const UserChangePasswordDialog: React.FC<
   UserModifyDialogProps<string>
 > = props => {
-  const [step, setStep] = useState<OperationStep>("input");
-  const [newPassword, setNewPassword] = useState<string>("");
-
   return (
     <OperationDialog
       open={props.open}
       close={props.close}
-      step={step}
       title="Caution"
       titleColor="dangerous"
-      input={
-        <TextField
-          label="New Password"
-          value={newPassword}
-          onChange={e => setNewPassword(e.target.value)}
-        />
-      }
       inputPrompt={
         <>
           {"You are change the password of user "}
@@ -363,45 +265,27 @@ const UserChangePasswordDialog: React.FC<
           {" !"}
         </>
       }
-      onConfirm={() => {
-        setStep("process");
-        props.process(newPassword).then(
-          _ => {
-            setStep({
-              error: false,
-              content: "Ok!"
-            });
-          },
-          e => {
-            setStep({
-              error: true,
-              content: e.toString()
-            });
-          }
-        );
+      inputScheme={[{ type: "text", label: "New Password" }]}
+      onConfirm={([newPassword]) => {
+        return props.process(newPassword as string);
       }}
     />
   );
 };
 
-interface UserChangePermissionDialogProps {
-  open: boolean;
+interface UserChangePermissionDialogProps extends DialogProps {
   username: string;
   newPermission: boolean;
-  close: () => void;
   process: () => Promise<void>;
 }
 
 const UserChangePermissionDialog: React.FC<
   UserChangePermissionDialogProps
 > = props => {
-  const [step, setStep] = useState<OperationStep>("input");
-
   return (
     <OperationDialog
       open={props.open}
       close={props.close}
-      step={step}
       title="Caution"
       titleColor="dangerous"
       inputPrompt={
@@ -415,23 +299,7 @@ const UserChangePermissionDialog: React.FC<
           {" !"}
         </>
       }
-      onConfirm={() => {
-        setStep("process");
-        props.process().then(
-          _ => {
-            setStep({
-              error: false,
-              content: "Ok!"
-            });
-          },
-          e => {
-            setStep({
-              error: true,
-              content: e.toString()
-            });
-          }
-        );
-      }}
+      onConfirm={props.process}
     />
   );
 };
