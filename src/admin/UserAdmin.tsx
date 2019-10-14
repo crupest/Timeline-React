@@ -7,10 +7,7 @@ import {
   Icon,
   Menu,
   MenuItem,
-  Fab,
-  TextField,
-  Checkbox,
-  FormControlLabel
+  Fab
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
@@ -32,30 +29,24 @@ interface CreateUserInfo {
 }
 
 function createUser(user: CreateUserInfo, token: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      reject(new Error("Network Error!"));
-    }, 2000);
+  return axios.put(`${apiBaseUrl}/users/${user.username}?token=${token}`, {
+    password: user.password,
+    administrator: user.administrator
   });
 }
 
 function deleteUser(username: string, token: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, 2000);
-  });
+  return axios.delete(`${apiBaseUrl}/users/${username}?token=${token}`);
 }
 
 function changeUsername(
-  username: string,
+  oldUsername: string,
   newUsername: string,
   token: string
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, 2000);
+  return axios.post(`${apiBaseUrl}/userop/changeusername?token=${token}`, {
+    oldUsername,
+    newUsername
   });
 }
 
@@ -64,10 +55,8 @@ function changePassword(
   newPassword: string,
   token: string
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, 2000);
+  return axios.patch(`${apiBaseUrl}/users/${username}?token=${token}`, {
+    password: newPassword
   });
 }
 
@@ -76,10 +65,8 @@ function changePermission(
   newPermission: boolean,
   token: string
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, 2000);
+  return axios.patch(`${apiBaseUrl}/users/${username}?token=${token}`, {
+    administrator: newPermission
   });
 }
 
