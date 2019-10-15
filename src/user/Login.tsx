@@ -1,155 +1,136 @@
-import React, { Fragment } from "react";
-import { withRouter, RouteComponentProps } from "react-router";
+import React, { Fragment, useState } from "react";
+import { useHistory } from "react-router";
 import {
   TextField,
   Checkbox,
   Button,
   CircularProgress,
-  Typography
+  Typography,
+  FormControlLabel,
+  makeStyles
 } from "@material-ui/core";
-
-import "./Login.css";
+import { useTranslation } from "react-i18next";
 
 import AppBar from "../common/AppBar";
 
 import { userLogin } from "../data/user";
 
-interface LoginForm {
-  username: string;
-  password: string;
-  rememberMe: boolean;
-}
-
-type LoginFormKeys = keyof LoginForm;
-
-interface LoginState extends LoginForm {
-  process: boolean;
-  error: object | string | undefined;
-}
-
-type OnInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => void;
-type InputEventValueGetter<K extends keyof LoginForm> = (
-  event: React.ChangeEvent<HTMLInputElement>
-) => LoginForm[K];
-
-class Login extends React.Component<RouteComponentProps, LoginState> {
-  private onInputHandlers: {
-    [key in LoginFormKeys]: OnInputHandler;
-  };
-
-  constructor(props: RouteComponentProps) {
-    super(props);
-    this.state = {
-      username: "",
-      password: "",
-      rememberMe: false,
-      process: false,
-      error: undefined
-    };
-
-    function generateHandler<K extends LoginFormKeys>(
-      _this: Login,
-      key: K,
-      getter: InputEventValueGetter<K>
-    ): OnInputHandler {
-      return (event: React.ChangeEvent<HTMLInputElement>) => {
-        _this.setState({
-          [key]: getter(event)
-        } as any);
-      };
-    }
-
-    this.onInputHandlers = {
-      username: generateHandler(this, "username", e => e.target.value),
-      password: generateHandler(this, "password", e => e.target.value),
-      rememberMe: generateHandler(this, "rememberMe", e => e.target.checked)
-    };
-
-    this.onSubmit = this.onSubmit.bind(this);
+const useStyles = makeStyles({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  welcome: {
+    margin: "20px 0"
+  },
+  form: {
+    display: "flex",
+    justifyContent: "center",
+    alignSelf: "stretch"
+  },
+  formBody: {
+    padding: "10px 20px",
+    maxWidth: "350px",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1
+  },
+  error: {
+    color: "red"
+  },
+  submitBox: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: "10px"
   }
+});
 
-  onSubmit(event: React.SyntheticEvent) {
-    this.setState({
-      process: true
-    });
+const Login: React.FC = _ => {
+  const classes = useStyles();
+  const { t } = useTranslation();
+  const history = useHistory();
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [process, setProcess] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function onSubmit(event: React.SyntheticEvent) {
+    setProcess(true);
     userLogin(
       {
-        username: this.state.username,
-        password: this.state.password
+        username: username,
+        password: password
       },
-      this.state.rememberMe
+      rememberMe
     ).then(
       _ => {
-        this.props.history.goBack();
+        history.goBack();
       },
       e => {
-        this.setState({
-          error: e,
-          process: false
-        });
+        setProcess(false);
+        setError(e.toString());
       }
     );
     event.preventDefault();
   }
 
-  render(): React.ReactNode {
-    return (
-      <Fragment>
-        <AppBar />
-        <div style={{ height: 56 }}></div>
-        <div className="login-page">
-          <Typography className="login-welcome" variant="h4">
-            Welcome to Timeline!
-          </Typography>
-          <form className="login-form">
-            <div className="login-body">
-              <TextField
-                label="username"
-                disabled={this.state.process}
-                onChange={this.onInputHandlers.username}
-                value={this.state.username}
-                fullWidth
-              />
-              <TextField
-                label="password"
-                disabled={this.state.process}
-                type="password"
-                onChange={this.onInputHandlers.password}
-                value={this.state.password}
-                fullWidth
-              />
-              <div className="login-rememberme-box">
-                <Checkbox
-                  id="rememberMe"
-                  onChange={this.onInputHandlers.rememberMe}
-                  disabled={this.state.process}
-                />
-                <label htmlFor="rememberMe">Remember me!</label>
-              </div>
-              {this.state.error ? (
-                <div className="login-error-message">
-                  {this.state.error.toString()}
-                </div>
-              ) : null}
-              <div className="login-submit-box">
-                {this.state.process ? (
-                  <CircularProgress size={50} />
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={this.onSubmit}
-                  >
-                    Login
-                  </Button>
-                )}
-              </div>
+  return (
+    <Fragment>
+      <AppBar />
+      <div style={{ height: 56 }}></div>
+      <div className={classes.root}>
+        <Typography className={classes.welcome} variant="h4">
+          {t("welcome")}
+        </Typography>
+        <form className={classes.form}>
+          <div className={classes.formBody}>
+            <TextField
+              label={t("user.username")}
+              disabled={process}
+              onChange={e => {
+                setUsername(e.target.value);
+              }}
+              value={username}
+              fullWidth
+            />
+            <TextField
+              label={t("user.password")}
+              disabled={process}
+              type="password"
+              onChange={e => {
+                setPassword(e.target.value);
+              }}
+              value={password}
+              fullWidth
+            />
+            <FormControlLabel
+              value={rememberMe}
+              onChange={e => {
+                const v = (e.target as HTMLInputElement).checked;
+                setRememberMe(v);
+              }}
+              control={<Checkbox />}
+              label={t("user.rememberMe")}
+            />
+            {error ? <div className={classes.error}>{error}</div> : null}
+            <div className={classes.submitBox}>
+              {process ? (
+                <CircularProgress size={50} />
+              ) : (
+                <Button variant="contained" color="primary" onClick={onSubmit}>
+                  {t("user.login")}
+                </Button>
+              )}
             </div>
-          </form>
-        </div>
-      </Fragment>
-    );
-  }
-}
+          </div>
+        </form>
+      </div>
+    </Fragment>
+  );
+};
 
-export default withRouter(Login);
+export default Login;

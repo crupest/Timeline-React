@@ -13,7 +13,7 @@ import { useHistory } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import logo from "./logo.svg";
-import "./AppBar.css";
+
 import {
   UserWithToken,
   generateAvartarUrl,
@@ -27,7 +27,23 @@ interface UserAreaProps {
   logout: () => void;
 }
 
+const useUserAreaStyles = makeStyles({
+  popupContainer: {
+    display: "flex",
+    flexDirection: "column",
+    padding: "20px",
+    alignItems: "center"
+  },
+  avatar: {
+    width: "80px",
+    height: "80px",
+    borderRadius: "50%",
+    background: "white"
+  }
+});
+
 const UserArea: React.FC<UserAreaProps> = props => {
+  const classes = useUserAreaStyles();
   const { t } = useTranslation();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
@@ -55,7 +71,7 @@ const UserArea: React.FC<UserAreaProps> = props => {
     const avatarUrl = generateAvartarUrl(user.username, user.token);
     popupContent = (
       <Fragment>
-        <img className="nav-user-avatar" src={avatarUrl} />
+        <img className={classes.avatar} src={avatarUrl} />
         <Typography variant="body1">
           {t("user.welcome0")}
           {user.username}
@@ -93,7 +109,7 @@ const UserArea: React.FC<UserAreaProps> = props => {
         }}
         onClose={closePopup}
         classes={{
-          paper: "nav-user-popup-container"
+          paper: classes.popupContainer
         }}
       >
         {popupContent}
@@ -136,9 +152,21 @@ interface AppBarProps {
   children?: React.ReactNode;
 }
 
+const useAppBarStyles = makeStyles({
+  body: {
+    display: "flex",
+    height: "56px",
+    alignItems: "center"
+  },
+  logo: {
+    height: "30px"
+  }
+});
+
 const AppBar: React.FC<AppBarProps> = props => {
   const history = useHistory();
   const user = useUser();
+  const classes = useAppBarStyles();
   const { t } = useTranslation();
 
   function login() {
@@ -152,9 +180,9 @@ const AppBar: React.FC<AppBarProps> = props => {
 
   return (
     <MDAppBar>
-      <div className="app-bar-body">
+      <div className={classes.body}>
         <LinkButton to="/" history={history}>
-          <img className="nav-logo" src={logo} alt="logo" />
+          <img className={classes.logo} src={logo} alt="logo" />
           Timeline
         </LinkButton>
         {user && user.administrator && (

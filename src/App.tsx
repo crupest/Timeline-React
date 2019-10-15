@@ -4,8 +4,6 @@ import { hot } from "react-hot-loader/root";
 import { createMuiTheme, CircularProgress } from "@material-ui/core";
 import { ThemeProvider, StylesProvider } from "@material-ui/styles";
 
-import "./App.css";
-
 import Home from "./home/Home";
 import Login from "./user/Login";
 import AppBar from "./common/AppBar";

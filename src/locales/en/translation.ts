@@ -9,7 +9,8 @@ const translation: TranslationResource = {
     noLoginPrompt: "You haven't login.",
     welcome0: "Welcome, ",
     welcome1: " !",
-    logout: "logout"
+    logout: "logout",
+    rememberMe: "Remember Me"
   },
   admin: {
     title: "admin"

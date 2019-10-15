@@ -9,7 +9,8 @@ const translation: TranslationResource = {
     noLoginPrompt: "你还没有登录!",
     welcome0: "欢迎，",
     welcome1: "！",
-    logout: "注销"
+    logout: "注销",
+    rememberMe: "记住我"
   },
   admin: {
     title: "管理"

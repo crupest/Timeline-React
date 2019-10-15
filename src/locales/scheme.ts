@@ -8,6 +8,7 @@ export default interface TranslationResource {
     welcome0: string;
     welcome1: string;
     logout: string;
+    rememberMe: string;
   };
   admin: {
     title: string;
