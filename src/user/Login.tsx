@@ -10,7 +10,8 @@ import {
 
 import "./Login.css";
 
-import { AppBar } from "../common/AppBar";
+import AppBar from "../common/AppBar";
+
 import { userLogin } from "../data/user";
 
 interface LoginForm {

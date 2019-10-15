@@ -8,8 +8,9 @@ import {
   Switch
 } from "react-router";
 
-import { AppBar } from "../common/AppBar";
+import AppBar from "../common/AppBar";
 import UserAdmin from "./UserAdmin";
+
 import { UserWithToken } from "../data/user";
 
 interface AdminProps extends RouteComponentProps {

@@ -1,7 +1,8 @@
 import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
-import { AppBar } from "../common/AppBar";
 import { useTranslation } from "react-i18next";
+
+import AppBar from "../common/AppBar";
 
 const useStyles = makeStyles({
   content: {

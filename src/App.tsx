@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { hot } from "react-hot-loader/root";
 import { createMuiTheme, CircularProgress } from "@material-ui/core";
@@ -8,7 +8,7 @@ import "./App.css";
 
 import Home from "./home/Home";
 import Login from "./user/Login";
-import { AppBar } from "./common/AppBar";
+import AppBar from "./common/AppBar";
 
 import { useUser } from "./data/user";
 

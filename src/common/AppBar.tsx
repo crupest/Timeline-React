@@ -5,10 +5,11 @@ import {
   Icon,
   IconButton,
   Button,
-  withStyles,
-  AppBar as MDAppBar
+  AppBar as MDAppBar,
+  makeStyles
 } from "@material-ui/core";
-import { withRouter, RouteComponentProps } from "react-router";
+import { History } from "history";
+import { useHistory } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import logo from "./logo.svg";
@@ -17,8 +18,7 @@ import {
   UserWithToken,
   generateAvartarUrl,
   userLogout,
-  withUser,
-  UserComponentProps
+  useUser
 } from "../data/user";
 
 interface UserAreaProps {
@@ -56,10 +56,14 @@ const UserArea: React.FC<UserAreaProps> = props => {
     popupContent = (
       <Fragment>
         <img className="nav-user-avatar" src={avatarUrl} />
-        <Typography variant="body1">Welcome, {user.username} !</Typography>
+        <Typography variant="body1">
+          {t("user.welcome0")}
+          {user.username}
+          {t("user.welcome1")}
+        </Typography>
         <Button onClick={onLogout}>
           <Typography color="error" variant="button">
-            Logout
+            {t("user.logout")}
           </Typography>
         </Button>
       </Fragment>
@@ -98,80 +102,75 @@ const UserArea: React.FC<UserAreaProps> = props => {
   );
 };
 
-interface LinkButtonProps extends RouteComponentProps {
-  to?: string;
+interface LinkButtonProps {
+  to: string;
+  history: History;
   children?: React.ReactNode;
 }
 
-const LinkButtonInternalButton = withStyles({
+const useLinkButtonStyle = makeStyles({
   root: {
     margin: "0 10px"
   },
   label: {
     color: "white"
   }
-})(Button);
-
-const LinkButton = withRouter((props: LinkButtonProps) => {
-  const to = props.to;
-  return (
-    <LinkButtonInternalButton
-      onClick={
-        to
-          ? () => {
-              props.history.push(to);
-            }
-          : undefined
-      }
-    >
-      {props.children}
-    </LinkButtonInternalButton>
-  );
 });
 
-interface MyAppBarProps extends RouteComponentProps, UserComponentProps {
+const LinkButton: React.FC<LinkButtonProps> = props => {
+  const classes = useLinkButtonStyle();
+  return (
+    <Button
+      onClick={() => {
+        props.history.push(props.to);
+      }}
+      classes={classes}
+    >
+      {props.children}
+    </Button>
+  );
+};
+
+interface AppBarProps {
   actions?: React.ReactNode;
   children?: React.ReactNode;
 }
 
-class MyAppBar extends React.Component<MyAppBarProps> {
-  constructor(props: MyAppBarProps) {
-    super(props);
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
+const AppBar: React.FC<AppBarProps> = props => {
+  const history = useHistory();
+  const user = useUser();
+  const { t } = useTranslation();
+
+  function login() {
+    history.push("/login");
   }
 
-  login() {
-    this.props.history.push("/login");
-  }
-
-  logout() {
+  function logout() {
     userLogout();
-    this.props.history.push("/");
+    history.push("/");
   }
 
-  render(): React.ReactNode {
-    const user = this.props.user;
-    return (
-      <MDAppBar>
-        <div className="app-bar-body">
-          <LinkButton to="/">
-            <img className="nav-logo" src={logo} alt="logo" />
-            Timeline
+  return (
+    <MDAppBar>
+      <div className="app-bar-body">
+        <LinkButton to="/" history={history}>
+          <img className="nav-logo" src={logo} alt="logo" />
+          Timeline
+        </LinkButton>
+        {user && user.administrator && (
+          <LinkButton to="/admin" history={history}>
+            {t("admin.title")}
           </LinkButton>
-          {user && user.administrator && (
-            <LinkButton to="/admin">Admin</LinkButton>
-          )}
-          <span className="fill-remaining-space"></span>
-          {this.props.actions}
-          {user !== undefined && (
-            <UserArea user={user} login={this.login} logout={this.logout} />
-          )}
-        </div>
-        {this.props.children}
-      </MDAppBar>
-    );
-  }
-}
+        )}
+        <span className="fill-remaining-space"></span>
+        {props.actions}
+        {user !== undefined && (
+          <UserArea user={user} login={login} logout={logout} />
+        )}
+      </div>
+      {props.children}
+    </MDAppBar>
+  );
+};
 
-export const AppBar = withRouter(withUser(MyAppBar));
+export default AppBar;
