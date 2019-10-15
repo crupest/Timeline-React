@@ -2,8 +2,9 @@ import axios from "axios";
 
 import { apiBaseUrl } from "../config";
 import { BehaviorSubject, Observable } from "rxjs";
-import { withSubscription } from "./withSubscription";
+import { withSubscription } from "./common";
 import { getDisplayName } from "../tools";
+import { useState, useEffect } from "react";
 
 export interface User {
   username: string;
@@ -138,4 +139,15 @@ export function withUser<P extends UserComponentProps>(
   >(user$, value => ({ user: value }), { user: undefined }, c);
   result.displayName = `WithUser(${getDisplayName(c)})`;
   return result;
+}
+
+export function useUser(): UserWithToken | null | undefined {
+  const [user, setUser] = useState<UserWithToken | null | undefined>(undefined);
+  useEffect(() => {
+    const sub = user$.subscribe(u => setUser(u));
+    return () => {
+      sub.unsubscribe();
+    };
+  });
+  return user;
 }

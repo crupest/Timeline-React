@@ -8,7 +8,6 @@ import {
   withStyles,
   AppBar as MDAppBar
 } from "@material-ui/core";
-import { History } from "history";
 import { withRouter, RouteComponentProps } from "react-router";
 
 import logo from "./logo.svg";
@@ -17,13 +16,9 @@ import {
   UserWithToken,
   generateAvartarUrl,
   userLogout,
-  user$,
   withUser,
   UserComponentProps
 } from "../data/user";
-import Login from "../user/Login";
-import { Subscription } from "rxjs";
-import { withSubscription } from "../data/withSubscription";
 
 interface UserAreaProps {
   user: UserWithToken | null;

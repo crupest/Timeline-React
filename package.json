@@ -9,15 +9,18 @@
     "axios": "^0.19.0",
     "clsx": "^1.0.4",
     "core-js": "^3.2.1",
+    "i18next": "^17.2.0",
+    "i18next-browser-languagedetector": "^4.0.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-hot-loader": "^4.12.14",
+    "react-i18next": "^10.13.1",
     "react-router-dom": "^5.0.1",
     "regenerator-runtime": "^0.13.3",
     "rxjs": "^6.5.3"
   },
   "scripts": {
-    "start": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack-dev-server --mode development --config ./webpack.config.dev.ts",
+    "start": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack-dev-server --config ./webpack.config.dev.ts",
     "build": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --config ./webpack.config.prod.ts"
   },
   "browserslist": {
