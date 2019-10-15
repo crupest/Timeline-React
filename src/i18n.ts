@@ -18,17 +18,15 @@ const backend: i18n.BackendModule = {
     }
 
     if (language === "en") {
-      success(
-        await import(
-          /* webpackChunkName: "locales-en" */ "./locales/en/translation.json"
-        )
-      );
+      const res = (await import(
+        /* webpackChunkName: "locales-en" */ "./locales/en/translation"
+      )).default;
+      success(res);
     } else if (language === "zh") {
-      success(
-        await import(
-          /* webpackChunkName: "locales-zh" */ "./locales/zh/translation.json"
-        )
-      );
+      const res = (await import(
+        /* webpackChunkName: "locales-zh" */ "./locales/zh/translation"
+      )).default;
+      success(res);
     } else {
       error(`Language ${language} is not supported.`);
     }
