@@ -63,4 +63,13 @@ export const i18nPromise = i18n
     */
   });
 
+if (module.hot) {
+  module.hot.accept(
+    ["./locales/en/translation", "./locales/zh/translation"],
+    () => {
+      i18n.reloadResources();
+    }
+  );
+}
+
 export default i18n;

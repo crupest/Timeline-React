@@ -1120,6 +1120,11 @@
     "@types/serve-static" "*"
     "@types/webpack" "*"
 
+"@types/webpack-env@^1.14.1":
+  version "1.14.1"
+  resolved "https://registry.npm.taobao.org/@types/webpack-env/download/@types/webpack-env-1.14.1.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fwebpack-env%2Fdownload%2F%40types%2Fwebpack-env-1.14.1.tgz#0d8a53f308f017c53a5ddc3d07f4d6fa76b790d7"
+  integrity sha1-DYpT8wjwF8U6Xdw9B/TW+na3kNc=
+
 "@types/webpack-sources@*":
   version "0.1.5"
   resolved "https://registry.npm.taobao.org/@types/webpack-sources/download/@types/webpack-sources-0.1.5.tgz?cache=0&sync_timestamp=1567534696188&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fwebpack-sources%2Fdownload%2F%40types%2Fwebpack-sources-0.1.5.tgz#be47c10f783d3d6efe1471ff7f042611bd464a92"

@@ -1,6 +1,7 @@
 export default interface TranslationResource {
   welcome: string;
-  login: {
+  user: {
+    login: string;
     noLoginPrompt: string;
   };
 }

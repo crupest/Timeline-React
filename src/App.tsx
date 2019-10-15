@@ -13,12 +13,7 @@ import { AppBar } from "./common/AppBar";
 import { useUser } from "./data/user";
 
 const LoadingPage: React.FC = () => {
-  return (
-    <Fragment>
-      <AppBar />
-      <CircularProgress />
-    </Fragment>
-  );
+  return <CircularProgress />;
 };
 
 const NoMatch: React.FC = () => {
@@ -32,6 +27,8 @@ const NoMatch: React.FC = () => {
 
 const theme = createMuiTheme({
   typography: {
+    fontFamily:
+      '"Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
     button: {
       textTransform: "unset"
     }

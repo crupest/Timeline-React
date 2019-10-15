@@ -80,7 +80,7 @@ const config: webpack.Configuration = {
       mobile: true,
       lang: "en-US",
       links: [
-        "https://fonts.googleapis.com/icon?family=Material+Icons|Roboto",
+        "https://fonts.googleapis.com/icon?family=Material+Icons|Noto+Sans",
         {
           href: "/manifest.json",
           rel: "manifest"

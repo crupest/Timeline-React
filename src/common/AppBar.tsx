@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import {
   Popover,
   Typography,
@@ -9,6 +9,7 @@ import {
   AppBar as MDAppBar
 } from "@material-ui/core";
 import { withRouter, RouteComponentProps } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import logo from "./logo.svg";
 import "./AppBar.css";
@@ -26,96 +27,76 @@ interface UserAreaProps {
   logout: () => void;
 }
 
-interface UserAreaState {
-  anchorEl: Element | null;
-}
+const UserArea: React.FC<UserAreaProps> = props => {
+  const { t } = useTranslation();
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
-class UserArea extends React.Component<UserAreaProps, UserAreaState> {
-  constructor(props: UserAreaProps) {
-    super(props);
-
-    this.state = {
-      anchorEl: null
-    };
-
-    this.onClick = this.onClick.bind(this);
-    this.onClose = this.onClose.bind(this);
-    this.onLogin = this.onLogin.bind(this);
-    this.onLogout = this.onLogout.bind(this);
+  function onIconClick(event: React.SyntheticEvent) {
+    setAnchor(event.target as HTMLElement);
   }
 
-  onClick(event: React.SyntheticEvent) {
-    this.setState({
-      anchorEl: event.currentTarget
-    });
+  function closePopup() {
+    setAnchor(null);
   }
 
-  onClose(_: {}) {
-    this.setState({
-      anchorEl: null
-    });
+  function onLogin() {
+    closePopup();
+    props.login();
   }
 
-  onLogin(_: React.SyntheticEvent) {
-    this.onClose({});
-    this.props.login();
+  function onLogout() {
+    closePopup();
+    props.logout();
   }
 
-  onLogout(_: React.MouseEvent) {
-    this.props.logout();
-    this.onClose({});
-  }
-
-  render(): React.ReactNode {
-    const user = this.props.user;
-    let popupContent;
-    if (user) {
-      const avatarUrl = generateAvartarUrl(user.username, user.token);
-      popupContent = (
-        <Fragment>
-          <img className="nav-user-avatar" src={avatarUrl} />
-          <Typography variant="body1">Welcome, {user.username} !</Typography>
-          <Button onClick={this.onLogout}>
-            <Typography color="error" variant="button">
-              Logout
-            </Typography>
-          </Button>
-        </Fragment>
-      );
-    } else {
-      popupContent = (
-        <Fragment>
-          <Typography variant="body1">You haven't login.</Typography>
-          <Button color="primary" onClick={this.onLogin}>
-            Login
-          </Button>
-        </Fragment>
-      );
-    }
-
-    return (
+  const user = props.user;
+  let popupContent;
+  if (user) {
+    const avatarUrl = generateAvartarUrl(user.username, user.token);
+    popupContent = (
       <Fragment>
-        <IconButton onClick={this.onClick} style={{ color: "white" }}>
-          <Icon>account_circle</Icon>
-        </IconButton>
-        <Popover
-          open={Boolean(this.state.anchorEl)}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          onClose={this.onClose}
-          classes={{
-            paper: "nav-user-popup-container"
-          }}
-        >
-          {popupContent}
-        </Popover>
+        <img className="nav-user-avatar" src={avatarUrl} />
+        <Typography variant="body1">Welcome, {user.username} !</Typography>
+        <Button onClick={onLogout}>
+          <Typography color="error" variant="button">
+            Logout
+          </Typography>
+        </Button>
+      </Fragment>
+    );
+  } else {
+    popupContent = (
+      <Fragment>
+        <Typography variant="body1">{t("user.noLoginPrompt")}</Typography>
+        <Button color="primary" onClick={onLogin}>
+          {t("user.login")}
+        </Button>
       </Fragment>
     );
   }
-}
+
+  return (
+    <Fragment>
+      <IconButton onClick={onIconClick} style={{ color: "white" }}>
+        <Icon>account_circle</Icon>
+      </IconButton>
+      <Popover
+        open={Boolean(anchor)}
+        anchorEl={anchor}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left"
+        }}
+        onClose={closePopup}
+        classes={{
+          paper: "nav-user-popup-container"
+        }}
+      >
+        {popupContent}
+      </Popover>
+    </Fragment>
+  );
+};
 
 interface LinkButtonProps extends RouteComponentProps {
   to?: string;
