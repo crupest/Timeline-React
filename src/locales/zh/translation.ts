@@ -12,6 +12,11 @@ const translation: TranslationResource = {
     logout: "注销",
     rememberMe: "记住我"
   },
+  settings: {
+    languagePrimary: "选择显示的语言。",
+    languageSecondary:
+      "您的语言偏好将会存储在本地，下次浏览时将自动使用上次保存的语言选项。"
+  },
   admin: {
     title: "管理"
   }

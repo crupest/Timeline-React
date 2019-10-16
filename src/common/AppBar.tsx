@@ -21,6 +21,12 @@ import {
   useUser
 } from "../data/user";
 
+const useActionIconStyles = makeStyles({
+  icon: {
+    color: "white"
+  }
+});
+
 interface UserAreaProps {
   user: UserWithToken | null;
   login: () => void;
@@ -44,6 +50,7 @@ const useUserAreaStyles = makeStyles({
 
 const UserArea: React.FC<UserAreaProps> = props => {
   const classes = useUserAreaStyles();
+  const iconClass = useActionIconStyles().icon;
   const { t } = useTranslation();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
@@ -97,8 +104,8 @@ const UserArea: React.FC<UserAreaProps> = props => {
 
   return (
     <Fragment>
-      <IconButton onClick={onIconClick} style={{ color: "white" }}>
-        <Icon>account_circle</Icon>
+      <IconButton onClick={onIconClick}>
+        <Icon className={iconClass}>account_circle</Icon>
       </IconButton>
       <Popover
         open={Boolean(anchor)}
@@ -167,6 +174,7 @@ const AppBar: React.FC<AppBarProps> = props => {
   const history = useHistory();
   const user = useUser();
   const classes = useAppBarStyles();
+  const iconClass = useActionIconStyles().icon;
   const { t } = useTranslation();
 
   function login() {
@@ -192,6 +200,9 @@ const AppBar: React.FC<AppBarProps> = props => {
         )}
         <span className="fill-remaining-space"></span>
         {props.actions}
+        <IconButton onClick={() => history.push("/settings")}>
+          <Icon className={iconClass}>settings</Icon>
+        </IconButton>
         {user !== undefined && (
           <UserArea user={user} login={login} logout={logout} />
         )}

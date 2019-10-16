@@ -4,9 +4,10 @@ import { hot } from "react-hot-loader/root";
 import { createMuiTheme, CircularProgress } from "@material-ui/core";
 import { ThemeProvider, StylesProvider } from "@material-ui/styles";
 
-import Home from "./home/Home";
-import Login from "./user/Login";
 import AppBar from "./common/AppBar";
+import Login from "./user/Login";
+import Home from "./home/Home";
+import Settings from "./settings/Settings";
 
 import { useUser } from "./data/user";
 
@@ -18,6 +19,7 @@ const NoMatch: React.FC = () => {
   return (
     <>
       <AppBar />
+      <div style={{ height: 56 }} />
       <div>Ah-oh, 404!</div>
     </>
   );
@@ -52,6 +54,9 @@ const App: React.FC = _ => {
           </Route>
           <Route exact path="/login">
             <Login />
+          </Route>
+          <Route path="/settings">
+            <Settings />
           </Route>
           {user && user.administrator && (
             <Route path="/admin">

@@ -10,6 +10,10 @@ export default interface TranslationResource {
     logout: string;
     rememberMe: string;
   };
+  settings: {
+    languagePrimary: string; 
+    languageSecondary: string;
+  }
   admin: {
     title: string;
   }

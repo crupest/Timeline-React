@@ -12,6 +12,11 @@ const translation: TranslationResource = {
     logout: "logout",
     rememberMe: "Remember Me"
   },
+  settings: {
+    languagePrimary: "Choose display language.",
+    languageSecondary:
+      "You language preference will be saved locally. Next time you visit this page, last language option will be used."
+  },
   admin: {
     title: "admin"
   }
