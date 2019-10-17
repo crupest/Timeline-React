@@ -2,6 +2,7 @@ import path from "path";
 import webpack from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import { htmlCommonConfig } from "./webpack.common";
 
 const config: webpack.Configuration = {
   entry: ["react-hot-loader/patch", "./src/index.tsx"],
@@ -72,29 +73,8 @@ const config: webpack.Configuration = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      inject: false,
-      template: require("html-webpack-template"),
-
-      appMountId: "app",
-      devServer: "http://localhost:3000",
-      mobile: true,
-      lang: "en-US",
-      links: [
-        "https://fonts.googleapis.com/icon?family=Material+Icons|Noto+Sans",
-        {
-          href: "/manifest.json",
-          rel: "manifest"
-        },
-        {
-          href: "/logo192.png",
-          rel: "apple-touch-icon"
-        },
-        {
-          href: "/favicon.ico",
-          rel: "shortcut icon"
-        }
-      ],
-      title: "Timeline"
+      ...htmlCommonConfig,
+      devServer: "http://localhost:3000"
     }),
     new ForkTsCheckerWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin()
