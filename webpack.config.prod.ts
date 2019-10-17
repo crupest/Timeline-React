@@ -3,6 +3,8 @@ import webpack from "webpack";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import CopyPlugin from 'copy-webpack-plugin';
+
 import { htmlCommonConfig } from "./webpack.common";
 
 const config: webpack.Configuration = {
@@ -70,7 +72,11 @@ const config: webpack.Configuration = {
       filename: "index-www.html",
       baseHref: "https://www.crupest.xyz"
     }),
-    new ForkTsCheckerWebpackPlugin()
+    new ForkTsCheckerWebpackPlugin(),
+    new CopyPlugin([{
+      from: path.resolve(__dirname, "public/"),
+      to: path.resolve(__dirname, "dist/")
+    }])
   ]
 };
 
