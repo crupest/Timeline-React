@@ -12,7 +12,7 @@ stages:
         vmImage: 'ubuntu-18.04'
 
       steps:
-      - script: yarn
+      - script: yarn --verbose
         displayName: Restore Packages
 
       - script: yarn build
