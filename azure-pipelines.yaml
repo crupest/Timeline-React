@@ -12,12 +12,6 @@ stages:
         vmImage: 'ubuntu-18.04'
 
       steps:
-      - task: CacheBeta@0
-        inputs:
-          key: yarn | $(Agent.OS) | yarn.lock
-          path: ./node_modules
-        displayName: Cache Yarn packages
-
       - script: yarn
         displayName: Restore Packages
 
