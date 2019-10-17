@@ -4,41 +4,47 @@ import { useTranslation } from "react-i18next";
 
 import AppBar from "../common/AppBar";
 
-interface StyleProps {
-  welcomeColorH: number;
-}
+const hToColor = (h: number) => `hsl(${h} 70% 70%)`;
 
 const useStyles = makeStyles({
   content: {
     padding: 5,
     textAlign: "center"
   },
+  "@keyframes welcome": {
+    "0%": {
+      color: hToColor(0)
+    },
+    "16.66%": {
+      color: hToColor(60)
+    },
+    "33.33%": {
+      color: hToColor(120)
+    },
+    "50%": {
+      color: hToColor(180)
+    },
+    "66.66%": {
+      color: hToColor(240)
+    },
+    "83.33%": {
+      color: hToColor(300)
+    },
+    "100%": {
+      color: hToColor(360)
+    }
+  },
   welcome: {
-    transition: "color 4s",
-    color: (props: StyleProps) => `hsl(${props.welcomeColorH} 70% 70%)`
+    animationName: "$welcome",
+    animationDuration: "10s",
+    animationIterationCount: "infinite"
   }
 });
 
 const Home: React.FC = _ => {
   const { t } = useTranslation();
-  const [welcomeColorH, setWelcomeColorH] = useState<number>(0);
 
-  useEffect(() => {
-    const ti = setTimeout(() => {
-      let newH = welcomeColorH + 60;
-      if (newH >= 360) {
-        newH = 0;
-      }
-      setWelcomeColorH(newH);
-    }, 4000);
-    return () => {
-      clearTimeout(ti);
-    };
-  }, [welcomeColorH]);
-
-  const classes = useStyles({
-    welcomeColorH: welcomeColorH
-  });
+  const classes = useStyles();
 
   return (
     <>
