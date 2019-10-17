@@ -39,7 +39,6 @@ stages:
     pool:
       name: 'Default'
     environment: 'timeline-server'
-    dependsOn: build
     strategy:
       runOnce:
         deploy:
