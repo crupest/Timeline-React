@@ -26,6 +26,7 @@ stages:
 - stage: deploy
   displayName: Deploy
   dependsOn: build
+  condition: eq(variables['Build.SourceBranchName'], 'master')
 
   jobs:
   - deployment: deploy

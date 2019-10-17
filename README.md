@@ -1,5 +1,7 @@
 # Welcome to Timeline!
 
+[![Build Status](https://dev.azure.com/crupest-web/Timeline/_apis/build/status/crupest.Timeline-React?branchName=master)](https://dev.azure.com/crupest-web/Timeline/_build/latest?definitionId=8&branchName=master)
+
 This is the first web app front-end of [me](https://github.com/crupest).
 
 It is written with [React](https://reactjs.org/) and [Typescript](https://www.typescriptlang.org/).
