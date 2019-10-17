@@ -1,0 +1,51 @@
+trigger:
+- master
+
+stages:
+- stage: build
+  displayName: Routine Build
+
+  jobs:
+    - job: build
+      displayName: Build
+      pool:
+        vmImage: 'ubuntu-18.04'
+
+      steps:
+      - task: CacheBeta@0
+        inputs:
+          key: yarn | $(Agent.OS) | yarn.lock
+          path: ./node_modules
+        displayName: Cache Yarn packages
+
+      - script: yarn --frozen-lockfile
+        displayName: Restore Packages
+
+      - script: yarn build
+        displayName: Webpack Build
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          artifactName: 'timeline'
+          targetPath: dist
+
+- stage: deploy
+  displayName: Deploy
+  dependsOn: build
+
+  jobs:
+  - deployment: deploy
+    displayName: Deploy to Server
+    pool:
+      name: 'Default'
+    environment: 'timeline-server'
+    dependsOn: build
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              rm -rf /var/www/timeline/*
+              cp -r $PIPELINE_WORKSPACE/timeline/. /var/www/timeline/
+            displayName: 'Copy Files'
+            failOnStderr: true
