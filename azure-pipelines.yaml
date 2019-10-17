@@ -18,7 +18,7 @@ stages:
           path: ./node_modules
         displayName: Cache Yarn packages
 
-      - script: yarn --frozen-lockfile
+      - script: yarn
         displayName: Restore Packages
 
       - script: yarn build
