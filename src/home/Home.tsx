@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles, Typography, Link } from "@material-ui/core";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 
 import AppBar from "../common/AppBar";
 
@@ -54,25 +54,27 @@ const Home: React.FC = _ => {
         <Typography variant="h4" classes={{ root: classes.welcome }}>
           {t("welcome")}
         </Typography>
-        <Typography variant="body1">
-          {t("home.description.p1.0")}
-          <Link href="https://github.com/crupest" target="_blank">
-            crupest
-          </Link>
-          {t("home.description.p1.2")}
-          <Link
-            href="https://github.com/crupest/Timeline-React"
-            target="_blank"
-          >
-            {t("home.description.p1.3")}
-          </Link>
-          {t("home.description.p1.4")}
-          <Link href="https://github.com/crupest/Timeline" target="_blank">
-            {t("home.description.p1.5")}
-          </Link>
-          {t("home.description.p1.6")}
-        </Typography>
-        <Typography variant="body1">{t("home.description.p2.0")}</Typography>
+        <Trans i18nKey="home.description">
+          <Typography variant="body1">
+            0
+            <Link href="https://github.com/crupest" target="_blank">
+              1
+            </Link>
+            2
+            <Link
+              href="https://github.com/crupest/Timeline-React"
+              target="_blank"
+            >
+              3
+            </Link>
+            4
+            <Link href="https://github.com/crupest/Timeline" target="_blank">
+              5
+            </Link>
+            6
+          </Typography>
+          <Typography variant="body1">0</Typography>
+        </Trans>
       </div>
     </>
   );

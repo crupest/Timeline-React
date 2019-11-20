@@ -3,27 +3,14 @@ import TranslationResource from "../scheme";
 const translation: TranslationResource = {
   welcome: "欢迎来到时间线！",
   home: {
-    description: {
-      p1: {
-        0: "这是我，",
-        2: "，创建的第一个Web App。这个网站就是它的前端。你可以在Github上找到它的源代码（",
-        3: "前端",
-        4: "，",
-        5: "后端",
-        6: "）。现在我正在努力开发它，欢迎在Github上留下任何想法！"
-      },
-      p2: {
-        0: "这个页面将来会被替换掉。"
-      }
-    }
+    description: `<0>这是我，<1>crupest</1>，创建的第一个Web App。这个网站就是它的前端。你可以在Github上找到它的源代码（<3>前端</3>，<5>后端</5>）。现在我正在努力开发它，欢迎在Github上留下任何想法！</0><1>这个页面将来会被替换掉。</1>`
   },
   user: {
     username: "用户名",
     password: "密码",
     login: "登录",
     noLoginPrompt: "你还没有登录!",
-    welcome0: "欢迎，",
-    welcome1: "！",
+    welcome: "欢迎，{{name}} ！",
     logout: "注销",
     rememberMe: "记住我"
   },

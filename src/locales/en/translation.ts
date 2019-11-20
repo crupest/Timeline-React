@@ -3,27 +3,14 @@ import TranslationResource from "../scheme";
 const translation: TranslationResource = {
   welcome: "Welcome to Timeline!",
   home: {
-    description: {
-      p1: {
-        0: "This is the first Web App created by me, ",
-        2: ". This page is the front-end of it. You can find the source code on Github (",
-        3: "front-end",
-        4: ", ",
-        5: "back-end",
-        6: "). Now it is under active development by me. You are welcomed to leave any thoughts on Github!"
-      },
-      p2: {
-        0: "This page will be replaced in the future."
-      }
-    }
+    description: `<0>This is the first Web App created by me, <1>crupest</1>. This page is the front-end of it. You can find the source code on Github (<3>front-end</3>, <5>back-end</5>). Now it is under active development by me. You are welcomed to leave any thoughts on Github!</0><1>This page will be replaced in the future.</1>`
   },
   user: {
     username: "username",
     password: "password",
     login: "login",
     noLoginPrompt: "You haven't login.",
-    welcome0: "Welcome, ",
-    welcome1: " !",
+    welcome: "Welcome, {{name}} !",
     logout: "logout",
     rememberMe: "Remember Me"
   },

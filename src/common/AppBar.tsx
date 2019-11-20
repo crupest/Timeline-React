@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { History } from "history";
 import { useHistory } from "react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 
 import logo from "./logo.svg";
 
@@ -80,9 +80,7 @@ const UserArea: React.FC<UserAreaProps> = props => {
       <Fragment>
         <img className={classes.avatar} src={avatarUrl} />
         <Typography variant="body1">
-          {t("user.welcome0")}
-          {user.username}
-          {t("user.welcome1")}
+          {t("user.welcome", { name: user.username })}
         </Typography>
         <Button onClick={onLogout}>
           <Typography color="error" variant="button">
