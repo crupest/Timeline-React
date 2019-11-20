@@ -13,8 +13,13 @@ export default interface TranslationResource {
     rememberMe: string;
   };
   settings: {
+    subheaders: {
+      account: string;
+      customization: string;
+    };
     languagePrimary: string;
     languageSecondary: string;
+    changePassword: string;
   };
   admin: {
     title: string;

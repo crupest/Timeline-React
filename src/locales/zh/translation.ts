@@ -15,9 +15,14 @@ const translation: TranslationResource = {
     rememberMe: "记住我"
   },
   settings: {
+    subheaders: {
+      account: "账户",
+      customization: "个性化"
+    },
     languagePrimary: "选择显示的语言。",
     languageSecondary:
-      "您的语言偏好将会存储在本地，下次浏览时将自动使用上次保存的语言选项。"
+      "您的语言偏好将会存储在本地，下次浏览时将自动使用上次保存的语言选项。",
+    changePassword: "更改账号的密码。"
   },
   admin: {
     title: "管理"

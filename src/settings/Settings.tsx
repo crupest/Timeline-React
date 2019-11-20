@@ -6,7 +6,8 @@ import {
   Icon,
   ListItemText,
   Select,
-  MenuItem
+  MenuItem,
+  ListSubheader
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
@@ -21,6 +22,14 @@ const Settings: React.FC = _ => {
       <AppBar />
       <div style={{ height: 56 }} />
       <List>
+        <ListSubheader>{t("settings.subheaders.account")}</ListSubheader>
+        <ListItem>
+          <ListItemText
+            primary={t("settings.changePassword")}
+            primaryTypographyProps={{ color: "error" }}
+          />
+        </ListItem>
+        <ListSubheader>{t("settings.subheaders.customization")}</ListSubheader>
         <ListItem>
           <ListItemIcon>
             <Icon>translate</Icon>

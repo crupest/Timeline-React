@@ -15,9 +15,14 @@ const translation: TranslationResource = {
     rememberMe: "Remember Me"
   },
   settings: {
+    subheaders: {
+      account: "Account",
+      customization: "Customization"
+    },
     languagePrimary: "Choose display language.",
     languageSecondary:
-      "You language preference will be saved locally. Next time you visit this page, last language option will be used."
+      "You language preference will be saved locally. Next time you visit this page, last language option will be used.",
+    changePassword: "Change account's password."
   },
   admin: {
     title: "admin"
