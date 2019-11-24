@@ -40,22 +40,32 @@ async function changePassword(
 const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
   const user = useUser()!;
   const history = useHistory();
+  const { t } = useTranslation();
 
   const [redirect, setRedirect] = useState<boolean>(false);
 
   return (
     <OperationDialog
       open={props.open}
-      title="Change password"
+      title={t('settings.dialogChangePassword.title')}
       titleColor="dangerous"
+      inputPrompt={t("settings.dialogChangePassword.prompt")}
       inputScheme={[
         {
           type: 'text',
-          label: 'old password',
+          label: t('settings.dialogChangePassword.inputOldPassword'),
           password: true
         },
-        { type: 'text', label: 'new password', password: true },
-        { type: 'text', label: 'retype new password', password: true }
+        {
+          type: 'text',
+          label: t('settings.dialogChangePassword.inputNewPassword'),
+          password: true
+        },
+        {
+          type: 'text',
+          label: t('settings.dialogChangePassword.inputRetypeNewPassword'),
+          password: true
+        }
       ]}
       onConfirm={async ([oldPassword, newPassword, retypeNewPassword]) => {
         if (newPassword !== retypeNewPassword) {

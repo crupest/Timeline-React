@@ -20,6 +20,13 @@ export default interface TranslationResource {
     languagePrimary: string;
     languageSecondary: string;
     changePassword: string;
+    dialogChangePassword: {
+      title: string;
+      prompt: string;
+      inputOldPassword: string;
+      inputNewPassword: string;
+      inputRetypeNewPassword: string;
+    };
   };
   admin: {
     title: string;

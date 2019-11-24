@@ -101,8 +101,8 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   let body: React.ReactNode;
   if (step === 'input') {
     let inputPrompt = props.inputPrompt;
-    if (React.isValidElement(inputPrompt)) {
-      inputPrompt = <Typography variant="subtitle1">{inputPrompt}</Typography>;
+    if (typeof inputPrompt === 'string' || React.isValidElement(inputPrompt)) {
+      inputPrompt = <Typography variant="subtitle2">{inputPrompt}</Typography>;
     }
     body = (
       <>
