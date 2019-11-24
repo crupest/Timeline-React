@@ -51,10 +51,11 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
       inputScheme={[
         {
           type: 'text',
-          label: 'old password'
+          label: 'old password',
+          password: true
         },
-        { type: 'text', label: 'new password' },
-        { type: 'text', label: 'retype new password' }
+        { type: 'text', label: 'new password', password: true },
+        { type: 'text', label: 'retype new password', password: true }
       ]}
       onConfirm={async ([oldPassword, newPassword, retypeNewPassword]) => {
         if (newPassword !== retypeNewPassword) {

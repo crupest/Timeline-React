@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import clsx from "clsx";
+import React, { useState } from 'react';
+import clsx from 'clsx';
 import {
   Dialog,
   DialogTitle,
@@ -12,16 +12,17 @@ import {
   TextField,
   FormControlLabel,
   Checkbox
-} from "@material-ui/core";
+} from '@material-ui/core';
 
 export interface OperationTextInputInfo {
-  type: "text";
+  type: 'text';
   label: string;
+  password?: boolean;
   initValue?: string;
 }
 
 export interface OperationBoolInputInfo {
-  type: "bool";
+  type: 'bool';
   label: string;
   initValue?: boolean;
 }
@@ -34,37 +35,37 @@ const useStyles = makeStyles(theme => ({
   paper: {
     minWidth: 220,
     minHeight: 140,
-    [theme.breakpoints.up("md")]: {
+    [theme.breakpoints.up('md')]: {
       minWidth: 300,
       minHeight: 160
     }
   },
   titleCreate: {
-    color: "green"
+    color: 'green'
   },
   titleDangerous: {
-    color: "red"
+    color: 'red'
   },
   content: {
-    display: "flex",
-    flexDirection: "column"
+    display: 'flex',
+    flexDirection: 'column'
   },
   processText: {
-    margin: "0 10px"
+    margin: '0 10px'
   }
 }));
 
 interface OperationResult {
-  type: "success" | "failure";
+  type: 'success' | 'failure';
   value: any;
 }
 
 interface OperationDialogProps {
   title: React.ReactNode;
-  titleColor: "default" | "dangerous" | "create";
+  titleColor: 'default' | 'dangerous' | 'create';
   inputPrompt?: React.ReactNode;
   inputScheme?: OperationInputInfo[];
-  onConfirm: (input: (string | boolean)[]) => Promise<any>;
+  onConfirm: (inputs: (string | boolean)[]) => Promise<any>;
   processPrompt?: () => React.ReactNode;
   successPrompt?: (value: any) => React.ReactNode;
   failurePrompt?: (error: any) => React.ReactNode;
@@ -76,29 +77,29 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   const inputScheme = props.inputScheme;
   if (!inputScheme) {
     throw new Error(
-      "InputScheme of operation dialog is falsy. Use empty array if no input needed, which is the default value."
+      'InputScheme of operation dialog is falsy. Use empty array if no input needed, which is the default value.'
     );
   }
 
   const classes = useStyles();
 
-  type Step = "input" | "process" | OperationResult;
-  const [step, setStep] = useState<Step>("input");
+  type Step = 'input' | 'process' | OperationResult;
+  const [step, setStep] = useState<Step>('input');
   const [values, setValues] = useState<(boolean | string)[]>(() => {
     return inputScheme.map(i => {
-      if (i.type === "bool") {
+      if (i.type === 'bool') {
         return i.initValue || false;
-      } else if (i.type === "text") {
-        return i.initValue || ("" as string);
+      } else if (i.type === 'text') {
+        return i.initValue || ('' as string);
       } else {
-        throw new Error("Unknown input scheme.");
+        throw new Error('Unknown input scheme.');
       }
     });
   });
-  const isProcessing = step === "process";
+  const isProcessing = step === 'process';
 
   let body: React.ReactNode;
-  if (step === "input") {
+  if (step === 'input') {
     let inputPrompt = props.inputPrompt;
     if (React.isValidElement(inputPrompt)) {
       inputPrompt = <Typography variant="subtitle1">{inputPrompt}</Typography>;
@@ -108,13 +109,13 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
         <DialogContent classes={{ root: classes.content }}>
           {inputPrompt}
           {inputScheme.map((i, index) => {
-            const type = i.type;
-            if (type === "text") {
+            if (i.type === 'text') {
               return (
                 <TextField
                   key={index}
                   label={i.label}
                   value={values[index]}
+                  type={i.password === true ? 'password' : undefined}
                   onChange={e => {
                     const v = e.target.value; // React may reuse the event, so copy and catch it.
                     setValues(oldValues => {
@@ -125,7 +126,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                   }}
                 />
               );
-            } else if (type === "bool") {
+            } else if (i.type === 'bool') {
               return (
                 <FormControlLabel
                   key={index}
@@ -150,17 +151,17 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
           <Button
             color="secondary"
             onClick={() => {
-              setStep("process");
+              setStep('process');
               props.onConfirm(values).then(
                 v => {
                   setStep({
-                    type: "success",
+                    type: 'success',
                     value: v
                   });
                 },
                 e => {
                   setStep({
-                    type: "failure",
+                    type: 'failure',
                     value: e
                   });
                 }
@@ -172,7 +173,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
         </DialogActions>
       </>
     );
-  } else if (step === "process") {
+  } else if (step === 'process') {
     body = (
       <DialogContent classes={{ root: classes.content }}>
         {props.processPrompt && props.processPrompt()}
@@ -181,7 +182,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   } else {
     let content: React.ReactNode;
     const result = step;
-    if (result.type === "success") {
+    if (result.type === 'success') {
       content = props.successPrompt && props.successPrompt(result.value);
       if (React.isValidElement(content))
         content = <Typography variant="body1">{content}</Typography>;
@@ -219,8 +220,8 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
       <DialogTitle
         classes={{
           root: clsx(
-            props.titleColor === "create" && classes.titleCreate,
-            props.titleColor === "dangerous" && classes.titleDangerous
+            props.titleColor === 'create' && classes.titleCreate,
+            props.titleColor === 'dangerous' && classes.titleDangerous
           )
         }}
       >
@@ -233,12 +234,12 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
 
 const useProcessStyles = makeStyles({
   processContent: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   processText: {
-    margin: "0 10px"
+    margin: '0 10px'
   }
 });
 
@@ -253,10 +254,10 @@ const DefaultProcessPrompt: React.FC = _ => {
 };
 
 OperationDialog.defaultProps = {
-  titleColor: "default",
+  titleColor: 'default',
   inputScheme: [],
   processPrompt: () => <DefaultProcessPrompt />,
-  successPrompt: _ => "Ok!",
+  successPrompt: _ => 'Ok!',
   failurePrompt: e => e.toString()
 };
 
