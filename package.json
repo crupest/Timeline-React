@@ -49,7 +49,6 @@
     "@types/node": "^12.7.11",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
-    "@types/react-hot-loader": "^4.1.0",
     "@types/react-router-dom": "^4.3.5",
     "@types/webpack": "^4.39.2",
     "@types/webpack-dev-server": "^3.1.7",
