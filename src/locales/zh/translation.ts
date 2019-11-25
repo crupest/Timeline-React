@@ -30,7 +30,10 @@ const translation: TranslationResource = {
         '您正在修改密码，您需要输入正确的旧密码。成功修改后您需要重新登陆，而且以前所有的登录都会失效。',
       inputOldPassword: '旧密码',
       inputNewPassword: '新密码',
-      inputRetypeNewPassword: '再次输入新密码'
+      inputRetypeNewPassword: '再次输入新密码',
+      errorEmptyOldPassword: '旧密码不能为空。',
+      errorEmptyNewPassword: '新密码不能为空',
+      errorRetypeNotMatch: '两次输入的密码不一致'
     }
   },
   admin: {

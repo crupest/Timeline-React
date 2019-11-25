@@ -10,15 +10,17 @@ import {
   ListSubheader
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { useHistory } from 'react-router';
 
 import { apiBaseUrl } from '../config';
 
 import { useUser, userLogout } from '../data/user';
 
 import AppBar from '../common/AppBar';
-import OperationDialog from '../common/OperationDialog';
-import { useHistory } from 'react-router';
+import OperationDialog, {
+  OperationInputErrorInfo
+} from '../common/OperationDialog';
 
 interface ChangePasswordDialogProps {
   open: boolean;
@@ -31,10 +33,23 @@ async function changePassword(
   token: string
 ): Promise<void> {
   const url = `${apiBaseUrl}/userop/changepassword?token=${token}`;
-  await axios.post(url, {
-    oldPassword,
-    newPassword
-  });
+  try {
+    await axios.post(url, {
+      oldPassword,
+      newPassword
+    });
+  } catch (e) {
+    const error = e as AxiosError;
+    if (
+      error.response &&
+      error.response.status === 400 &&
+      error.response.data &&
+      error.response.data.message
+    ) {
+      throw error.response.data.message;
+    }
+    throw e;
+  }
 }
 
 const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
@@ -49,7 +64,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
       open={props.open}
       title={t('settings.dialogChangePassword.title')}
       titleColor="dangerous"
-      inputPrompt={t("settings.dialogChangePassword.prompt")}
+      inputPrompt={t('settings.dialogChangePassword.prompt')}
       inputScheme={[
         {
           type: 'text',
@@ -67,10 +82,32 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
           password: true
         }
       ]}
-      onConfirm={async ([oldPassword, newPassword, retypeNewPassword]) => {
-        if (newPassword !== retypeNewPassword) {
-          throw new Error('Two new passwords are not the same.');
+      validator={(inputs, index) => {
+        let result: OperationInputErrorInfo = {};
+        if (index == null || index === 0) {
+          if (inputs[0]) {
+            result[0] = null;
+          } else {
+            result[0] = t =>
+              t('settings.dialogChangePassword.errorEmptyOldPassword');
+          }
         }
+        if (index == null || index === 1 || index === 2) {
+          result[1] = null;
+          result[2] = null;
+          if (inputs[1] !== inputs[2]) {
+            result[1] = () => '';
+            result[2] = t =>
+              t('settings.dialogChangePassword.errorRetypeNotMatch');
+          }
+          if (!inputs[1]) {
+            result[1] = t =>
+              t('settings.dialogChangePassword.errorEmptyNewPassword');
+          }
+        }
+        return result;
+      }}
+      onConfirm={async ([oldPassword, newPassword]) => {
         await changePassword(
           oldPassword as string,
           newPassword as string,

@@ -26,6 +26,9 @@ export default interface TranslationResource {
       inputOldPassword: string;
       inputNewPassword: string;
       inputRetypeNewPassword: string;
+      errorEmptyOldPassword: string;
+      errorEmptyNewPassword: string;
+      errorRetypeNotMatch: string;
     };
   };
   admin: {

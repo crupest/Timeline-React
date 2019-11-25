@@ -13,6 +13,8 @@ import {
   FormControlLabel,
   Checkbox
 } from '@material-ui/core';
+import { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export interface OperationTextInputInfo {
   type: 'text';
@@ -30,6 +32,10 @@ export interface OperationBoolInputInfo {
 export type OperationInputInfo =
   | OperationTextInputInfo
   | OperationBoolInputInfo;
+
+export interface OperationInputErrorInfo {
+  [index: number]: ((t: TFunction) => string) | null | undefined;
+}
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -71,6 +77,10 @@ interface OperationDialogProps {
   failurePrompt?: (error: any) => React.ReactNode;
   open: boolean;
   close: () => void;
+  validator?: (
+    inputs: (string | boolean)[],
+    index?: number
+  ) => OperationInputErrorInfo | void;
 }
 
 const OperationDialog: React.FC<OperationDialogProps> = props => {
@@ -82,6 +92,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   }
 
   const classes = useStyles();
+  const { t } = useTranslation();
 
   type Step = 'input' | 'process' | OperationResult;
   const [step, setStep] = useState<Step>('input');
@@ -96,6 +107,22 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
       }
     });
   });
+  const [inputError, setInputError] = useState<OperationInputErrorInfo>(() => {
+    if (props.validator) {
+      const initValues = inputScheme.map(i => {
+        if (i.type === 'bool') {
+          return i.initValue || false;
+        } else if (i.type === 'text') {
+          return i.initValue || ('' as string);
+        } else {
+          throw new Error('Unknown input scheme.');
+        }
+      });
+      const result = props.validator(initValues);
+      return result ? result : {};
+    }
+    return {};
+  });
   const isProcessing = step === 'process';
 
   let body: React.ReactNode;
@@ -108,39 +135,56 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
       <>
         <DialogContent classes={{ root: classes.content }}>
           {inputPrompt}
-          {inputScheme.map((i, index) => {
-            if (i.type === 'text') {
+          {inputScheme.map((item, index) => {
+            const error = inputError[index];
+            if (item.type === 'text') {
               return (
                 <TextField
                   key={index}
-                  label={i.label}
+                  label={item.label}
                   value={values[index]}
-                  type={i.password === true ? 'password' : undefined}
+                  type={item.password === true ? 'password' : undefined}
+                  error={error != null}
+                  helperText={error && error(t)}
                   onChange={e => {
                     const v = e.target.value; // React may reuse the event, so copy and catch it.
-                    setValues(oldValues => {
-                      const newValues = oldValues.slice();
-                      newValues[index] = v;
-                      return newValues;
-                    });
+                    const oldValues = values;
+                    const newValues = oldValues.slice();
+                    newValues[index] = v;
+                    setValues(newValues);
+                    if (props.validator) {
+                      const result = props.validator(newValues, index);
+                      if (result) {
+                        setInputError(oldError => {
+                          return { ...oldError, ...result };
+                        });
+                      }
+                    }
                   }}
                 />
               );
-            } else if (i.type === 'bool') {
+            } else if (item.type === 'bool') {
               return (
                 <FormControlLabel
                   key={index}
                   value={values[index]}
                   onChange={e => {
                     const v = (e.target as HTMLInputElement).checked; // React may reuse the event, so copy and catch it.
-                    setValues(oldValues => {
-                      const newValues = oldValues.slice();
-                      newValues[index] = v;
-                      return newValues;
-                    });
+                    const oldValues = values;
+                    const newValues = oldValues.slice();
+                    newValues[index] = v;
+                    setValues(newValues);
+                    if (props.validator) {
+                      const result = props.validator(newValues, index);
+                      if (result) {
+                        setInputError(oldError => {
+                          return { ...oldError, ...result };
+                        });
+                      }
+                    }
                   }}
                   control={<Checkbox />}
-                  label={i.label}
+                  label={item.label}
                 />
               );
             }
@@ -150,6 +194,22 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
           <Button onClick={props.close}>Cancel</Button>
           <Button
             color="secondary"
+            disabled={
+              props.inputScheme
+                ? (() => {
+                    const inputScheme = props.inputScheme;
+                    for (let i = 0; i < inputScheme.length; i++) {
+                      if (
+                        inputScheme[i].type === 'text' &&
+                        inputError[i] != null
+                      ) {
+                        return true;
+                      }
+                    }
+                    return false;
+                  })()
+                : false
+            }
             onClick={() => {
               setStep('process');
               props.onConfirm(values).then(
@@ -184,11 +244,11 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
     const result = step;
     if (result.type === 'success') {
       content = props.successPrompt && props.successPrompt(result.value);
-      if (React.isValidElement(content))
+      if (typeof content === 'string' || React.isValidElement(content))
         content = <Typography variant="body1">{content}</Typography>;
     } else {
       content = props.failurePrompt && props.failurePrompt(result.value);
-      if (React.isValidElement(content))
+      if (typeof content === 'string' || React.isValidElement(content))
         content = (
           <Typography color="error" variant="body1">
             {content}

@@ -29,7 +29,10 @@ const translation: TranslationResource = {
         'You are changing your password. You need to input the correct old password. After change, you need to login again and all old login will be invalid.',
       inputOldPassword: 'Old password',
       inputNewPassword: 'New password',
-      inputRetypeNewPassword: 'Retype new password'
+      inputRetypeNewPassword: 'Retype new password',
+      errorEmptyOldPassword: "Old password can't be empty.",
+      errorEmptyNewPassword: "New password can't be empty.",
+      errorRetypeNotMatch: 'Password retyped does not match.'
     }
   },
   admin: {
