@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 import { apiBaseUrl } from "../config";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -121,8 +121,8 @@ export function userLogout() {
   userSubject.next(null);
 }
 
-export function generateAvartarUrl(username: string, token: string): string {
-  return `${apiBaseUrl}/users/${username}/avatar?token=${token}`;
+export function generateAvatarUrl(username: string): string {
+  return `${apiBaseUrl}/users/${username}/avatar`;
 }
 
 export interface UserComponentProps {
@@ -150,4 +150,32 @@ export function useUser(): UserWithToken | null | undefined {
     };
   });
   return user;
+}
+
+// area : nickname cache
+
+export async function fetchNickname(username: string) : Promise<AxiosResponse<string>> {
+  return axios.get(`${apiBaseUrl}/users/${username}/nickname`);
+}
+
+class NicknameManager {
+  private cache: Map<string, string> = new Map();
+
+  async get(username: string): Promise<string> {
+    const cacheName = this.cache.get(username);
+    if (cacheName) {
+      return cacheName;
+    } else {
+      const res = await fetchNickname(username);
+      const nickname = res.data;
+      this.cache.set(username, nickname);
+      return nickname;
+    }
+  }
+}
+
+const nicknameManager = new NicknameManager();
+
+export async function getNickname(username: string) : Promise<string> {
+  return await nicknameManager.get(username);
 }

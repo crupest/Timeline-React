@@ -16,7 +16,7 @@ import logo from "./logo.svg";
 
 import {
   UserWithToken,
-  generateAvartarUrl,
+  generateAvatarUrl,
   userLogout,
   useUser
 } from "../data/user";
@@ -75,7 +75,7 @@ const UserArea: React.FC<UserAreaProps> = props => {
   const user = props.user;
   let popupContent;
   if (user) {
-    const avatarUrl = generateAvartarUrl(user.username, user.token);
+    const avatarUrl = generateAvatarUrl(user.username);
     popupContent = (
       <Fragment>
         <img className={classes.avatar} src={avatarUrl} />
