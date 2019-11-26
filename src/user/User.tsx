@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
-import { CircularProgress, Typography, Card } from '@material-ui/core';
+import {
+  CircularProgress,
+  Typography,
+  Card,
+  IconButton,
+  Icon
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { AxiosError } from 'axios';
 
@@ -25,6 +31,13 @@ const useStyles = makeStyles({
     display: 'flex',
     margin: '10px'
   },
+  userInfoAvatarArea: {
+    display: 'flex',
+  },
+  userInfoAvatarEditButton: {
+    alignSelf: 'flex-end',
+    marginLeft: -20
+  },
   userInfoBody: {},
   userInfoNickname: {
     display: 'inline-block',
@@ -40,6 +53,8 @@ const User: React.FC = _ => {
   const classes = useStyles();
 
   const user = useUser();
+
+  const editable = user && (user.username === username || user.administrator);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,11 +96,29 @@ const User: React.FC = _ => {
     } else {
       body = (
         <Card classes={{ root: classes.userInfoCard }}>
-          <img className={classes.avatar} src={generateAvatarUrl(username)} />
+          <div className={classes.userInfoAvatarArea}>
+            <img className={classes.avatar} src={generateAvatarUrl(username)} />
+            {editable ? (
+              <IconButton className={classes.userInfoAvatarEditButton} size="small">
+                <Icon>edit</Icon>
+              </IconButton>
+            ) : (
+              undefined
+            )}
+          </div>
           <div className={classes.userInfoBody}>
-            <Typography className={classes.userInfoNickname} variant="h6">
-              {nickname}
-            </Typography>
+            <div className={classes.userInfoNickname}>
+              <Typography variant="h6" style={{ display: 'inline' }}>
+                {nickname}
+              </Typography>
+              {editable ? (
+                <IconButton size="small">
+                  <Icon>edit</Icon>
+                </IconButton>
+              ) : (
+                undefined
+              )}
+            </div>
             <Typography
               variant="caption"
               color="textSecondary"
