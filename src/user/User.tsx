@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router';
+import { useParams } from 'react-router';
 import {
   CircularProgress,
   Typography,
@@ -13,6 +13,7 @@ import { AxiosError } from 'axios';
 import { fetchNickname, useUser, generateAvatarUrl } from '../data/user';
 
 import AppBar from '../common/AppBar';
+import OperationDialog from '../common/OperationDialog';
 
 const useStyles = makeStyles({
   loadingBody: {
@@ -29,14 +30,8 @@ const useStyles = makeStyles({
   },
   userInfoCard: {
     display: 'flex',
-    margin: '10px'
-  },
-  userInfoAvatarArea: {
-    display: 'flex',
-  },
-  userInfoAvatarEditButton: {
-    alignSelf: 'flex-end',
-    marginLeft: -20
+    margin: '10px',
+    position: 'relative'
   },
   userInfoBody: {},
   userInfoNickname: {
@@ -45,8 +40,31 @@ const useStyles = makeStyles({
   },
   userInfoUsername: {
     display: 'inline-block'
+  },
+  userInfoEditButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0
   }
 });
+
+interface ChangeNicknameDialogProps {
+  open: boolean;
+  close: () => void;
+}
+
+const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
+  return (
+    <OperationDialog
+      open={props.open}
+      title="Change nickname"
+      titleColor="default"
+      inputScheme={[{ type: 'text', label: 'new nickname' }]}
+      onConfirm={async () => {}}
+      close={props.close}
+    />
+  );
+};
 
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
@@ -58,6 +76,7 @@ const User: React.FC = _ => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [dialog, setDialog] = useState<null | 'changenickname'>(null);
   const [nickname, setNickname] = useState<string>();
 
   useEffect(() => {
@@ -78,6 +97,18 @@ const User: React.FC = _ => {
   }, [username]);
 
   let body: React.ReactElement;
+  let dialogElement: React.ReactElement | undefined;
+
+  if (dialog === 'changenickname') {
+    dialogElement = (
+      <ChangeNicknameDialog
+        open
+        close={() => {
+          setDialog(null);
+        }}
+      />
+    );
+  }
 
   if (loading) {
     body = (
@@ -96,28 +127,12 @@ const User: React.FC = _ => {
     } else {
       body = (
         <Card classes={{ root: classes.userInfoCard }}>
-          <div className={classes.userInfoAvatarArea}>
-            <img className={classes.avatar} src={generateAvatarUrl(username)} />
-            {editable ? (
-              <IconButton className={classes.userInfoAvatarEditButton} size="small">
-                <Icon>edit</Icon>
-              </IconButton>
-            ) : (
-              undefined
-            )}
-          </div>
+          <img className={classes.avatar} src={generateAvatarUrl(username)} />
           <div className={classes.userInfoBody}>
             <div className={classes.userInfoNickname}>
-              <Typography variant="h6" style={{ display: 'inline' }}>
+              <Typography variant="h6" className={classes.userInfoNickname}>
                 {nickname}
               </Typography>
-              {editable ? (
-                <IconButton size="small">
-                  <Icon>edit</Icon>
-                </IconButton>
-              ) : (
-                undefined
-              )}
             </div>
             <Typography
               variant="caption"
@@ -127,6 +142,16 @@ const User: React.FC = _ => {
               @{username}
             </Typography>
           </div>
+          {editable ? (
+            <IconButton
+              color="secondary"
+              classes={{ root: classes.userInfoEditButton }}
+            >
+              <Icon>edit</Icon>
+            </IconButton>
+          ) : (
+            undefined
+          )}
         </Card>
       );
     }
@@ -137,6 +162,7 @@ const User: React.FC = _ => {
       <AppBar />
       <div style={{ height: 56 }}></div>
       {body}
+      {dialogElement}
     </>
   );
 };

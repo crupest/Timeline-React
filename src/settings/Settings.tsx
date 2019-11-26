@@ -117,7 +117,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
         setRedirect(true);
       }}
       close={() => {
-        props.close && props.close();
+        props.close();
         if (redirect) {
           history.push('/login');
         }
