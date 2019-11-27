@@ -8,17 +8,23 @@ import {
   Icon,
   Dialog,
   DialogTitle,
-  DialogContent,
   MenuList,
   MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 
-import { fetchNickname, useUser, generateAvatarUrl } from '../data/user';
+import {
+  fetchNickname,
+  useUser,
+  generateAvatarUrl,
+  UserWithToken
+} from '../data/user';
 
 import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
+import { useTranslation } from 'react-i18next';
+import { apiBaseUrl } from '../config';
 
 type EditItem = 'nickname' | 'avatar';
 
@@ -29,42 +35,71 @@ interface EditSelectDialogProps {
 }
 
 const EditSelectDialog: React.FC<EditSelectDialogProps> = props => {
+  const { t } = useTranslation();
   return (
     <Dialog open={props.open} onClose={props.close}>
-      <DialogTitle>Edit what?</DialogTitle>
+      <DialogTitle> {t('userPage.dialogEditSelect.title')}</DialogTitle>
       <MenuList>
         <MenuItem
           onClick={() => {
             props.onSelect('nickname');
           }}
         >
-          Nickname
+          {t('userPage.dialogEditSelect.nickname')}
         </MenuItem>
         <MenuItem
           onClick={() => {
             props.onSelect('avatar');
           }}
         >
-          Avatar
+          {t('userPage.dialogEditSelect.avatar')}
         </MenuItem>
       </MenuList>
     </Dialog>
   );
 };
 
+function changeNickname(
+  username: string,
+  newNickname: string,
+  token: string
+): Promise<void> {
+  return axios.put(
+    `${apiBaseUrl}/users/${username}/nickname?token=${token}`,
+    newNickname,
+    {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }
+  );
+}
+
 interface ChangeNicknameDialogProps {
+  user: UserWithToken;
   open: boolean;
   close: () => void;
+  onChanged: (newNickname: string) => void;
 }
 
 const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
+  const { t } = useTranslation();
   return (
     <OperationDialog
       open={props.open}
-      title="Change nickname"
+      title={t('userPage.dialogChangeNickname.title')}
       titleColor="default"
-      inputScheme={[{ type: 'text', label: 'new nickname' }]}
-      onConfirm={async () => {}}
+      inputScheme={[
+        { type: 'text', label: t('userPage.dialogChangeNickname.inputLabel') }
+      ]}
+      onConfirm={async ([newNickname]) => {
+        await changeNickname(
+          props.user.username,
+          newNickname as string,
+          props.user.token
+        );
+        props.onChanged(newNickname as string);
+      }}
       close={props.close}
     />
   );
@@ -142,8 +177,12 @@ const User: React.FC = _ => {
     dialogElement = (
       <ChangeNicknameDialog
         open
+        user={user!}
         close={() => {
           setDialog(null);
+        }}
+        onChanged={newNickname => {
+          setNickname(newNickname);
         }}
       />
     );

@@ -14,6 +14,17 @@ const translation: TranslationResource = {
     logout: 'logout',
     rememberMe: 'Remember Me'
   },
+  userPage: {
+    dialogEditSelect: {
+      title: 'Change what?',
+      avatar: 'Avatar',
+      nickname: 'Nickname'
+    },
+    dialogChangeNickname: {
+      title: 'Change Nickname',
+      inputLabel: 'New nickname'
+    }
+  },
   settings: {
     subheaders: {
       account: 'Account',

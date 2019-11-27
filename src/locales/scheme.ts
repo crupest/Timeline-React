@@ -12,6 +12,17 @@ export default interface TranslationResource {
     logout: string;
     rememberMe: string;
   };
+  userPage: {
+    dialogEditSelect: {
+      title: string;
+      avatar: string;
+      nickname: string;
+    };
+    dialogChangeNickname: {
+      title: string;
+      inputLabel: string;
+    }
+  };
   settings: {
     subheaders: {
       account: string;

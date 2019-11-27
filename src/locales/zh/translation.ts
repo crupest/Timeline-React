@@ -15,6 +15,17 @@ const translation: TranslationResource = {
     logout: '注销',
     rememberMe: '记住我'
   },
+  userPage: {
+    dialogEditSelect: {
+      title: '修改什么？',
+      avatar: '头像',
+      nickname: '昵称'
+    },
+    dialogChangeNickname: {
+      title: '更改昵称',
+      inputLabel: '新昵称'
+    }
+  },
   settings: {
     subheaders: {
       account: '账户',
