@@ -5,7 +5,12 @@ import {
   Typography,
   Card,
   IconButton,
-  Icon
+  Icon,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  MenuList,
+  MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { AxiosError } from 'axios';
@@ -14,6 +19,56 @@ import { fetchNickname, useUser, generateAvatarUrl } from '../data/user';
 
 import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
+
+type EditItem = 'nickname' | 'avatar';
+
+interface EditSelectDialogProps {
+  open: boolean;
+  close: () => void;
+  onSelect: (item: EditItem) => void;
+}
+
+const EditSelectDialog: React.FC<EditSelectDialogProps> = props => {
+  return (
+    <Dialog open={props.open} onClose={props.close}>
+      <DialogTitle>Edit what?</DialogTitle>
+      <MenuList>
+        <MenuItem
+          onClick={() => {
+            props.onSelect('nickname');
+          }}
+        >
+          Nickname
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            props.onSelect('avatar');
+          }}
+        >
+          Avatar
+        </MenuItem>
+      </MenuList>
+    </Dialog>
+  );
+};
+
+interface ChangeNicknameDialogProps {
+  open: boolean;
+  close: () => void;
+}
+
+const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
+  return (
+    <OperationDialog
+      open={props.open}
+      title="Change nickname"
+      titleColor="default"
+      inputScheme={[{ type: 'text', label: 'new nickname' }]}
+      onConfirm={async () => {}}
+      close={props.close}
+    />
+  );
+};
 
 const useStyles = makeStyles({
   loadingBody: {
@@ -48,24 +103,6 @@ const useStyles = makeStyles({
   }
 });
 
-interface ChangeNicknameDialogProps {
-  open: boolean;
-  close: () => void;
-}
-
-const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
-  return (
-    <OperationDialog
-      open={props.open}
-      title="Change nickname"
-      titleColor="default"
-      inputScheme={[{ type: 'text', label: 'new nickname' }]}
-      onConfirm={async () => {}}
-      close={props.close}
-    />
-  );
-};
-
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
   const classes = useStyles();
@@ -76,7 +113,9 @@ const User: React.FC = _ => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [dialog, setDialog] = useState<null | 'changenickname'>(null);
+  const [dialog, setDialog] = useState<null | 'editselect' | 'changenickname'>(
+    null
+  );
   const [nickname, setNickname] = useState<string>();
 
   useEffect(() => {
@@ -105,6 +144,22 @@ const User: React.FC = _ => {
         open
         close={() => {
           setDialog(null);
+        }}
+      />
+    );
+  } else if (dialog === 'editselect') {
+    dialogElement = (
+      <EditSelectDialog
+        open
+        close={() => {
+          setDialog(null);
+        }}
+        onSelect={item => {
+          if (item === 'nickname') {
+            setDialog('changenickname');
+          } else {
+            setDialog(null);
+          }
         }}
       />
     );
@@ -146,6 +201,9 @@ const User: React.FC = _ => {
             <IconButton
               color="secondary"
               classes={{ root: classes.userInfoEditButton }}
+              onClick={() => {
+                setDialog('editselect');
+              }}
             >
               <Icon>edit</Icon>
             </IconButton>
