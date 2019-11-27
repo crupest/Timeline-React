@@ -154,20 +154,28 @@ const User: React.FC = _ => {
   const [nickname, setNickname] = useState<string>();
 
   useEffect(() => {
+    let subscribe = true;
     fetchNickname(username).then(
       res => {
-        setLoading(false);
-        setNickname(res.data);
+        if (subscribe) {
+          setLoading(false);
+          setNickname(res.data);
+        }
       },
       (error: AxiosError) => {
-        setLoading(false);
-        if (error.response && error.response.status === 404) {
-          setError('User does not exist.');
-        } else {
-          setError(error.toString());
+        if (subscribe) {
+          setLoading(false);
+          if (error.response && error.response.status === 404) {
+            setError('User does not exist.');
+          } else {
+            setError(error.toString());
+          }
         }
       }
     );
+    return () => {
+      subscribe = false;
+    };
   }, [username]);
 
   let body: React.ReactElement;
