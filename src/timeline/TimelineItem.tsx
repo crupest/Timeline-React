@@ -5,6 +5,7 @@ import { Color } from 'csstype';
 import { TimelinePostInfo } from '../data/timeline';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { generateAvatarUrl } from '../data/user';
 
 const timelineColor: Color = 'deepskyblue';
 const timelineWidth: string = '8px';
@@ -40,7 +41,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     boxSizing: 'border-box'
   },
   contentArea: {
-    padding: '10px 0'
+    padding: '15px 0'
+  },
+  contentAreaTop: {
+    display: 'flex'
+  },
+  nickname: {
+    margin: `0 ${theme.spacing(1)}px`
+  },
+  contentAreaBody: {
+    display: 'flex'
+  },
+  avatar: {
+    height: '50px'
   }
 }));
 
@@ -60,10 +73,21 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
         <div className={clsx(classes.line, classes.lineEnd)}></div>
       </div>
       <div className={classes.contentArea}>
-        <Typography variant="subtitle2" color="primary">
-          {props.post.time.toLocaleString(i18n.languages)}
-        </Typography>
-        <Typography variant="body1">{props.post.content}</Typography>
+        <div className={classes.contentAreaTop}>
+          <Typography variant="subtitle2" color="primary">
+            {props.post.time.toLocaleString(i18n.languages)}
+          </Typography>
+          <Typography variant="body2" className={classes.nickname}>
+            {props.post.author}
+          </Typography>
+        </div>
+        <div className={classes.contentAreaBody}>
+          <img
+            src={generateAvatarUrl(props.post.author)}
+            className={classes.avatar}
+          />
+          <Typography variant="body1">{props.post.content}</Typography>
+        </div>
       </div>
     </div>
   );
