@@ -28,6 +28,7 @@ import { BaseTimelineInfo, fetchTimeline } from '../data/timeline';
 
 import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
+import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
 
 type EditItem = 'nickname' | 'avatar';
 
@@ -130,11 +131,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: theme.spacing(1)
   },
   userInfoNickname: {
-    display: 'inline-block',
-    padding: `0 ${theme.spacing(1)}px 0 0 `
+    display: 'inline-block'
   },
   userInfoUsername: {
-    display: 'inline-block'
+    display: 'inline-block',
+    padding: `0 ${theme.spacing(1)}px`
+  },
+  userInfoVisibilityIcon: {
+    verticalAlign: 'text-top'
   },
   userInfoEditButton: {
     position: 'absolute',
@@ -254,6 +258,7 @@ const User: React.FC = _ => {
             >
               @{username}
             </Typography>
+            <TimelineVisibilityIcon className={classes.userInfoVisibilityIcon} visibility={timelineInfo!.visibility} />
             <Typography variant="body2">{timelineInfo!.description}</Typography>
           </div>
           {editable ? (
