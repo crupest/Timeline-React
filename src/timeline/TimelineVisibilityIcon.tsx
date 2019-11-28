@@ -3,7 +3,7 @@ import React from 'react';
 import { TimelineVisibility } from '../data/timeline';
 import { Tooltip, Icon } from '@material-ui/core';
 
-interface TimelineVisibilityIconProps {
+export interface TimelineVisibilityIconProps {
   className?: string;
   visibility: TimelineVisibility;
 }

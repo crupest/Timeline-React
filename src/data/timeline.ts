@@ -9,6 +9,13 @@ export interface BaseTimelineInfo {
   members: string[];
 }
 
+export interface TimelinePostInfo {
+  id: number;
+  content: string;
+  time: Date;
+  author: string;
+}
+
 export function fetchTimeline(
   url: string
 ): Promise<AxiosResponse<BaseTimelineInfo>> {

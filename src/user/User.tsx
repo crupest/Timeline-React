@@ -24,11 +24,31 @@ import {
   UserWithToken
 } from '../data/user';
 import { extractStatusCode, extractErrorCode } from '../data/common';
-import { BaseTimelineInfo, fetchTimeline } from '../data/timeline';
+import {
+  BaseTimelineInfo,
+  fetchTimeline,
+  TimelinePostInfo
+} from '../data/timeline';
 
 import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
 import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
+import Timeline from '../timeline/Timeline';
+
+const mockPosts: TimelinePostInfo[] = [
+  {
+    id: 1,
+    content: 'hahahaha',
+    time: new Date(2019, 11, 27, 15, 30, 30),
+    author: 'crupest'
+  },
+  {
+    id: 2,
+    content: 'hohohohoho',
+    time: new Date(2019, 11, 28, 15, 30, 30),
+    author: 'crupest'
+  }
+];
 
 type EditItem = 'nickname' | 'avatar';
 
@@ -245,36 +265,44 @@ const User: React.FC = _ => {
       );
     } else {
       body = (
-        <Card classes={{ root: classes.userInfoCard }}>
-          <img className={classes.avatar} src={generateAvatarUrl(username)} />
-          <div className={classes.userInfoBody}>
-            <Typography variant="h6" className={classes.userInfoNickname}>
-              {nickname}
-            </Typography>
-            <Typography
-              variant="caption"
-              color="textSecondary"
-              className={classes.userInfoUsername}
-            >
-              @{username}
-            </Typography>
-            <TimelineVisibilityIcon className={classes.userInfoVisibilityIcon} visibility={timelineInfo!.visibility} />
-            <Typography variant="body2">{timelineInfo!.description}</Typography>
-          </div>
-          {editable ? (
-            <IconButton
-              color="secondary"
-              classes={{ root: classes.userInfoEditButton }}
-              onClick={() => {
-                setDialog('editselect');
-              }}
-            >
-              <Icon>edit</Icon>
-            </IconButton>
-          ) : (
-            undefined
-          )}
-        </Card>
+        <>
+          <Card classes={{ root: classes.userInfoCard }}>
+            <img className={classes.avatar} src={generateAvatarUrl(username)} />
+            <div className={classes.userInfoBody}>
+              <Typography variant="h6" className={classes.userInfoNickname}>
+                {nickname}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="textSecondary"
+                className={classes.userInfoUsername}
+              >
+                @{username}
+              </Typography>
+              <TimelineVisibilityIcon
+                className={classes.userInfoVisibilityIcon}
+                visibility={timelineInfo!.visibility}
+              />
+              <Typography variant="body2">
+                {timelineInfo!.description}
+              </Typography>
+            </div>
+            {editable ? (
+              <IconButton
+                color="secondary"
+                classes={{ root: classes.userInfoEditButton }}
+                onClick={() => {
+                  setDialog('editselect');
+                }}
+              >
+                <Icon>edit</Icon>
+              </IconButton>
+            ) : (
+              undefined
+            )}
+          </Card>
+          <Timeline posts={mockPosts} />
+        </>
       );
     }
   }
