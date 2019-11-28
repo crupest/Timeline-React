@@ -1,6 +1,7 @@
-import React from "react";
-import { Observable, Subscription } from "rxjs";
-import { getDisplayName } from "../tools";
+import React from 'react';
+import { Observable, Subscription } from 'rxjs';
+import { getDisplayName } from '../tools';
+import { AxiosError } from 'axios';
 
 export function withSubscription<TBindResult, TValue, P extends TBindResult>(
   observable: Observable<TValue>,
@@ -40,4 +41,23 @@ export function withSubscription<TBindResult, TValue, P extends TBindResult>(
   }
 
   return withSubscription;
+}
+
+export function extractStatusCode(error: AxiosError): number | null {
+  const code = error.response && error.response.status;
+  if (typeof code === 'number') {
+    return code;
+  } else {
+    return null;
+  }
+}
+
+export function extractErrorCode(error: AxiosError): number | null {
+  const code =
+    error.response && error.response.data && error.response.data.code;
+  if (typeof code === 'number') {
+    return code;
+  } else {
+    return null;
+  }
 }

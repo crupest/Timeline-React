@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, MeterHTMLAttributes } from 'react';
 import { useParams } from 'react-router';
 import {
   CircularProgress,
@@ -9,22 +9,25 @@ import {
   Dialog,
   DialogTitle,
   MenuList,
-  MenuItem
+  MenuItem,
+  Theme
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import axios, { AxiosError } from 'axios';
+import { useTranslation } from 'react-i18next';
 
+import { apiBaseUrl } from '../config';
 import {
   fetchNickname,
   useUser,
   generateAvatarUrl,
   UserWithToken
 } from '../data/user';
+import { extractStatusCode, extractErrorCode } from '../data/common';
+import { BaseTimelineInfo, fetchTimeline } from '../data/timeline';
 
 import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
-import { useTranslation } from 'react-i18next';
-import { apiBaseUrl } from '../config';
 
 type EditItem = 'nickname' | 'avatar';
 
@@ -105,7 +108,7 @@ const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
   );
 };
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   loadingBody: {
     display: 'flex',
     justifyContent: 'center',
@@ -120,13 +123,15 @@ const useStyles = makeStyles({
   },
   userInfoCard: {
     display: 'flex',
-    margin: '10px',
+    margin: theme.spacing(1),
     position: 'relative'
   },
-  userInfoBody: {},
+  userInfoBody: {
+    padding: theme.spacing(1)
+  },
   userInfoNickname: {
     display: 'inline-block',
-    padding: ' 0 10px'
+    padding: `0 ${theme.spacing(1)}px 0 0 `
   },
   userInfoUsername: {
     display: 'inline-block'
@@ -136,7 +141,7 @@ const useStyles = makeStyles({
     right: 0,
     bottom: 0
   }
-});
+}));
 
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
@@ -152,24 +157,32 @@ const User: React.FC = _ => {
     null
   );
   const [nickname, setNickname] = useState<string>();
+  const [timelineInfo, setTimelineInfo] = useState<BaseTimelineInfo>();
 
   useEffect(() => {
     let subscribe = true;
-    fetchNickname(username).then(
-      res => {
+    Promise.all([
+      fetchTimeline(`${apiBaseUrl}/users/${username}/timeline`),
+      fetchNickname(username)
+    ]).then(
+      ([res1, res2]) => {
         if (subscribe) {
+          setTimelineInfo(res1.data);
+          setNickname(res2.data);
           setLoading(false);
-          setNickname(res.data);
         }
       },
       (error: AxiosError) => {
         if (subscribe) {
-          setLoading(false);
-          if (error.response && error.response.status === 404) {
+          if (
+            extractStatusCode(error) === 404 ||
+            extractErrorCode(error) === 11020101
+          ) {
             setError('User does not exist.');
           } else {
             setError(error.toString());
           }
+          setLoading(false);
         }
       }
     );
@@ -231,11 +244,9 @@ const User: React.FC = _ => {
         <Card classes={{ root: classes.userInfoCard }}>
           <img className={classes.avatar} src={generateAvatarUrl(username)} />
           <div className={classes.userInfoBody}>
-            <div className={classes.userInfoNickname}>
-              <Typography variant="h6" className={classes.userInfoNickname}>
-                {nickname}
-              </Typography>
-            </div>
+            <Typography variant="h6" className={classes.userInfoNickname}>
+              {nickname}
+            </Typography>
             <Typography
               variant="caption"
               color="textSecondary"
@@ -243,6 +254,7 @@ const User: React.FC = _ => {
             >
               @{username}
             </Typography>
+            <Typography variant="body2">{timelineInfo!.description}</Typography>
           </div>
           {editable ? (
             <IconButton
