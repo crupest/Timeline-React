@@ -21,7 +21,8 @@
   },
   "scripts": {
     "start": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack-dev-server --config ./webpack.config.dev.ts",
-    "build": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --config ./webpack.config.prod.ts"
+    "build": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --config ./webpack.config.prod.ts",
+    "lint": "eslint src/ --ext .js --ext .jsx --ext .ts --ext .tsx"
   },
   "browserslist": {
     "production": [
@@ -53,11 +54,16 @@
     "@types/webpack": "^4.39.2",
     "@types/webpack-dev-server": "^3.1.7",
     "@types/webpack-env": "^1.14.1",
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.4",
     "cross-env": "^6.0.3",
     "css-loader": "^3.2.0",
+    "eslint": "^6.7.1",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-react": "^7.17.0",
     "file-loader": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
     "html-webpack-plugin": "^3.2.0",

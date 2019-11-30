@@ -83,7 +83,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
         }
       ]}
       validator={(inputs, index) => {
-        let result: OperationInputErrorInfo = {};
+        const result: OperationInputErrorInfo = {};
         if (index == null || index === 0) {
           if (inputs[0]) {
             result[0] = null;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, MeterHTMLAttributes } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import {
   CircularProgress,

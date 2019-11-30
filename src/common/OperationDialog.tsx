@@ -63,6 +63,7 @@ const useStyles = makeStyles(theme => ({
 
 interface OperationResult {
   type: 'success' | 'failure';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 }
 
@@ -71,9 +72,12 @@ interface OperationDialogProps {
   titleColor: 'default' | 'dangerous' | 'create';
   inputPrompt?: React.ReactNode;
   inputScheme?: OperationInputInfo[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onConfirm: (inputs: (string | boolean)[]) => Promise<any>;
   processPrompt?: () => React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   successPrompt?: (value: any) => React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   failurePrompt?: (error: any) => React.ReactNode;
   open: boolean;
   close: () => void;
@@ -316,6 +320,7 @@ const DefaultProcessPrompt: React.FC = _ => {
 OperationDialog.defaultProps = {
   titleColor: 'default',
   inputScheme: [],
+  // eslint-disable-next-line react/display-name
   processPrompt: () => <DefaultProcessPrompt />,
   successPrompt: _ => 'Ok!',
   failurePrompt: e => e.toString()

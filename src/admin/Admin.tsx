@@ -1,66 +1,57 @@
-import React, { Fragment } from "react";
-import { Tabs, Tab } from "@material-ui/core";
+import React, { Fragment } from 'react';
+import { Tabs, Tab } from '@material-ui/core';
 import {
-  withRouter,
-  RouteComponentProps,
   Redirect,
   Route,
-  Switch
-} from "react-router";
+  Switch,
+  useRouteMatch,
+  useHistory
+} from 'react-router';
 
-import AppBar from "../common/AppBar";
-import UserAdmin from "./UserAdmin";
+import AppBar from '../common/AppBar';
+import UserAdmin from './UserAdmin';
 
-import { UserWithToken } from "../data/user";
+import { UserWithToken } from '../data/user';
 
-interface AdminProps extends RouteComponentProps {
+interface AdminProps {
   user: UserWithToken;
 }
 
-class Admin extends React.Component<AdminProps> {
-  constructor(props: AdminProps) {
-    super(props);
+const Admin: React.FC<AdminProps> = props => {
+  const match = useRouteMatch();
+  const history = useHistory();
 
-    this.onTabChange = this.onTabChange.bind(this);
+  function onTabChange(_: React.ChangeEvent<{}>, newValue: string): void {
+    history.push(`${match.url}/${newValue}`);
   }
 
-  onTabChange(_: React.ChangeEvent<{}>, newValue: string) {
-    this.props.history.push(`${this.props.match.url}/${newValue}`);
-  }
-
-  render() {
-    const createRoute = (
-      name: string,
-      body: React.ReactNode
-    ): React.ReactNode => {
-      return (
-        <Route path={`${this.props.match.path}/${name}`}>
-          <AppBar>
-            <Tabs value={name} onChange={this.onTabChange}>
-              <Tab label="Users" value="users" />
-              <Tab label="More" value="more" />
-            </Tabs>
-          </AppBar>
-          <div style={{ height: 104 }} />
-          {body}
-        </Route>
-      );
-    };
-
+  const createRoute = (
+    name: string,
+    body: React.ReactNode
+  ): React.ReactNode => {
     return (
-      <Fragment>
-        <Switch>
-          <Redirect
-            from={this.props.match.path}
-            to={`${this.props.match.path}/users`}
-            exact
-          />
-          {createRoute("users", <UserAdmin user={this.props.user} />)}
-          {createRoute("more", <div>More Page Works</div>)}
-        </Switch>
-      </Fragment>
+      <Route path={`${match.path}/${name}`}>
+        <AppBar>
+          <Tabs value={name} onChange={onTabChange}>
+            <Tab label="Users" value="users" />
+            <Tab label="More" value="more" />
+          </Tabs>
+        </AppBar>
+        <div style={{ height: 104 }} />
+        {body}
+      </Route>
     );
-  }
-}
+  };
 
-export default withRouter(Admin);
+  return (
+    <Fragment>
+      <Switch>
+        <Redirect from={match.path} to={`${match.path}/users`} exact />
+        {createRoute('users', <UserAdmin user={props.user} />)}
+        {createRoute('more', <div>More Page Works</div>)}
+      </Switch>
+    </Fragment>
+  );
+};
+
+export default Admin;

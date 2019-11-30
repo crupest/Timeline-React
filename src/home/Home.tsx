@@ -1,43 +1,43 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles, Typography, Link } from "@material-ui/core";
-import { useTranslation, Trans } from "react-i18next";
+import React from 'react';
+import { makeStyles, Typography, Link } from '@material-ui/core';
+import { useTranslation, Trans } from 'react-i18next';
 
-import AppBar from "../common/AppBar";
+import AppBar from '../common/AppBar';
 
-const hToColor = (h: number) => `hsl(${h} 70% 70%)`;
+const hToColor = (h: number): string => `hsl(${h} 70% 70%)`;
 
 const useStyles = makeStyles({
   content: {
     padding: 5,
-    textAlign: "center"
+    textAlign: 'center'
   },
-  "@keyframes welcome": {
-    "0%": {
+  '@keyframes welcome': {
+    '0%': {
       color: hToColor(0)
     },
-    "16.66%": {
+    '16.66%': {
       color: hToColor(60)
     },
-    "33.33%": {
+    '33.33%': {
       color: hToColor(120)
     },
-    "50%": {
+    '50%': {
       color: hToColor(180)
     },
-    "66.66%": {
+    '66.66%': {
       color: hToColor(240)
     },
-    "83.33%": {
+    '83.33%': {
       color: hToColor(300)
     },
-    "100%": {
+    '100%': {
       color: hToColor(360)
     }
   },
   welcome: {
-    animationName: "$welcome",
-    animationDuration: "10s",
-    animationIterationCount: "infinite"
+    animationName: '$welcome',
+    animationDuration: '10s',
+    animationIterationCount: 'infinite'
   }
 });
 
@@ -52,7 +52,7 @@ const Home: React.FC = _ => {
       <div style={{ height: 56 }} />
       <div className={classes.content}>
         <Typography variant="h4" classes={{ root: classes.welcome }}>
-          {t("welcome")}
+          {t('welcome')}
         </Typography>
         <Trans i18nKey="home.description">
           <Typography variant="body1">

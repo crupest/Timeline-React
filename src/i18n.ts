@@ -1,38 +1,43 @@
-import i18n from "i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
-import { initReactI18next } from "react-i18next";
+import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
 
 const backend: i18n.BackendModule = {
-  type: "backend",
+  type: 'backend',
   async read(language, namespace, callback) {
-    function error(message: string) {
+    function error(message: string): void {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       callback(new Error(message), false as any);
     }
 
-    function success(result: i18n.ResourceKey) {
+    function success(result: i18n.ResourceKey): void {
       callback(null, result);
     }
 
-    if (namespace !== "translation") {
+    if (namespace !== 'translation') {
       error("Namespace must be 'translation'.");
     }
 
-    if (language === "en") {
-      const res = (await import(
-        /* webpackChunkName: "locales-en" */ "./locales/en/translation"
-      )).default;
+    if (language === 'en') {
+      const res = (
+        await import(
+          /* webpackChunkName: "locales-en" */ './locales/en/translation'
+        )
+      ).default;
       success(res);
-    } else if (language === "zh") {
-      const res = (await import(
-        /* webpackChunkName: "locales-zh" */ "./locales/zh/translation"
-      )).default;
+    } else if (language === 'zh') {
+      const res = (
+        await import(
+          /* webpackChunkName: "locales-zh" */ './locales/zh/translation'
+        )
+      ).default;
       success(res);
     } else {
       error(`Language ${language} is not supported.`);
     }
   },
-  init() {},
-  create() {}
+  init() {}, // eslint-disable-line @typescript-eslint/no-empty-function
+  create() {} // eslint-disable-line @typescript-eslint/no-empty-function
 };
 
 export const i18nPromise = i18n
@@ -40,10 +45,10 @@ export const i18nPromise = i18n
   .use(backend)
   .use(initReactI18next) // bind react-i18next to the instance
   .init({
-    fallbackLng: "en",
+    fallbackLng: 'en',
     lowerCaseLng: true,
 
-    debug: process.env.NODE_ENV === "development",
+    debug: process.env.NODE_ENV === 'development',
 
     interpolation: {
       escapeValue: false // not needed for react!!
@@ -65,7 +70,7 @@ export const i18nPromise = i18n
 
 if (module.hot) {
   module.hot.accept(
-    ["./locales/en/translation", "./locales/zh/translation"],
+    ['./locales/en/translation', './locales/zh/translation'],
     () => {
       i18n.reloadResources();
     }

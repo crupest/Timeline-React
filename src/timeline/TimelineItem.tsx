@@ -1,15 +1,14 @@
 import React from 'react';
 import { makeStyles, Theme, Typography } from '@material-ui/core';
-import { Color } from 'csstype';
-
-import { TimelinePostInfo } from '../data/timeline';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { generateAvatarUrl } from '../data/user';
+import clsx from 'clsx';
 
-const timelineColor: Color = 'deepskyblue';
-const timelineWidth: string = '8px';
-const timelineNodeRadius: string = '35px';
+import { generateAvatarUrl } from '../data/user';
+import { TimelinePostInfo } from '../data/timeline';
+
+const timelineColor = 'deepskyblue';
+const timelineWidth = '8px';
+const timelineNodeRadius = '35px';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {

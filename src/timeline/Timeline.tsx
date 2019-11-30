@@ -5,7 +5,7 @@ import { TimelinePostInfo } from '../data/timeline';
 
 import TimelineItem from './TimelineItem';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_: Theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column'

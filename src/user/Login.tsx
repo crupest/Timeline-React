@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from "react";
-import { useHistory } from "react-router";
+import React, { Fragment, useState } from 'react';
+import { useHistory } from 'react-router';
 import {
   TextField,
   Checkbox,
@@ -8,43 +8,43 @@ import {
   Typography,
   FormControlLabel,
   makeStyles
-} from "@material-ui/core";
-import { useTranslation } from "react-i18next";
+} from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
-import AppBar from "../common/AppBar";
+import AppBar from '../common/AppBar';
 
-import { userLogin } from "../data/user";
+import { userLogin } from '../data/user';
 
 const useStyles = makeStyles({
   root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   welcome: {
-    margin: "20px 0"
+    margin: '20px 0'
   },
   form: {
-    display: "flex",
-    justifyContent: "center",
-    alignSelf: "stretch"
+    display: 'flex',
+    justifyContent: 'center',
+    alignSelf: 'stretch'
   },
   formBody: {
-    padding: "10px 20px",
-    maxWidth: "350px",
-    boxSizing: "border-box",
-    display: "flex",
-    flexDirection: "column",
+    padding: '10px 20px',
+    maxWidth: '350px',
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1
   },
   error: {
-    color: "red"
+    color: 'red'
   },
   submitBox: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "flex-end",
-    marginTop: "10px"
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginTop: '10px'
   }
 });
 
@@ -52,13 +52,13 @@ const Login: React.FC = _ => {
   const classes = useStyles();
   const { t } = useTranslation();
   const history = useHistory();
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [process, setProcess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  function onSubmit(event: React.SyntheticEvent) {
+  function onSubmit(event: React.SyntheticEvent): void {
     setProcess(true);
     userLogin(
       {
@@ -84,12 +84,12 @@ const Login: React.FC = _ => {
       <div style={{ height: 56 }}></div>
       <div className={classes.root}>
         <Typography className={classes.welcome} variant="h4">
-          {t("welcome")}
+          {t('welcome')}
         </Typography>
         <form className={classes.form}>
           <div className={classes.formBody}>
             <TextField
-              label={t("user.username")}
+              label={t('user.username')}
               disabled={process}
               onChange={e => {
                 setUsername(e.target.value);
@@ -98,7 +98,7 @@ const Login: React.FC = _ => {
               fullWidth
             />
             <TextField
-              label={t("user.password")}
+              label={t('user.password')}
               disabled={process}
               type="password"
               onChange={e => {
@@ -114,7 +114,7 @@ const Login: React.FC = _ => {
                 setRememberMe(v);
               }}
               control={<Checkbox />}
-              label={t("user.rememberMe")}
+              label={t('user.rememberMe')}
             />
             {error ? <div className={classes.error}>{error}</div> : null}
             <div className={classes.submitBox}>
@@ -122,7 +122,7 @@ const Login: React.FC = _ => {
                 <CircularProgress size={50} />
               ) : (
                 <Button variant="contained" color="primary" onClick={onSubmit}>
-                  {t("user.login")}
+                  {t('user.login')}
                 </Button>
               )}
             </div>

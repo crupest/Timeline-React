@@ -1,10 +1,8 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from 'axios';
+import { useState, useEffect } from 'react';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-import { apiBaseUrl } from "../config";
-import { BehaviorSubject, Observable } from "rxjs";
-import { withSubscription } from "./common";
-import { getDisplayName } from "../tools";
-import { useState, useEffect } from "react";
+import { apiBaseUrl } from '../config';
 
 export interface User {
   username: string;
@@ -45,8 +43,8 @@ export function getCurrentUser(): UserWithToken | null | undefined {
   return userSubject.value;
 }
 
-const kCreateTokenUrl = "/token/create";
-const kVerifyTokenUrl = "/token/verify";
+const kCreateTokenUrl = '/token/create';
+const kVerifyTokenUrl = '/token/verify';
 const createTokenUrl = apiBaseUrl + kCreateTokenUrl;
 const verifyTokenUrl = apiBaseUrl + kVerifyTokenUrl;
 
@@ -58,7 +56,7 @@ async function verifyToken(token: string): Promise<User> {
   return d.user;
 }
 
-const TOKEN_STORAGE_KEY = "token";
+const TOKEN_STORAGE_KEY = 'token';
 
 export async function checkUserLoginState(): Promise<UserWithToken | null> {
   if (getCurrentUser() !== undefined)
@@ -77,10 +75,9 @@ export async function checkUserLoginState(): Promise<UserWithToken | null> {
   } catch (e) {
     console.error(e);
     window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-  } finally {
-    userSubject.next(user);
-    return user;
   }
+  userSubject.next(user);
+  return user;
 }
 
 export async function userLogin(
@@ -88,15 +85,12 @@ export async function userLogin(
   rememberMe: boolean
 ): Promise<UserWithToken> {
   if (getCurrentUser() === undefined) {
-    throw new Error("Please check user first.");
+    throw new Error('Please check user first.');
   }
   if (getCurrentUser()) {
-    throw new Error("Already login.");
+    throw new Error('Already login.');
   }
-  const res = await axios.post(
-    createTokenUrl,
-    credentials as CreateTokenRequest
-  );
+  const res = await axios.post(createTokenUrl, credentials);
   const body = res.data as CreateTokenResponse;
   const token = body.token;
   if (rememberMe) {
@@ -110,12 +104,12 @@ export async function userLogin(
   return user;
 }
 
-export function userLogout() {
+export function userLogout(): void {
   if (getCurrentUser() === undefined) {
-    throw new Error("Please check user first.");
+    throw new Error('Please check user first.');
   }
   if (getCurrentUser() === null) {
-    throw new Error("No login.");
+    throw new Error('No login.');
   }
   window.localStorage.removeItem(TOKEN_STORAGE_KEY);
   userSubject.next(null);
@@ -123,22 +117,6 @@ export function userLogout() {
 
 export function generateAvatarUrl(username: string): string {
   return `${apiBaseUrl}/users/${username}/avatar`;
-}
-
-export interface UserComponentProps {
-  user: UserWithToken | null | undefined;
-}
-
-export function withUser<P extends UserComponentProps>(
-  c: React.ComponentType<P>
-): React.ComponentClass<Omit<P, keyof UserComponentProps>> {
-  const result = withSubscription<
-    UserComponentProps,
-    UserWithToken | null | undefined,
-    P
-  >(user$, value => ({ user: value }), { user: undefined }, c);
-  result.displayName = `WithUser(${getDisplayName(c)})`;
-  return result;
 }
 
 export function useUser(): UserWithToken | null | undefined {
@@ -154,7 +132,9 @@ export function useUser(): UserWithToken | null | undefined {
 
 // area : nickname cache
 
-export async function fetchNickname(username: string) : Promise<AxiosResponse<string>> {
+export async function fetchNickname(
+  username: string
+): Promise<AxiosResponse<string>> {
   return axios.get(`${apiBaseUrl}/users/${username}/nickname`);
 }
 
@@ -176,6 +156,6 @@ class NicknameManager {
 
 const nicknameManager = new NicknameManager();
 
-export async function getNickname(username: string) : Promise<string> {
+export async function getNickname(username: string): Promise<string> {
   return await nicknameManager.get(username);
 }
