@@ -19,11 +19,22 @@ export interface TimelineProps {
 const Timeline: React.FC<TimelineProps> = props => {
   const classes = useStyles();
 
+  const posts = props.posts;
+
   return (
     <div className={classes.container}>
-      {props.posts.map(post => (
-        <TimelineItem post={post} key={post.id} />
-      ))}
+      {(() => {
+        const length = posts.length;
+        return posts.map((post, i) => {
+          return (
+            <TimelineItem
+              post={post}
+              key={post.id}
+              current={length - 1 === i}
+            />
+          );
+        });
+      })()}
     </div>
   );
 };
