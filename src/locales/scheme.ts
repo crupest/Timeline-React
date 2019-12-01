@@ -3,6 +3,18 @@ export default interface TranslationResource {
   home: {
     description: string;
   };
+  timeline: {
+    visibility: {
+      public: string;
+      register: string;
+      private: string;
+    };
+    dialogChangeProperty: {
+      title: string;
+      visibility: string;
+      description: string;
+    };
+  };
   user: {
     username: string;
     password: string;
@@ -17,11 +29,12 @@ export default interface TranslationResource {
       title: string;
       avatar: string;
       nickname: string;
+      timelineProperty: string;
     };
     dialogChangeNickname: {
       title: string;
       inputLabel: string;
-    }
+    };
   };
   settings: {
     subheaders: {

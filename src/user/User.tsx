@@ -84,7 +84,7 @@ const EditSelectDialog: React.FC<EditSelectDialogProps> = props => {
             props.onSelect('timelineproperty');
           }}
         >
-          Timeline properties
+          {t('userPage.dialogEditSelect.timelineProperty')}
         </MenuItem>
       </MenuList>
     </Dialog>
@@ -264,7 +264,9 @@ const User: React.FC = _ => {
         close={closeDialogHandler}
         description={timelineInfo!.description}
         visibility={timelineInfo!.visibility}
-        process={async () => {}}
+        process={async () => {
+          // TODO!
+        }}
       />
     );
   }

@@ -5,6 +5,18 @@ const translation: TranslationResource = {
   home: {
     description: `<0>This is the first Web App created by me, <1>crupest</1>. This page is the front-end of it. You can find the source code on Github (<3>front-end</3>, <5>back-end</5>). Now it is under active development by me. You are welcomed to leave any thoughts on Github!</0><1>This page will be replaced in the future.</1>`
   },
+  timeline: {
+    visibility: {
+      public: 'public to everyone',
+      register: 'only registed people can see',
+      private: 'only members can see'
+    },
+    dialogChangeProperty: {
+      title: 'Change Timeline Properties',
+      visibility: 'Visibility',
+      description: 'Description'
+    }
+  },
   user: {
     username: 'username',
     password: 'password',
@@ -18,7 +30,8 @@ const translation: TranslationResource = {
     dialogEditSelect: {
       title: 'Change what?',
       avatar: 'Avatar',
-      nickname: 'Nickname'
+      nickname: 'Nickname',
+      timelineProperty: 'Timeline properties'
     },
     dialogChangeNickname: {
       title: 'Change Nickname',

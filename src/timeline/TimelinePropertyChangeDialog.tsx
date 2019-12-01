@@ -1,10 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { TimelineVisibility, kTimelineVisibilities } from '../data/timeline';
+
+import TimelineVisibilityIcon from './TimelineVisibilityIcon';
 import OperationDialog, {
   OperationSelectInputInfoOption
 } from '../common/OperationDialog';
-import TimelineVisibilityIcon from './TimelineVisibilityIcon';
 
 export interface ChangePropertyRequest {
   visibility?: TimelineVisibility;
@@ -19,19 +21,26 @@ export interface TimelinePropertyChangeDialogProps {
   process: (request: ChangePropertyRequest) => Promise<void>;
 }
 
+const labelMap: { [key in TimelineVisibility]: string } = {
+  Private: 'timeline.visibility.private',
+  Public: 'timeline.visibility.public',
+  Register: 'timeline.visibility.register'
+};
+
 const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> = props => {
+  const { t } = useTranslation();
   return (
     <OperationDialog
-      title="Change timeline properties."
+      title={t('timeline.dialogChangeProperty.title')}
       titleColor="default"
       inputScheme={[
         {
           type: 'select',
-          label: 'Visibility',
+          label: t('timeline.dialogChangeProperty.visibility'),
           options: kTimelineVisibilities.map<OperationSelectInputInfoOption>(
             v => {
               return {
-                label: v,
+                label: t(labelMap[v]),
                 value: v,
                 icon: <TimelineVisibilityIcon visibility={v} />
               };
@@ -41,7 +50,7 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
         },
         {
           type: 'text',
-          label: 'Description',
+          label: t('timeline.dialogChangeProperty.description'),
           initValue: props.description,
           variant: 'outlined',
           multiline: true
@@ -50,7 +59,7 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
       open={props.open}
       close={props.close}
       onConfirm={async () => {
-        //TODO
+        //TODO!
       }}
     />
   );
