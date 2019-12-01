@@ -7,9 +7,9 @@ import Color from 'color';
 import { generateAvatarUrl } from '../data/user';
 import { TimelinePostInfo } from '../data/timeline';
 
-const timelineColor: string = Color('#0089ff').hex();
-const timelineCurrentColor: string = Color('#4f4dff').hex();
-const timelineHaloColor: string = Color('white').hex();
+const timelineColor = Color('#0089ff');
+const timelineCurrentColor = Color('#4f4dff');
+const timelineHaloColor = Color('white');
 const timelineWidth = '8px';
 const timelineNodeRadius = '35px';
 
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   line: {
     width: timelineWidth,
-    background: timelineColor
+    background: timelineColor.string()
   },
   lineStart: {
     height: '20px',
@@ -37,27 +37,23 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   '@keyframes halo': {
     to: {
-      boxShadow: `0 0 5px 3px ${timelineHaloColor}`
+      boxShadow: `0 0 5px 3px ${timelineHaloColor.string()}`
     }
   },
   '@keyframes halo-noncurrent': {
     from: {
-      borderColor: timelineColor
+      borderColor: timelineColor.string()
     },
     to: {
-      borderColor: Color(timelineColor)
-        .lighten(0.2)
-        .hex()
+      borderColor: timelineColor.fade(0.2).string()
     }
   },
   '@keyframes halo-current': {
     from: {
-      borderColor: timelineCurrentColor
+      borderColor: timelineCurrentColor.string()
     },
     to: {
-      borderColor: Color(timelineCurrentColor)
-        .lighten(0.2)
-        .hex()
+      borderColor: timelineCurrentColor.fade(0.2).string()
     }
   },
   node: {
@@ -65,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: timelineNodeRadius,
     flex: '0 0 auto',
     borderRadius: '50%',
-    border: `${timelineWidth} solid ${timelineColor}`,
+    border: `${timelineWidth} solid ${timelineColor.string()}`,
     boxSizing: 'border-box',
     zIndex: 1,
     animation: '0.6s infinite alternate',
@@ -89,21 +85,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   currentEnd: {
     height: '20px',
     flex: '0 0 auto',
-    background: `linear-gradient(${timelineCurrentColor}, transparent)`
+    background: `linear-gradient(${timelineCurrentColor.string()}, transparent)`
   },
   current: {
     '& $contentArea': {
       paddingBottom: '22px'
     },
     '& $lineStart': {
-      background: `linear-gradient(${timelineColor}, ${timelineCurrentColor})`
+      background: `linear-gradient(${timelineColor.string()}, ${timelineCurrentColor.string()})`
     },
     '& $node': {
-      borderColor: timelineCurrentColor,
+      borderColor: timelineCurrentColor.string(),
       animationName: '$halo , $halo-current'
     },
     '& $lineEnd': {
-      background: timelineCurrentColor
+      background: timelineCurrentColor.string()
     }
   }
 }));
