@@ -34,6 +34,7 @@ import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
 import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
 import Timeline from '../timeline/Timeline';
+import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 
 const mockPosts: TimelinePostInfo[] = [
   {
@@ -50,7 +51,7 @@ const mockPosts: TimelinePostInfo[] = [
   }
 ];
 
-type EditItem = 'nickname' | 'avatar';
+type EditItem = 'nickname' | 'avatar' | 'timelineproperty';
 
 interface EditSelectDialogProps {
   open: boolean;
@@ -77,6 +78,13 @@ const EditSelectDialog: React.FC<EditSelectDialogProps> = props => {
           }}
         >
           {t('userPage.dialogEditSelect.avatar')}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            props.onSelect('timelineproperty');
+          }}
+        >
+          Timeline properties
         </MenuItem>
       </MenuList>
     </Dialog>
@@ -177,9 +185,9 @@ const User: React.FC = _ => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [dialog, setDialog] = useState<null | 'editselect' | 'changenickname'>(
-    null
-  );
+  const [dialog, setDialog] = useState<
+    null | 'editselect' | 'changenickname' | 'changetimelineproperty'
+  >(null);
   const [nickname, setNickname] = useState<string>();
   const [timelineInfo, setTimelineInfo] = useState<BaseTimelineInfo>();
 
@@ -218,14 +226,16 @@ const User: React.FC = _ => {
   let body: React.ReactElement;
   let dialogElement: React.ReactElement | undefined;
 
+  const closeDialogHandler = (): void => {
+    setDialog(null);
+  };
+
   if (dialog === 'changenickname') {
     dialogElement = (
       <ChangeNicknameDialog
         open
         user={user!}
-        close={() => {
-          setDialog(null);
-        }}
+        close={closeDialogHandler}
         onChanged={newNickname => {
           setNickname(newNickname);
         }}
@@ -235,16 +245,26 @@ const User: React.FC = _ => {
     dialogElement = (
       <EditSelectDialog
         open
-        close={() => {
-          setDialog(null);
-        }}
+        close={closeDialogHandler}
         onSelect={item => {
           if (item === 'nickname') {
             setDialog('changenickname');
+          } else if (item === 'timelineproperty') {
+            setDialog('changetimelineproperty');
           } else {
             setDialog(null);
           }
         }}
+      />
+    );
+  } else if (dialog === 'changetimelineproperty') {
+    dialogElement = (
+      <TimelinePropertyChangeDialog
+        open
+        close={closeDialogHandler}
+        description={timelineInfo!.description}
+        visibility={timelineInfo!.visibility}
+        process={async () => {}}
       />
     );
   }

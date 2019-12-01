@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import clsx from 'clsx';
 import {
   Dialog,
@@ -11,16 +11,24 @@ import {
   Typography,
   TextField,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  ListItemIcon
 } from '@material-ui/core';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { TextFieldProps } from '@material-ui/core/TextField';
 
 export interface OperationTextInputInfo {
   type: 'text';
   label: string;
   password?: boolean;
   initValue?: string;
+  variant?: TextFieldProps['variant'];
+  multiline?: boolean;
 }
 
 export interface OperationBoolInputInfo {
@@ -29,9 +37,23 @@ export interface OperationBoolInputInfo {
   initValue?: boolean;
 }
 
+export interface OperationSelectInputInfoOption {
+  value: string;
+  label: string;
+  icon?: React.ReactElement;
+}
+
+export interface OperationSelectInputInfo {
+  type: 'select';
+  label: string;
+  options: OperationSelectInputInfoOption[];
+  initValue?: string;
+}
+
 export type OperationInputInfo =
   | OperationTextInputInfo
-  | OperationBoolInputInfo;
+  | OperationBoolInputInfo
+  | OperationSelectInputInfo;
 
 export interface OperationInputErrorInfo {
   [index: number]: ((t: TFunction) => string) | null | undefined;
@@ -54,10 +76,14 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    alignItems: 'start'
   },
   processText: {
     margin: '0 10px'
+  },
+  inputText: {
+    margin: '10px 0'
   }
 }));
 
@@ -98,30 +124,23 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  type Step = 'input' | 'process' | OperationResult;
-  const [step, setStep] = useState<Step>('input');
-  const [values, setValues] = useState<(boolean | string)[]>(() => {
+  const initValues = useMemo(() => {
     return inputScheme.map(i => {
       if (i.type === 'bool') {
         return i.initValue || false;
-      } else if (i.type === 'text') {
-        return i.initValue || ('' as string);
+      } else if (i.type === 'text' || i.type === 'select') {
+        return i.initValue || '';
       } else {
         throw new Error('Unknown input scheme.');
       }
     });
-  });
+  }, [inputScheme]);
+
+  type Step = 'input' | 'process' | OperationResult;
+  const [step, setStep] = useState<Step>('input');
+  const [values, setValues] = useState<(boolean | string)[]>(initValues);
   const [inputError, setInputError] = useState<OperationInputErrorInfo>(() => {
     if (props.validator) {
-      const initValues = inputScheme.map(i => {
-        if (i.type === 'bool') {
-          return i.initValue || false;
-        } else if (i.type === 'text') {
-          return i.initValue || ('' as string);
-        } else {
-          throw new Error('Unknown input scheme.');
-        }
-      });
       const result = props.validator(initValues);
       return result ? result : {};
     }
@@ -140,30 +159,48 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
         <DialogContent classes={{ root: classes.content }}>
           {inputPrompt}
           {inputScheme.map((item, index) => {
+            const setValue = (
+              newValue: string | boolean
+            ): (string | boolean)[] => {
+              const oldValues = values;
+              const newValues = oldValues.slice();
+              newValues[index] = newValue;
+              setValues(newValues);
+              if (props.validator) {
+                const result = props.validator(newValues, index);
+                if (result) {
+                  setInputError(oldError => {
+                    return { ...oldError, ...result };
+                  });
+                }
+              }
+              return newValues;
+            };
+
+            const value = values[index];
             const error = inputError[index];
+
             if (item.type === 'text') {
+              const variant = item.variant || 'standard';
               return (
+                // I don't known what's wrong with typescript.
+                // With any way I can come up with, I can't get this component pass type check.
+                // The only lucky thing is that I find a way to disable it.
+                // eslint-disable-next-line
+                // @ts-ignore
                 <TextField
                   key={index}
+                  variant={variant}
+                  classes={{root: classes.inputText}}
+                  fullWidth
+                  multiline={item.multiline}
                   label={item.label}
                   value={values[index]}
                   type={item.password === true ? 'password' : undefined}
                   error={error != null}
                   helperText={error && error(t)}
                   onChange={e => {
-                    const v = e.target.value; // React may reuse the event, so copy and catch it.
-                    const oldValues = values;
-                    const newValues = oldValues.slice();
-                    newValues[index] = v;
-                    setValues(newValues);
-                    if (props.validator) {
-                      const result = props.validator(newValues, index);
-                      if (result) {
-                        setInputError(oldError => {
-                          return { ...oldError, ...result };
-                        });
-                      }
-                    }
+                    setValue(e.target.value);
                   }}
                 />
               );
@@ -173,23 +210,34 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                   key={index}
                   value={values[index]}
                   onChange={e => {
-                    const v = (e.target as HTMLInputElement).checked; // React may reuse the event, so copy and catch it.
-                    const oldValues = values;
-                    const newValues = oldValues.slice();
-                    newValues[index] = v;
-                    setValues(newValues);
-                    if (props.validator) {
-                      const result = props.validator(newValues, index);
-                      if (result) {
-                        setInputError(oldError => {
-                          return { ...oldError, ...result };
-                        });
-                      }
-                    }
+                    setValue((e.target as HTMLInputElement).checked);
                   }}
                   control={<Checkbox />}
                   label={item.label}
                 />
+              );
+            } else if (item.type === 'select') {
+              return (
+                <FormControl key={index}>
+                  <InputLabel>{item.label}</InputLabel>
+                  <Select
+                    value={value}
+                    onChange={event => {
+                      setValue(event.target.value as string);
+                    }}
+                  >
+                    {item.options.map((option, i) => {
+                      return (
+                        <MenuItem value={option.value} key={i}>
+                          {option.icon && (
+                            <ListItemIcon>{option.icon}</ListItemIcon>
+                          )}
+                          {option.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
               );
             }
           })}

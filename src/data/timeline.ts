@@ -1,6 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 
-export type TimelineVisibility = 'Public' | 'Register' | 'Private';
+export const kTimelineVisibilities = ['Public', 'Register', 'Private'] as const;
+
+export type TimelineVisibility = typeof kTimelineVisibilities[number];
 
 export interface BaseTimelineInfo {
   description: string;
