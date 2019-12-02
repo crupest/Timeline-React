@@ -58,8 +58,15 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
       ]}
       open={props.open}
       close={props.close}
-      onConfirm={async () => {
-        //TODO!
+      onConfirm={async ([newVisibility, newDescription]) => {
+        const req: ChangePropertyRequest = {};
+        if (newVisibility !== props.visibility) {
+          req.visibility = newVisibility as TimelineVisibility;
+        }
+        if (newDescription !== props.description) {
+          req.description = newDescription as string;
+        }
+        await props.process(req);
       }}
     />
   );

@@ -264,8 +264,21 @@ const User: React.FC = _ => {
         close={closeDialogHandler}
         description={timelineInfo!.description}
         visibility={timelineInfo!.visibility}
-        process={async () => {
-          // TODO!
+        process={async req => {
+          await axios.post(
+            `${apiBaseUrl}/users/${username}/timeline/op/property?token=${
+              user!.token
+            }`,
+            req
+          );
+          const newTimelineInfo: BaseTimelineInfo = { ...timelineInfo! };
+          if (req.visibility != null) {
+            newTimelineInfo.visibility = req.visibility;
+          }
+          if (req.description != null) {
+            newTimelineInfo.description = req.description;
+          }
+          setTimelineInfo(newTimelineInfo);
         }}
       />
     );
