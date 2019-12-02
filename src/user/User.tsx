@@ -35,6 +35,7 @@ import OperationDialog from '../common/OperationDialog';
 import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
 import Timeline from '../timeline/Timeline';
 import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
+import ChangeAvatarDialog from './ChangeAvatarDialog';
 
 const mockPosts: TimelinePostInfo[] = [
   {
@@ -186,7 +187,11 @@ const User: React.FC = _ => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [dialog, setDialog] = useState<
-    null | 'editselect' | 'changenickname' | 'changetimelineproperty'
+    | null
+    | 'editselect'
+    | 'changenickname'
+    | 'changeavatar'
+    | 'changetimelineproperty'
   >(null);
   const [nickname, setNickname] = useState<string>();
   const [timelineInfo, setTimelineInfo] = useState<BaseTimelineInfo>();
@@ -251,6 +256,8 @@ const User: React.FC = _ => {
             setDialog('changenickname');
           } else if (item === 'timelineproperty') {
             setDialog('changetimelineproperty');
+          } else if (item === 'avatar') {
+            setDialog('changeavatar');
           } else {
             setDialog(null);
           }
@@ -282,6 +289,8 @@ const User: React.FC = _ => {
         }}
       />
     );
+  } else if (dialog === 'changeavatar') {
+    dialogElement = <ChangeAvatarDialog open close={closeDialogHandler} />;
   }
 
   if (loading) {
