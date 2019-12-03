@@ -36,6 +36,19 @@ const translation: TranslationResource = {
     dialogChangeNickname: {
       title: 'Change Nickname',
       inputLabel: 'New nickname'
+    },
+    dialogChangeAvatar: {
+      title: 'Change Avatar',
+      prompt:
+        'Currently you must manually crop the image into a square. Then you can upload it as avatar. A cropper component will be added in the future. So looking forward to it!😅',
+      previewImgAlt: 'preview',
+      imgPrompt: {
+        select: 'Please select a picture.',
+        loadingFile: 'Loading the file...',
+        decoding: 'Decoding picture...',
+        errorNotSquare: 'The image is not a square.'
+      },
+      upload: 'upload'
     }
   },
   settings: {

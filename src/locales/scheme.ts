@@ -35,6 +35,18 @@ export default interface TranslationResource {
       title: string;
       inputLabel: string;
     };
+    dialogChangeAvatar: {
+      title: string;
+      prompt: string;
+      previewImgAlt: string;
+      imgPrompt: {
+        select: string;
+        loadingFile: string;
+        decoding: string;
+        errorNotSquare: string;
+      };
+      upload: string;
+    };
   };
   settings: {
     subheaders: {
