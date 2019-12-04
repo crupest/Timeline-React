@@ -6,6 +6,7 @@ const translation: TranslationResource = {
     description: `<0>This is the first Web App created by me, <1>crupest</1>. This page is the front-end of it. You can find the source code on Github (<3>front-end</3>, <5>back-end</5>). Now it is under active development by me. You are welcomed to leave any thoughts on Github!</0><1>This page will be replaced in the future.</1>`
   },
   timeline: {
+    messageCantSee: 'Sorry, you are not allowed to see this timeline.😅',
     visibility: {
       public: 'public to everyone',
       register: 'only registed people can see',

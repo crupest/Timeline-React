@@ -120,7 +120,7 @@ export function generateAvatarUrl(username: string): string {
 }
 
 export function useUser(): UserWithToken | null | undefined {
-  const [user, setUser] = useState<UserWithToken | null | undefined>(undefined);
+  const [user, setUser] = useState<UserWithToken | null | undefined>(userSubject.value);
   useEffect(() => {
     const sub = user$.subscribe(u => setUser(u));
     return () => {

@@ -7,6 +7,7 @@ const translation: TranslationResource = {
       '<0>这是我，<1>crupest</1>，创建的第一个Web App。这个网站就是它的前端。你可以在Github上找到它的源代码（<3>前端</3>，<5>后端</5>）。现在我正在努力开发它，欢迎在Github上留下任何想法！</0><1>这个页面将来会被替换掉。</1>'
   },
   timeline: {
+    messageCantSee: '不好意思，你没有权限查看这个时间线。😅',
     visibility: {
       public: '对所有人公开',
       register: '仅注册可见',

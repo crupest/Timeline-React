@@ -4,6 +4,7 @@ export default interface TranslationResource {
     description: string;
   };
   timeline: {
+    messageCantSee: string;
     visibility: {
       public: string;
       register: string;

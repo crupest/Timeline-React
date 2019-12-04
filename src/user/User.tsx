@@ -26,8 +26,10 @@ import {
 import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
   BaseTimelineInfo,
-  fetchTimeline,
-  TimelinePostInfo
+  fetchPersonalTimeline,
+  TimelinePostInfo,
+  canSee,
+  fetchPersonalTimelinePosts
 } from '../data/timeline';
 
 import AppBar from '../common/AppBar';
@@ -36,21 +38,6 @@ import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
 import Timeline from '../timeline/Timeline';
 import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 import ChangeAvatarDialog from './ChangeAvatarDialog';
-
-const mockPosts: TimelinePostInfo[] = [
-  {
-    id: 1,
-    content: 'hahahaha',
-    time: new Date(2019, 11, 27, 15, 30, 30),
-    author: 'crupest'
-  },
-  {
-    id: 2,
-    content: 'hohohohoho',
-    time: new Date(2019, 11, 28, 15, 30, 30),
-    author: 'crupest'
-  }
-];
 
 type EditItem = 'nickname' | 'avatar' | 'timelineproperty';
 
@@ -149,7 +136,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   avatar: {
     height: 80,
-    borderRadius: '50%'
   },
   userInfoCard: {
     display: 'flex',
@@ -179,6 +165,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const user = useUser();
 
@@ -197,17 +184,66 @@ const User: React.FC = _ => {
   const [timelineInfo, setTimelineInfo] = useState<BaseTimelineInfo>();
   const [avatarKey, setAvatarKey] = useState<number>(0);
 
+  interface TimelineStateLoading {
+    type: 'load';
+  }
+
+  interface TimelineStateError {
+    type: 'error';
+    error: string;
+  }
+
+  interface TimelineStateDone {
+    type: 'done';
+    data: TimelinePostInfo[];
+  }
+
+  type TimelineState =
+    | TimelineStateLoading
+    | TimelineStateError
+    | TimelineStateDone;
+
+  const [timelineState, setTimelineState] = useState<TimelineState>({
+    type: 'load'
+  });
+
   useEffect(() => {
     let subscribe = true;
     Promise.all([
-      fetchTimeline(`${apiBaseUrl}/users/${username}/timeline`),
+      fetchPersonalTimeline(username),
       fetchNickname(username)
     ]).then(
       ([res1, res2]) => {
         if (subscribe) {
-          setTimelineInfo(res1.data);
+          const ti = res1.data;
+          setTimelineInfo(ti);
           setNickname(res2.data);
           setLoading(false);
+          if (!canSee(user != null ? user.username : null, ti)) {
+            setTimelineState({
+              type: 'error',
+              error: t('timeline.messageCantSee')
+            });
+          } else {
+            fetchPersonalTimelinePosts(username, user && user.token).then(
+              data => {
+                if (subscribe) {
+                  setTimelineState({
+                    type: 'done',
+                    data: data
+                  });
+                }
+              },
+              error => {
+                if (subscribe) {
+                  setTimelineState({
+                    type: 'error',
+                    error: 'Network error??????' //TODO! improve this error message
+                  });
+                }
+              }
+            );
+          }
         }
       },
       (error: AxiosError) => {
@@ -367,7 +403,17 @@ const User: React.FC = _ => {
               undefined
             )}
           </Card>
-          <Timeline key={avatarKey} posts={mockPosts} />
+          {(() => {
+            if (timelineState.type === 'load') {
+              return <CircularProgress />;
+            } else if (timelineState.type === 'error') {
+              return (
+                <Typography color="error">{timelineState.error}</Typography>
+              );
+            } else {
+              return <Timeline key={avatarKey} posts={timelineState.data} />;
+            }
+          })()}
         </>
       );
     }
