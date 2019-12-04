@@ -195,6 +195,7 @@ const User: React.FC = _ => {
   >(null);
   const [nickname, setNickname] = useState<string>();
   const [timelineInfo, setTimelineInfo] = useState<BaseTimelineInfo>();
+  const [avatarKey, setAvatarKey] = useState<number>(0);
 
   useEffect(() => {
     let subscribe = true;
@@ -290,7 +291,24 @@ const User: React.FC = _ => {
       />
     );
   } else if (dialog === 'changeavatar') {
-    dialogElement = <ChangeAvatarDialog open close={closeDialogHandler} />;
+    dialogElement = (
+      <ChangeAvatarDialog
+        open
+        close={closeDialogHandler}
+        process={async file => {
+          await axios.put(
+            `${apiBaseUrl}/users/${username}/avatar?token=${user!.token}`,
+            file,
+            {
+              headers: {
+                'Content-Type': file.type
+              }
+            }
+          );
+          setAvatarKey(avatarKey + 1);
+        }}
+      />
+    );
   }
 
   if (loading) {
@@ -311,7 +329,11 @@ const User: React.FC = _ => {
       body = (
         <>
           <Card classes={{ root: classes.userInfoCard }}>
-            <img className={classes.avatar} src={generateAvatarUrl(username)} />
+            <img
+              key={avatarKey}
+              className={classes.avatar}
+              src={generateAvatarUrl(username)}
+            />
             <div className={classes.userInfoBody}>
               <Typography variant="h6" className={classes.userInfoNickname}>
                 {nickname}
@@ -345,7 +367,7 @@ const User: React.FC = _ => {
               undefined
             )}
           </Card>
-          <Timeline posts={mockPosts} />
+          <Timeline key={avatarKey} posts={mockPosts} />
         </>
       );
     }

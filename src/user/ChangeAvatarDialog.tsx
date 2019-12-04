@@ -8,7 +8,8 @@ import {
   Theme,
   IconButton,
   Icon,
-  Button
+  Button,
+  CircularProgress
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
@@ -40,6 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface ChangeAvatarDialogProps {
   open: boolean;
   close: () => void;
+  process: (file: File) => Promise<void>;
 }
 
 const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
@@ -48,7 +50,12 @@ const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
 
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [state, setState] = useState<'decode' | 'error' | 'ok'>('decode');
+  const [imgState, setImgState] = useState<'decode' | 'error' | 'ok'>('decode');
+  const [uploadState, setUploadState] = useState<
+    { type: 'input'; error?: string } | { type: 'processing' }
+  >({ type: 'input' });
+
+  const uploading = uploadState.type === 'processing';
 
   useEffect(() => {
     if (file != null) {
@@ -69,9 +76,11 @@ const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
     >
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={props.close}>
-            <Icon>arrow_back</Icon>
-          </IconButton>
+          {!uploading && (
+            <IconButton edge="start" color="inherit" onClick={props.close}>
+              <Icon>arrow_back</Icon>
+            </IconButton>
+          )}
           <Typography variant="h6">
             {t('userPage.dialogChangeAvatar.title')}
           </Typography>
@@ -81,20 +90,22 @@ const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
         <Typography variant="body1">
           {t('userPage.dialogChangeAvatar.prompt')}
         </Typography>
-        <input
-          type="file"
-          className={classes.fileInput}
-          onChange={e => {
-            const files = e.target.files;
-            setState('decode');
-            if (files == null || files.length === 0) {
-              setFile(null);
-            } else {
-              setFile(files[0]);
-            }
-          }}
-          accept="image/*"
-        />
+        {!uploading && (
+          <input
+            type="file"
+            className={classes.fileInput}
+            onChange={e => {
+              const files = e.target.files;
+              setImgState('decode');
+              if (files == null || files.length === 0) {
+                setFile(null);
+              } else {
+                setFile(files[0]);
+              }
+            }}
+            accept="image/*"
+          />
+        )}
         {(() => {
           const createBottomPrompt = (
             message: string,
@@ -117,7 +128,7 @@ const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
                     className={classes.imagePreview}
                     onLoad={e => {
                       const image = e.currentTarget;
-                      setState(
+                      setImgState(
                         image.naturalWidth === image.naturalHeight
                           ? 'ok'
                           : 'error'
@@ -127,7 +138,7 @@ const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
                     alt={t('userPage.dialogChangeAvatar.previewImgAlt')}
                   />
                   {(() => {
-                    switch (state) {
+                    switch (imgState) {
                       case 'decode':
                         return createBottomPrompt(
                           t('userPage.dialogChangeAvatar.imgPrompt.decoding')
@@ -139,16 +150,50 @@ const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
                           ),
                           true
                         );
-                      case 'ok':
-                        return (
-                          <Button
-                            classes={{ root: classes.uploadButton }}
-                            variant="contained"
-                            color="secondary"
-                          >
-                            {t('userPage.dialogChangeAvatar.upload')}
-                          </Button>
-                        );
+                      case 'ok': {
+                        if (uploadState.type === 'input') {
+                          const button = (
+                            <Button
+                              classes={{ root: classes.uploadButton }}
+                              variant="contained"
+                              color="secondary"
+                              onClick={() => {
+                                setUploadState({ type: 'processing' });
+                                props.process(file).then(
+                                  _ => {
+                                    props.close();
+                                  },
+                                  e => {
+                                    setUploadState({
+                                      type: 'input',
+                                      error: e.toString()
+                                    });
+                                  }
+                                );
+                              }}
+                            >
+                              {t('userPage.dialogChangeAvatar.upload')}
+                            </Button>
+                          );
+
+                          if (uploadState.error) {
+                            return (
+                              <>
+                                {createBottomPrompt(uploadState.error, true)}
+                                {button}
+                              </>
+                            );
+                          } else {
+                            return button;
+                          }
+                        } else {
+                          return (
+                            <CircularProgress
+                              classes={{ root: classes.uploadButton }}
+                            />
+                          );
+                        }
+                      }
                     }
                   })()}
                 </>
