@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router';
 import {
   CircularProgress,
@@ -29,7 +29,8 @@ import {
   fetchPersonalTimeline,
   TimelinePostInfo,
   canSee,
-  fetchPersonalTimelinePosts
+  fetchPersonalTimelinePosts,
+  canPost
 } from '../data/timeline';
 
 import AppBar from '../common/AppBar';
@@ -38,6 +39,7 @@ import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
 import Timeline from '../timeline/Timeline';
 import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 import ChangeAvatarDialog from './ChangeAvatarDialog';
+import TimelinePostEdit from '../timeline/TimelinePostEdit';
 
 type EditItem = 'nickname' | 'avatar' | 'timelineproperty';
 
@@ -135,7 +137,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     textAlign: 'center'
   },
   avatar: {
-    height: 80,
+    height: 80
   },
   userInfoCard: {
     display: 'flex',
@@ -159,6 +161,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'absolute',
     right: 0,
     bottom: 0
+  },
+  timeline: {
+    flex: '1 1 auto'
   }
 }));
 
@@ -183,6 +188,11 @@ const User: React.FC = _ => {
   const [nickname, setNickname] = useState<string>();
   const [timelineInfo, setTimelineInfo] = useState<BaseTimelineInfo>();
   const [avatarKey, setAvatarKey] = useState<number>(0);
+
+  const timelinePostable = useMemo<boolean>(
+    () => canPost(user && user.username, timelineInfo),
+    [user, timelineInfo]
+  );
 
   interface TimelineStateLoading {
     type: 'load';
@@ -411,9 +421,22 @@ const User: React.FC = _ => {
                 <Typography color="error">{timelineState.error}</Typography>
               );
             } else {
-              return <Timeline key={avatarKey} posts={timelineState.data} />;
+              return (
+                <Timeline
+                  className={classes.timeline}
+                  key={avatarKey}
+                  posts={timelineState.data}
+                />
+              );
             }
           })()}
+          {timelinePostable && (
+            <TimelinePostEdit
+              onPost={async () => {
+                //TODO!
+              }}
+            />
+          )}
         </>
       );
     }

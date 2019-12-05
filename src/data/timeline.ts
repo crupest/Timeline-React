@@ -66,3 +66,17 @@ export function canSee(
   }
   return false;
 }
+
+export function canPost(
+  username: string | null | undefined,
+  timeline: BaseTimelineInfo | null | undefined
+): boolean {
+  if (
+    username != null &&
+    timeline != null &&
+    (timeline.owner === username || timeline.members.includes(username))
+  ) {
+    return true;
+  }
+  return false;
+}
