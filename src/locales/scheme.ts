@@ -1,6 +1,7 @@
 export default interface TranslationResource {
   welcome: string;
   home: {
+    guide: string;
     description: string;
   };
   timeline: {

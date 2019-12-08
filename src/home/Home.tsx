@@ -1,15 +1,28 @@
-import React from 'react';
-import { makeStyles, Typography, Link } from '@material-ui/core';
+import React, { useState } from 'react';
+import {
+  makeStyles,
+  Typography,
+  Link,
+  Paper,
+  InputBase,
+  Theme,
+  IconButton,
+  Icon
+} from '@material-ui/core';
 import { useTranslation, Trans } from 'react-i18next';
+import { useHistory } from 'react-router';
 
 import AppBar from '../common/AppBar';
 
 const hToColor = (h: number): string => `hsl(${h} 70% 70%)`;
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   content: {
     padding: 5,
-    textAlign: 'center'
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    alignSelf: 'center'
   },
   '@keyframes welcome': {
     '0%': {
@@ -35,17 +48,41 @@ const useStyles = makeStyles({
     }
   },
   welcome: {
+    margin: `${theme.spacing(2)}px 0`,
     animationName: '$welcome',
     animationDuration: '10s',
     animationIterationCount: 'infinite'
+  },
+  navRoot: {
+    padding: '2px 4px',
+    display: 'flex',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    margin: `${theme.spacing(2)}px 0`,
+    [theme.breakpoints.down('sm')]: {
+      margin: `${theme.spacing(2)}px`
+    }
+  },
+  navInput: {
+    marginLeft: theme.spacing(1),
+    flex: 1
+  },
+  navButton: {
+    padding: 10
   }
-});
+}));
 
 const Home: React.FC = _ => {
   const { t } = useTranslation();
 
   const classes = useStyles();
+  const history = useHistory();
 
+  const [navText, setNavText] = useState<string>('');
+
+  const goto = (): void => {
+    history.push(`users/${navText === '' ? 'crupest' : navText}`);
+  };
   return (
     <>
       <AppBar />
@@ -54,27 +91,54 @@ const Home: React.FC = _ => {
         <Typography variant="h4" classes={{ root: classes.welcome }}>
           {t('welcome')}
         </Typography>
-        <Trans i18nKey="home.description">
-          <Typography variant="body1">
-            0
-            <Link href="https://github.com/crupest" target="_blank">
-              1
-            </Link>
-            2
-            <Link
-              href="https://github.com/crupest/Timeline-React"
-              target="_blank"
-            >
-              3
-            </Link>
-            4
-            <Link href="https://github.com/crupest/Timeline" target="_blank">
-              5
-            </Link>
-            6
-          </Typography>
-          <Typography variant="body1">0</Typography>
-        </Trans>
+        <div>
+          <Trans i18nKey="home.guide">
+            <Typography>0</Typography>
+            <Typography>1</Typography>
+          </Trans>
+          <Paper component="div" className={classes.navRoot}>
+            <InputBase
+              autoFocus
+              className={classes.navInput}
+              placeholder="crupest"
+              value={navText}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setNavText(event.currentTarget.value);
+              }}
+              onKeyPress={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                if (event.key === 'Enter') {
+                  goto();
+                }
+              }}
+            />
+            <IconButton className={classes.navButton} onClick={goto}>
+              <Icon>arrow_forward</Icon>
+            </IconButton>
+          </Paper>
+        </div>
+
+        <div>
+          <Trans i18nKey="home.description">
+            <Typography variant="body2">
+              0
+              <Link href="https://github.com/crupest" target="_blank">
+                1
+              </Link>
+              2
+              <Link
+                href="https://github.com/crupest/Timeline-React"
+                target="_blank"
+              >
+                3
+              </Link>
+              4
+              <Link href="https://github.com/crupest/Timeline" target="_blank">
+                5
+              </Link>
+              6
+            </Typography>
+          </Trans>
+        </div>
       </div>
     </>
   );
