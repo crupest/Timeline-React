@@ -74,13 +74,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex'
   },
   nickname: {
-    margin: `0 ${theme.spacing(1)}px`
+    margin: `0 ${theme.spacing(1)}px`,
+    color: theme.palette.grey[700]
   },
   contentAreaBody: {
-    display: 'flex'
+    display: 'flex',
+    margin: `${theme.spacing(1)}px 0`
   },
   avatar: {
-    height: '50px'
+    height: '50px',
+    borderRadius: '5px'
+  },
+  trueContent: {
+    margin: `0 ${theme.spacing(1)}px`
   },
   currentEnd: {
     height: '20px',
@@ -137,7 +143,7 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
             src={generateAvatarUrl(props.post.author)}
             className={classes.avatar}
           />
-          <Typography variant="body1">{props.post.content}</Typography>
+          <Typography className={classes.trueContent} variant="body1">{props.post.content}</Typography>
         </div>
       </div>
     </div>
