@@ -10,6 +10,11 @@ export default interface TranslationResource {
       register: string;
       private: string;
     };
+    visibilityTooltip: {
+      public: string;
+      register: string;
+      private: string;
+    };
     dialogChangeProperty: {
       title: string;
       visibility: string;

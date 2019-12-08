@@ -1,7 +1,8 @@
 import React from 'react';
+import { Tooltip, Icon } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 import { TimelineVisibility } from '../data/timeline';
-import { Tooltip, Icon } from '@material-ui/core';
 
 export interface TimelineVisibilityIconProps {
   className?: string;
@@ -9,21 +10,23 @@ export interface TimelineVisibilityIconProps {
 }
 
 const TimelineVisibilityIcon: React.FC<TimelineVisibilityIconProps> = props => {
+  const {t} = useTranslation();
+
   if (props.visibility === 'Public')
     return (
-      <Tooltip title="Everyone can see the timeline.">
+      <Tooltip title={t("timeline.visibilityTooltip.public")}>
         <Icon className={props.className}>public</Icon>
       </Tooltip>
     );
   else if (props.visibility === 'Register')
     return (
-      <Tooltip title="Only registers can see the timeline.">
+      <Tooltip title={t("timeline.visibilityTooltip.register")}>
         <Icon className={props.className}>person</Icon>
       </Tooltip>
     );
   else if (props.visibility === 'Private')
     return (
-      <Tooltip title="Only members can see the timeline.">
+      <Tooltip title={t("timeline.visibilityTooltip.private")}>
         <Icon className={props.className}>group</Icon>
       </Tooltip>
     );

@@ -12,6 +12,13 @@ const translation: TranslationResource = {
       register: 'only registed people can see',
       private: 'only members can see'
     },
+    visibilityTooltip: {
+      public:
+        'Everyone including those without accounts can see content of the timeline.',
+      register:
+        'Only those who have an account and logined can see content of the timeline.',
+      private: 'Only members of this timeline can see content of the timeline.'
+    },
     dialogChangeProperty: {
       title: 'Change Timeline Properties',
       visibility: 'Visibility',

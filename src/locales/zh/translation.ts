@@ -13,6 +13,11 @@ const translation: TranslationResource = {
       register: '仅注册可见',
       private: '仅成员可见'
     },
+    visibilityTooltip: {
+      public: '所有人都可以看到这个时间线的内容，包括没有注册的人。',
+      register: '只有拥有本网站的账号且登陆了的人才能看到这个时间线的内容。',
+      private: '只有这个时间线的成员可以看到这个时间线的内容。'
+    },
     dialogChangeProperty: {
       title: '修改时间线属性',
       visibility: '可见性',
