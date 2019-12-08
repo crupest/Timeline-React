@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 import { createMuiTheme, CircularProgress } from '@material-ui/core';
 import { ThemeProvider, StylesProvider } from '@material-ui/styles';
+import { teal, orange } from '@material-ui/core/colors';
 
 import AppBar from './common/AppBar';
 import Login from './user/Login';
@@ -27,6 +28,10 @@ const NoMatch: React.FC = () => {
 };
 
 const theme = createMuiTheme({
+  palette: {
+    primary: teal,
+    secondary: orange
+  },
   typography: {
     fontFamily:
       '"Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
