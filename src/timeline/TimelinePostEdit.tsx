@@ -5,7 +5,10 @@ import {
   TextField,
   Icon,
   Button,
-  CircularProgress
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
+  IconButton
 } from '@material-ui/core';
 
 export interface TimelinePostEditProps {
@@ -37,17 +40,45 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '100%',
     minWidth: 'unset'
   },
-  progress: {}
+  progress: {},
+  sendErrorSnackbar: {
+    backgroundColor: theme.palette.error.dark
+  },
+  sendErrorSnackbarMessage: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  sendErrorSnackbarMessageText: {
+    marginLeft: theme.spacing(1)
+  }
 }));
 
 const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
   const classes = useStyles();
 
   const [state, setState] = useState<'input' | 'process'>('input');
+  const [text, setText] = useState<string>('');
+
+  const [errorSnackbar, setErrorSnackbar] = useState<null | (() => string)>(
+    null
+  );
+
+  const closeErrorSnackbar = (): void => {
+    setErrorSnackbar(null);
+  };
 
   return (
     <div className={classes.container}>
-      <TextField fullWidth multiline classes={{ root: classes.input }} />
+      <TextField
+        fullWidth
+        multiline
+        value={text}
+        disabled={state === 'process'}
+        classes={{ root: classes.input }}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          setText(event.currentTarget.value);
+        }}
+      />
       <div className={classes.sendArea}>
         {(() => {
           if (state === 'input') {
@@ -57,9 +88,18 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
                 classes={{ root: classes.sendButton }}
                 onClick={() => {
                   setState('process');
-                  setTimeout(() => {
-                    setState('input');
-                  }, 3000);
+                  props.onPost(text).then(
+                    _ => {
+                      setText('');
+                      setState('input');
+                    },
+                    e => {
+                      setErrorSnackbar(() => () =>
+                        'Send failed! Error: ' + e.toString()
+                      );
+                      setState('input');
+                    }
+                  );
                 }}
               >
                 <Icon>send</Icon>
@@ -70,6 +110,29 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
           }
         })()}
       </div>
+      {errorSnackbar && (
+        <Snackbar open onClose={closeErrorSnackbar}>
+          <SnackbarContent
+            classes={{
+              root: classes.sendErrorSnackbar,
+              message: classes.sendErrorSnackbarMessage
+            }}
+            message={
+              <>
+                <Icon>error</Icon>
+                <span className={classes.sendErrorSnackbarMessageText}>
+                  {errorSnackbar()}
+                </span>
+              </>
+            }
+            action={
+              <IconButton color="inherit" onClick={closeErrorSnackbar}>
+                <Icon>close</Icon>
+              </IconButton>
+            }
+          ></SnackbarContent>
+        </Snackbar>
+      )}
     </div>
   );
 };

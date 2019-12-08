@@ -30,7 +30,8 @@ import {
   TimelinePostInfo,
   canSee,
   fetchPersonalTimelinePosts,
-  canPost
+  canPost,
+  createPersonalTimelinePost
 } from '../data/timeline';
 
 import AppBar from '../common/AppBar';
@@ -422,21 +423,36 @@ const User: React.FC = _ => {
               );
             } else {
               return (
-                <Timeline
-                  className={classes.timeline}
-                  key={avatarKey}
-                  posts={timelineState.data}
-                />
+                <>
+                  <Timeline
+                    className={classes.timeline}
+                    key={avatarKey}
+                    posts={timelineState.data}
+                  />
+                  {timelinePostable && (
+                    <TimelinePostEdit
+                      onPost={async content => {
+                        const newPost = await createPersonalTimelinePost(
+                          username,
+                          user!,
+                          {
+                            content: content
+                          }
+                        );
+                        const posts = timelineState.data;
+                        const newPostList = posts.slice();
+                        newPostList.push(newPost);
+                        setTimelineState({
+                          type: 'done',
+                          data: newPostList
+                        });
+                      }}
+                    />
+                  )}
+                </>
               );
             }
           })()}
-          {timelinePostable && (
-            <TimelinePostEdit
-              onPost={async () => {
-                //TODO!
-              }}
-            />
-          )}
         </>
       );
     }

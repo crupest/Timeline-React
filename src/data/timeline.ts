@@ -80,3 +80,45 @@ export function canPost(
   }
   return false;
 }
+
+interface RawCreatePostRequest {
+  content: string;
+  time?: string;
+}
+
+interface RawCreatePostResponse {
+  id: number;
+  time: string;
+}
+
+export interface CreatePostAuthor {
+  username: string;
+  token: string;
+}
+
+export interface CreatePostRequest {
+  content: string;
+  time?: Date;
+}
+
+export async function createPersonalTimelinePost(
+  username: string,
+  author: CreatePostAuthor,
+  request: CreatePostRequest
+): Promise<TimelinePostInfo> {
+  const rawReq: RawCreatePostRequest = { content: request.content };
+  if (request.time != null) {
+    rawReq.time = request.time.toISOString();
+  }
+  const res = await axios.post<RawCreatePostResponse>(
+    `${apiBaseUrl}/users/${username}/timeline/postop/create?token=${author.token}`,
+    rawReq
+  );
+  const body = res.data;
+  return {
+    id: body.id,
+    author: author.username,
+    content: request.content,
+    time: new Date(body.time)
+  };
+}
