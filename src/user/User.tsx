@@ -130,11 +130,6 @@ const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  pageContainer: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column'
-  },
   fixHeight: {
     flexGrow: 0,
     flexShrink: 0
@@ -472,12 +467,12 @@ const User: React.FC = _ => {
   }
 
   return (
-    <div className={classes.pageContainer}>
+    <>
       <AppBar />
       <div style={{ height: 56 }} className={classes.fixHeight}></div>
       {body}
       {dialogElement}
-    </div>
+    </>
   );
 };
 
