@@ -22,7 +22,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     bottom: 0,
     width: '100%',
     boxSizing: 'border-box',
-    background: theme.palette.grey[200]
+    background: theme.palette.grey[200],
+    zIndex: 1000
   },
   input: {
     margin: theme.spacing(1)
@@ -33,7 +34,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '50px',
     flexShrink: 0,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    alignSelf: 'flex-end'
   },
   sendButton: {
     width: '100%',
@@ -72,6 +74,7 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
       <TextField
         fullWidth
         multiline
+        rowsMax={5}
         value={text}
         disabled={state === 'process'}
         classes={{ root: classes.input }}
