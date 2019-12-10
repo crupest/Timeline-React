@@ -86,7 +86,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: '5px'
   },
   trueContent: {
-    margin: `0 ${theme.spacing(1)}px`
+    margin: `0 ${theme.spacing(1)}px`,
+    whiteSpace: 'pre-line'
   },
   currentEnd: {
     height: '20px',

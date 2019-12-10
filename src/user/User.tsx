@@ -15,6 +15,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import axios, { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 
 import { apiBaseUrl } from '../config';
 import {
@@ -129,6 +130,15 @@ const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
+  pageContainer: {
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  fixHeight: {
+    flexGrow: 0,
+    flexShrink: 0
+  },
   loadingBody: {
     display: 'flex',
     justifyContent: 'center',
@@ -375,7 +385,9 @@ const User: React.FC = _ => {
     } else {
       body = (
         <>
-          <Card classes={{ root: classes.userInfoCard }}>
+          <Card
+            classes={{ root: clsx(classes.userInfoCard, classes.fixHeight) }}
+          >
             <img
               key={avatarKey}
               className={classes.avatar}
@@ -431,6 +443,7 @@ const User: React.FC = _ => {
                   />
                   {timelinePostable && (
                     <TimelinePostEdit
+                      className={classes.fixHeight}
                       onPost={async content => {
                         const newPost = await createPersonalTimelinePost(
                           username,
@@ -459,12 +472,12 @@ const User: React.FC = _ => {
   }
 
   return (
-    <>
+    <div className={classes.pageContainer}>
       <AppBar />
-      <div style={{ height: 56 }}></div>
+      <div style={{ height: 56 }} className={classes.fixHeight}></div>
       {body}
       {dialogElement}
-    </>
+    </div>
   );
 };
 

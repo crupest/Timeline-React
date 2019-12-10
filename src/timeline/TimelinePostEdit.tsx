@@ -10,15 +10,16 @@ import {
   SnackbarContent,
   IconButton
 } from '@material-ui/core';
+import clsx from 'clsx';
 
 export interface TimelinePostEditProps {
+  className?: string;
   onPost: (content: string) => Promise<void>;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     display: 'flex',
-    position: 'fixed',
     bottom: 0,
     width: '100%',
     boxSizing: 'border-box',
@@ -70,7 +71,7 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
   };
 
   return (
-    <div className={classes.container}>
+    <div className={clsx(classes.container, props.className)}>
       <TextField
         fullWidth
         multiline

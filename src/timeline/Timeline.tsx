@@ -9,7 +9,8 @@ import clsx from 'clsx';
 const useStyles = makeStyles((_: Theme) => ({
   container: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    overflowY: 'auto'
   }
 }));
 
@@ -24,7 +25,12 @@ const Timeline: React.FC<TimelineProps> = props => {
   const posts = props.posts;
 
   return (
-    <div className={clsx(classes.container, props.className)}>
+    <div
+      className={clsx(classes.container, props.className)}
+      onLoad={e => {
+        e.currentTarget.scrollTo(0, e.currentTarget.scrollHeight);
+      }}
+    >
       {(() => {
         const length = posts.length;
         return posts.map((post, i) => {
