@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   makeStyles,
   Theme,
@@ -15,11 +15,13 @@ import clsx from 'clsx';
 export interface TimelinePostEditProps {
   className?: string;
   onPost: (content: string) => Promise<void>;
+  onHeightChange?: (height: number) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     display: 'flex',
+    position: 'fixed',
     bottom: 0,
     width: '100%',
     boxSizing: 'border-box',
@@ -70,8 +72,37 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
     setErrorSnackbar(null);
   };
 
+  let containerElement: HTMLDivElement | null = null;
+  let height = 0;
+
+  const checkHeight = (): void => {
+    if (containerElement == null) {
+      return;
+    }
+    const newHeight = containerElement.clientHeight;
+    if (height === newHeight) {
+      return;
+    } else {
+      height = newHeight;
+      if (props.onHeightChange != null) {
+        props.onHeightChange(newHeight);
+      }
+    }
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      checkHeight();
+    });
+  }, [text, containerElement]);
+
   return (
-    <div className={clsx(classes.container, props.className)}>
+    <div
+      className={clsx(classes.container, props.className)}
+      ref={el => {
+        containerElement = el;
+      }}
+    >
       <TextField
         fullWidth
         multiline

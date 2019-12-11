@@ -10,7 +10,8 @@ import {
   DialogTitle,
   MenuList,
   MenuItem,
-  Theme
+  Theme,
+  useTheme
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import axios, { AxiosError } from 'axios';
@@ -34,6 +35,8 @@ import {
   canPost,
   createPersonalTimelinePost
 } from '../data/timeline';
+
+import { useHeightBinding } from '../common/layout';
 
 import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
@@ -129,6 +132,9 @@ const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
   );
 };
 
+const appBarHeight = 56;
+const cardMarginRatio = 1;
+
 const useStyles = makeStyles((theme: Theme) => ({
   fixHeight: {
     flexGrow: 0,
@@ -147,8 +153,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   userInfoCard: {
     display: 'flex',
-    margin: theme.spacing(1),
-    position: 'relative'
+    margin: theme.spacing(cardMarginRatio),
+    width: `calc(100% - ${theme.spacing(cardMarginRatio) * 2}px)`,
+    boxSizing: 'border-box',
+    position: 'fixed',
+    top: appBarHeight,
+    zIndex: 1000
   },
   userInfoBody: {
     padding: theme.spacing(1)
@@ -281,6 +291,22 @@ const User: React.FC = _ => {
     };
   }, [username]);
 
+  const theme = useTheme();
+  const [cardRefCallback, cardSpaceRefCallback] = useHeightBinding(
+    height => height + theme.spacing(cardMarginRatio)
+  );
+
+  useEffect(() => {
+    if (timelineState.type === 'done') {
+      setTimeout(() => {
+        window.scrollTo(
+          0,
+          document.body.scrollHeight || document.documentElement.scrollHeight
+        );
+      });
+    }
+  }, [timelineState]);
+
   let body: React.ReactElement;
   let dialogElement: React.ReactElement | undefined;
 
@@ -380,47 +406,60 @@ const User: React.FC = _ => {
     } else {
       body = (
         <>
-          <Card
-            classes={{ root: clsx(classes.userInfoCard, classes.fixHeight) }}
-          >
-            <img
-              key={avatarKey}
-              className={classes.avatar}
-              src={generateAvatarUrl(username)}
-            />
-            <div className={classes.userInfoBody}>
-              <Typography variant="h6" className={classes.userInfoNickname}>
-                {nickname}
-              </Typography>
-              <Typography
-                variant="caption"
-                color="textSecondary"
-                className={classes.userInfoUsername}
-              >
-                @{username}
-              </Typography>
-              <TimelineVisibilityIcon
-                className={classes.userInfoVisibilityIcon}
-                visibility={timelineInfo!.visibility}
-              />
-              <Typography variant="body2">
-                {timelineInfo!.description}
-              </Typography>
-            </div>
-            {editable ? (
-              <IconButton
-                color="secondary"
-                classes={{ root: classes.userInfoEditButton }}
-                onClick={() => {
-                  setDialog('editselect');
-                }}
-              >
-                <Icon>edit</Icon>
-              </IconButton>
-            ) : (
-              undefined
-            )}
-          </Card>
+          {(() => {
+            return (
+              <>
+                <Card
+                  ref={cardRefCallback}
+                  classes={{
+                    root: clsx(classes.userInfoCard)
+                  }}
+                >
+                  <img
+                    key={avatarKey}
+                    className={classes.avatar}
+                    src={generateAvatarUrl(username)}
+                  />
+                  <div className={classes.userInfoBody}>
+                    <Typography
+                      variant="h6"
+                      className={classes.userInfoNickname}
+                    >
+                      {nickname}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="textSecondary"
+                      className={classes.userInfoUsername}
+                    >
+                      @{username}
+                    </Typography>
+                    <TimelineVisibilityIcon
+                      className={classes.userInfoVisibilityIcon}
+                      visibility={timelineInfo!.visibility}
+                    />
+                    <Typography variant="body2">
+                      {timelineInfo!.description}
+                    </Typography>
+                  </div>
+                  {editable ? (
+                    <IconButton
+                      color="secondary"
+                      classes={{ root: classes.userInfoEditButton }}
+                      onClick={() => {
+                        setDialog('editselect');
+                      }}
+                    >
+                      <Icon>edit</Icon>
+                    </IconButton>
+                  ) : (
+                    undefined
+                  )}
+                </Card>
+                <div ref={cardSpaceRefCallback} className={classes.fixHeight} />
+              </>
+            );
+          })()}
           {(() => {
             if (timelineState.type === 'load') {
               return <CircularProgress />;
@@ -436,27 +475,42 @@ const User: React.FC = _ => {
                     key={avatarKey}
                     posts={timelineState.data}
                   />
-                  {timelinePostable && (
-                    <TimelinePostEdit
-                      className={classes.fixHeight}
-                      onPost={async content => {
-                        const newPost = await createPersonalTimelinePost(
-                          username,
-                          user!,
-                          {
-                            content: content
-                          }
-                        );
-                        const posts = timelineState.data;
-                        const newPostList = posts.slice();
-                        newPostList.push(newPost);
-                        setTimelineState({
-                          type: 'done',
-                          data: newPostList
-                        });
-                      }}
-                    />
-                  )}
+                  {(() => {
+                    if (timelinePostable) {
+                      let bottomSpaceElement: HTMLElement | null = null;
+                      return (
+                        <>
+                          <div
+                            ref={el => (bottomSpaceElement = el)}
+                            className={classes.fixHeight}
+                          />
+                          <TimelinePostEdit
+                            onPost={async content => {
+                              const newPost = await createPersonalTimelinePost(
+                                username,
+                                user!,
+                                {
+                                  content: content
+                                }
+                              );
+                              const posts = timelineState.data;
+                              const newPostList = posts.slice();
+                              newPostList.push(newPost);
+                              setTimelineState({
+                                type: 'done',
+                                data: newPostList
+                              });
+                            }}
+                            onHeightChange={height => {
+                              if (bottomSpaceElement != null) {
+                                bottomSpaceElement.style.height = height + 'px';
+                              }
+                            }}
+                          />
+                        </>
+                      );
+                    }
+                  })()}
                 </>
               );
             }
@@ -469,7 +523,7 @@ const User: React.FC = _ => {
   return (
     <>
       <AppBar />
-      <div style={{ height: 56 }} className={classes.fixHeight}></div>
+      <div style={{ height: appBarHeight }} className={classes.fixHeight} />
       {body}
       {dialogElement}
     </>

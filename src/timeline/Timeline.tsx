@@ -1,16 +1,15 @@
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
+import clsx from 'clsx';
 
 import { TimelinePostInfo } from '../data/timeline';
 
 import TimelineItem from './TimelineItem';
-import clsx from 'clsx';
 
 const useStyles = makeStyles((_: Theme) => ({
   container: {
     display: 'flex',
-    flexDirection: 'column',
-    overflowY: 'auto'
+    flexDirection: 'column'
   }
 }));
 
