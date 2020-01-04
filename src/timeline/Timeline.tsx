@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
 
@@ -21,6 +21,10 @@ export interface TimelineProps {
 const Timeline: React.FC<TimelineProps> = props => {
   const classes = useStyles();
 
+  const [indexShowDeleteButton, setIndexShowDeleteButton] = useState<number>(
+    -1
+  );
+
   const posts = props.posts;
 
   return (
@@ -38,6 +42,14 @@ const Timeline: React.FC<TimelineProps> = props => {
               post={post}
               key={post.id}
               current={length - 1 === i}
+              showDeleteButton={indexShowDeleteButton === i}
+              onClick={() => {
+                if (indexShowDeleteButton === i) {
+                  setIndexShowDeleteButton(-1);
+                } else {
+                  setIndexShowDeleteButton(i);
+                }
+              }}
             />
           );
         });

@@ -1,5 +1,12 @@
 import React from 'react';
-import { makeStyles, Theme, Typography } from '@material-ui/core';
+import {
+  makeStyles,
+  Theme,
+  Typography,
+  ButtonBase,
+  IconButton,
+  Icon
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import Color from 'color';
@@ -15,7 +22,13 @@ const timelineNodeRadius = '35px';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
+    position: 'relative',
     display: 'flex'
+  },
+  surfaceButton: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%'
   },
   lineArea: {
     display: 'flex',
@@ -108,17 +121,24 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& $lineEnd': {
       background: timelineCurrentColor.string()
     }
+  },
+  deleteButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0
   }
 }));
 
 export interface TimelineItemProps {
   post: TimelinePostInfo;
+  showDeleteButton?: boolean;
   current?: boolean;
+  onClick?: () => void;
 }
 
 const TimelineItem: React.FC<TimelineItemProps> = props => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const current = props.current === true;
 
@@ -144,9 +164,23 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
             src={generateAvatarUrl(props.post.author)}
             className={classes.avatar}
           />
-          <Typography className={classes.trueContent} variant="body1">{props.post.content}</Typography>
+          <Typography className={classes.trueContent} variant="body1">
+            {props.post.content}
+          </Typography>
         </div>
       </div>
+      <ButtonBase
+        TouchRippleProps={{ style: { zIndex: -5 } }}
+        classes={{ root: classes.surfaceButton }}
+        onClick={props.onClick}
+      />
+      {props.showDeleteButton ? (
+        <IconButton classes={{ root: classes.deleteButton }}>
+          <Icon>delete</Icon>
+        </IconButton>
+      ) : (
+        false
+      )}
     </div>
   );
 };
