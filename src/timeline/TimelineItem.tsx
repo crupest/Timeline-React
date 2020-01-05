@@ -28,7 +28,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   surfaceButton: {
     position: 'absolute',
     width: '100%',
-    height: '100%'
+    height: '100%',
+    cursor: 'default'
   },
   lineArea: {
     display: 'flex',
