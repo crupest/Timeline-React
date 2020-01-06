@@ -6,6 +6,10 @@ import { TimelinePostInfo } from '../data/timeline';
 
 import TimelineItem from './TimelineItem';
 
+export interface TimelinePostInfoEx extends TimelinePostInfo {
+  deletable: boolean;
+}
+
 const useStyles = makeStyles((_: Theme) => ({
   container: {
     display: 'flex',
@@ -15,7 +19,8 @@ const useStyles = makeStyles((_: Theme) => ({
 
 export interface TimelineProps {
   className?: string;
-  posts: TimelinePostInfo[];
+  posts: TimelinePostInfoEx[];
+  onDelete: (index: number, id: number) => void;
 }
 
 const Timeline: React.FC<TimelineProps> = props => {
@@ -44,11 +49,14 @@ const Timeline: React.FC<TimelineProps> = props => {
               current={length - 1 === i}
               showDeleteButton={indexShowDeleteButton === i}
               onClick={() => {
-                if (indexShowDeleteButton === i) {
-                  setIndexShowDeleteButton(-1);
-                } else {
+                if (indexShowDeleteButton !== i && post.deletable) {
                   setIndexShowDeleteButton(i);
+                } else {
+                  setIndexShowDeleteButton(-1);
                 }
+              }}
+              onDelete={() => {
+                props.onDelete(i, post.id);
               }}
             />
           );

@@ -126,7 +126,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   deleteButton: {
     position: 'absolute',
     right: 0,
-    bottom: 0
+    bottom: 0,
+    color: 'red'
   }
 }));
 
@@ -135,6 +136,7 @@ export interface TimelineItemProps {
   showDeleteButton?: boolean;
   current?: boolean;
   onClick?: () => void;
+  onDelete?: () => void;
 }
 
 const TimelineItem: React.FC<TimelineItemProps> = props => {
@@ -176,7 +178,10 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
         onClick={props.onClick}
       />
       {props.showDeleteButton ? (
-        <IconButton classes={{ root: classes.deleteButton }}>
+        <IconButton
+          classes={{ root: classes.deleteButton }}
+          onClick={props.onDelete}
+        >
           <Icon>delete</Icon>
         </IconButton>
       ) : (

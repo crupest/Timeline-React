@@ -81,6 +81,14 @@ export function canPost(
   return false;
 }
 
+export function canDelete(
+  username: string | null | undefined,
+  timelineOwner: string,
+  postAuthor: string
+): boolean {
+  return username === timelineOwner || username === postAuthor;
+}
+
 interface RawCreatePostRequest {
   content: string;
   time?: string;
@@ -121,4 +129,21 @@ export async function createPersonalTimelinePost(
     content: request.content,
     time: new Date(body.time)
   };
+}
+
+interface TimelineDeleteRequest {
+  id: number;
+}
+
+export async function deletePersonalTimelinePost(
+  username: string,
+  id: number,
+  token: string
+): Promise<void> {
+  await axios.post(
+    `${apiBaseUrl}/users/${username}/timeline/postop/delete?token=${token}`,
+    {
+      id
+    } as TimelineDeleteRequest
+  );
 }

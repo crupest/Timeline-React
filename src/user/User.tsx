@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams } from 'react-router';
 import {
+  Button,
   CircularProgress,
   Typography,
   Card,
@@ -11,7 +12,8 @@ import {
   MenuList,
   MenuItem,
   Theme,
-  useTheme
+  useTheme,
+  Snackbar
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import axios, { AxiosError } from 'axios';
@@ -29,20 +31,21 @@ import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
   BaseTimelineInfo,
   fetchPersonalTimeline,
-  TimelinePostInfo,
   canSee,
   fetchPersonalTimelinePosts,
   canPost,
-  createPersonalTimelinePost
+  createPersonalTimelinePost,
+  canDelete,
+  deletePersonalTimelinePost
 } from '../data/timeline';
+import TimelinePostEdit from '../timeline/TimelinePostEdit';
 
 import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
 import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
-import Timeline from '../timeline/Timeline';
+import Timeline, { TimelinePostInfoEx } from '../timeline/Timeline';
 import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 import ChangeAvatarDialog from './ChangeAvatarDialog';
-import TimelinePostEdit from '../timeline/TimelinePostEdit';
 
 type EditItem = 'nickname' | 'avatar' | 'timelineproperty';
 
@@ -219,7 +222,7 @@ const User: React.FC = _ => {
 
   interface TimelineStateDone {
     type: 'done';
-    data: TimelinePostInfo[];
+    data: TimelinePostInfoEx[];
   }
 
   type TimelineState =
@@ -254,7 +257,14 @@ const User: React.FC = _ => {
                 if (subscribe) {
                   setTimelineState({
                     type: 'done',
-                    data: data
+                    data: data.map(post => ({
+                      ...post,
+                      deletable: canDelete(
+                        user && user.username,
+                        username,
+                        post.author
+                      )
+                    }))
                   });
                 }
               },
@@ -312,6 +322,8 @@ const User: React.FC = _ => {
       });
     }
   }, [timelineState]);
+
+  const [snackBar, setSnackBar] = useState<string | null>(null);
 
   let body: React.ReactElement;
   let dialogElement: React.ReactElement | undefined;
@@ -480,6 +492,25 @@ const User: React.FC = _ => {
                     className={classes.timeline}
                     key={avatarKey}
                     posts={timelineState.data}
+                    onDelete={(index, id) => {
+                      deletePersonalTimelinePost(
+                        username,
+                        id,
+                        user!.token
+                      ).then(
+                        _ => {
+                          const newData = timelineState.data.slice();
+                          newData.splice(index, 1);
+                          setTimelineState({
+                            type: 'done',
+                            data: newData
+                          });
+                        },
+                        error => {
+                          setSnackBar('Failed to delete post.'); // TODO: Translation
+                        }
+                      );
+                    }}
                   />
                   {(() => {
                     if (timelinePostable) {
@@ -500,7 +531,10 @@ const User: React.FC = _ => {
                               );
                               const posts = timelineState.data;
                               const newPostList = posts.slice();
-                              newPostList.push(newPost);
+                              newPostList.push({
+                                ...newPost,
+                                deletable: true
+                              });
                               setTimelineState({
                                 type: 'done',
                                 data: newPostList
@@ -532,6 +566,26 @@ const User: React.FC = _ => {
       <div style={{ height: appBarHeight }} className={classes.fixHeight} />
       {body}
       {dialogElement}
+      {snackBar && (
+        <Snackbar
+          open
+          autoHideDuration={3000}
+          onClose={() => {
+            setSnackBar(null);
+          }}
+          message={snackBar}
+          action={
+            <Button
+              onClick={() => {
+                setSnackBar(null);
+              }}
+              color="secondary"
+            >
+              ok!
+            </Button> // TODO! Translation
+          }
+        />
+      )}
     </>
   );
 };
