@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   makeStyles,
   Theme,
@@ -72,36 +72,18 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
     setErrorSnackbar(null);
   };
 
-  let containerElement: HTMLDivElement | null = null;
-  let height = 0;
-
-  const checkHeight = (): void => {
-    if (containerElement == null) {
-      return;
-    }
-    const newHeight = containerElement.clientHeight;
-    if (height === newHeight) {
-      return;
-    } else {
-      height = newHeight;
-      if (props.onHeightChange != null) {
-        props.onHeightChange(newHeight);
-      }
-    }
-  };
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      checkHeight();
-    });
-  }, [text, containerElement]);
+    if (props.onHeightChange) {
+      props.onHeightChange(containerRef.current!.clientHeight);
+    }
+  });
 
   return (
     <div
       className={clsx(classes.container, props.className)}
-      ref={el => {
-        containerElement = el;
-      }}
+      ref={containerRef}
     >
       <TextField
         fullWidth

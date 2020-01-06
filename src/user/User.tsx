@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams } from 'react-router';
 import {
   CircularProgress,
@@ -35,8 +35,6 @@ import {
   canPost,
   createPersonalTimelinePost
 } from '../data/timeline';
-
-import { useHeightBinding } from '../common/layout';
 
 import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
@@ -292,9 +290,17 @@ const User: React.FC = _ => {
   }, [username]);
 
   const theme = useTheme();
-  const [cardRefCallback, cardSpaceRefCallback] = useHeightBinding(
-    height => height + theme.spacing(cardMarginRatio)
-  );
+
+  const cardRef = useRef<HTMLElement>(null);
+  const cardSpaceRef = useRef<HTMLDivElement>(null);
+  const bottomSpaceRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (cardSpaceRef.current && cardRef.current) {
+      cardSpaceRef.current.style.height =
+        cardRef.current.clientHeight + theme.spacing(cardMarginRatio) + 'px';
+    }
+  });
 
   useEffect(() => {
     if (timelineState.type === 'done') {
@@ -410,7 +416,7 @@ const User: React.FC = _ => {
             return (
               <>
                 <Card
-                  ref={cardRefCallback}
+                  ref={cardRef}
                   classes={{
                     root: clsx(classes.userInfoCard)
                   }}
@@ -456,7 +462,7 @@ const User: React.FC = _ => {
                     undefined
                   )}
                 </Card>
-                <div ref={cardSpaceRefCallback} className={classes.fixHeight} />
+                <div ref={cardSpaceRef} className={classes.fixHeight} />
               </>
             );
           })()}
@@ -477,11 +483,10 @@ const User: React.FC = _ => {
                   />
                   {(() => {
                     if (timelinePostable) {
-                      let bottomSpaceElement: HTMLElement | null = null;
                       return (
                         <>
                           <div
-                            ref={el => (bottomSpaceElement = el)}
+                            ref={bottomSpaceRef}
                             className={classes.fixHeight}
                           />
                           <TimelinePostEdit
@@ -502,8 +507,9 @@ const User: React.FC = _ => {
                               });
                             }}
                             onHeightChange={height => {
-                              if (bottomSpaceElement != null) {
-                                bottomSpaceElement.style.height = height + 'px';
+                              if (bottomSpaceRef.current) {
+                                bottomSpaceRef.current.style.height =
+                                  height + 'px';
                               }
                             }}
                           />
