@@ -51,7 +51,7 @@ export async function fetchPersonalTimelinePosts(
 }
 
 export function canSee(
-  username: string | null,
+  username: string | null | undefined,
   timeline: BaseTimelineInfo
 ): boolean {
   const { visibility, members } = timeline;

@@ -10,18 +10,21 @@ export interface TimelinePostInfoEx extends TimelinePostInfo {
   deletable: boolean;
 }
 
+export type TimelineDeleteCallback = (index: number, id: number) => void;
+
+export interface TimelineProps {
+  className?: string;
+  avatarKey?: number | string;
+  posts: TimelinePostInfoEx[];
+  onDelete: TimelineDeleteCallback;
+}
+
 const useStyles = makeStyles((_: Theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column'
   }
 }));
-
-export interface TimelineProps {
-  className?: string;
-  posts: TimelinePostInfoEx[];
-  onDelete: (index: number, id: number) => void;
-}
 
 const Timeline: React.FC<TimelineProps> = props => {
   const classes = useStyles();
@@ -45,6 +48,7 @@ const Timeline: React.FC<TimelineProps> = props => {
           return (
             <TimelineItem
               post={post}
+              avatarKey={props.avatarKey}
               key={post.id}
               current={length - 1 === i}
               showDeleteButton={indexShowDeleteButton === i}

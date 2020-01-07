@@ -1,24 +1,15 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import {
   Button,
-  CircularProgress,
-  Typography,
-  Card,
-  IconButton,
-  Icon,
   Dialog,
   DialogTitle,
   MenuList,
   MenuItem,
-  Theme,
-  useTheme,
   Snackbar
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import axios, { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
 
 import { apiBaseUrl } from '../config';
 import {
@@ -29,7 +20,6 @@ import {
 } from '../data/user';
 import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
-  BaseTimelineInfo,
   fetchPersonalTimeline,
   canSee,
   fetchPersonalTimelinePosts,
@@ -38,14 +28,14 @@ import {
   canDelete,
   deletePersonalTimelinePost
 } from '../data/timeline';
-import TimelinePostEdit from '../timeline/TimelinePostEdit';
 
-import AppBar from '../common/AppBar';
 import OperationDialog from '../common/OperationDialog';
-import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
-import Timeline, { TimelinePostInfoEx } from '../timeline/Timeline';
 import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 import ChangeAvatarDialog from './ChangeAvatarDialog';
+import UserPage, {
+  UserPageUserInfoBase,
+  UserPageTimelineBase
+} from './UserPage';
 
 type EditItem = 'nickname' | 'avatar' | 'timelineproperty';
 
@@ -133,68 +123,11 @@ const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
   );
 };
 
-const appBarHeight = 56;
-const cardMarginRatio = 1;
-
-const useStyles = makeStyles((theme: Theme) => ({
-  fixHeight: {
-    flexGrow: 0,
-    flexShrink: 0
-  },
-  loadingBody: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  errorBody: {
-    textAlign: 'center'
-  },
-  avatar: {
-    height: 80
-  },
-  userInfoCard: {
-    display: 'flex',
-    margin: theme.spacing(cardMarginRatio),
-    width: `calc(100% - ${theme.spacing(cardMarginRatio) * 2}px)`,
-    boxSizing: 'border-box',
-    position: 'fixed',
-    top: appBarHeight,
-    zIndex: 1000
-  },
-  userInfoBody: {
-    padding: theme.spacing(1)
-  },
-  userInfoNickname: {
-    display: 'inline-block'
-  },
-  userInfoUsername: {
-    display: 'inline-block',
-    padding: `0 ${theme.spacing(1)}px`
-  },
-  userInfoVisibilityIcon: {
-    verticalAlign: 'text-top'
-  },
-  userInfoEditButton: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0
-  },
-  timeline: {
-    flex: '1 1 auto'
-  }
-}));
-
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
-  const classes = useStyles();
-  const { t } = useTranslation();
 
   const user = useUser();
 
-  const editable = user && (user.username === username || user.administrator);
-
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [dialog, setDialog] = useState<
     | null
     | 'editselect'
@@ -202,37 +135,10 @@ const User: React.FC = _ => {
     | 'changeavatar'
     | 'changetimelineproperty'
   >(null);
-  const [nickname, setNickname] = useState<string>();
-  const [timelineInfo, setTimelineInfo] = useState<BaseTimelineInfo>();
+  const [userInfo, setUserInfo] = useState<UserPageUserInfoBase>();
+  const [timeline, setTimeline] = useState<UserPageTimelineBase>();
+  const [error, setError] = useState<string | undefined>(undefined);
   const [avatarKey, setAvatarKey] = useState<number>(0);
-
-  const timelinePostable = useMemo<boolean>(
-    () => canPost(user && user.username, timelineInfo),
-    [user, timelineInfo]
-  );
-
-  interface TimelineStateLoading {
-    type: 'load';
-  }
-
-  interface TimelineStateError {
-    type: 'error';
-    error: string;
-  }
-
-  interface TimelineStateDone {
-    type: 'done';
-    data: TimelinePostInfoEx[];
-  }
-
-  type TimelineState =
-    | TimelineStateLoading
-    | TimelineStateError
-    | TimelineStateDone;
-
-  const [timelineState, setTimelineState] = useState<TimelineState>({
-    type: 'load'
-  });
 
   useEffect(() => {
     let subscribe = true;
@@ -243,37 +149,38 @@ const User: React.FC = _ => {
       ([res1, res2]) => {
         if (subscribe) {
           const ti = res1.data;
-          setTimelineInfo(ti);
-          setNickname(res2.data);
-          setLoading(false);
-          if (!canSee(user != null ? user.username : null, ti)) {
-            setTimelineState({
-              type: 'error',
-              error: t('timeline.messageCantSee')
-            });
+          if (!canSee(user?.username, ti)) {
+            setError('timeline.messageCantSee');
           } else {
-            fetchPersonalTimelinePosts(username, user && user.token).then(
+            setUserInfo({
+              username: username,
+              nickname: res2.data,
+              avatarUrl: generateAvatarUrl(username),
+              description: ti.description,
+              timelineVisibility: ti.visibility,
+              editable:
+                user != null &&
+                (user.username === username || user.administrator)
+            });
+            fetchPersonalTimelinePosts(username, user?.token).then(
               data => {
                 if (subscribe) {
-                  setTimelineState({
-                    type: 'done',
-                    data: data.map(post => ({
+                  setTimeline({
+                    posts: data.map(post => ({
                       ...post,
                       deletable: canDelete(
                         user && user.username,
                         username,
                         post.author
                       )
-                    }))
+                    })),
+                    postable: canPost(user?.username, ti)
                   });
                 }
               },
               error => {
                 if (subscribe) {
-                  setTimelineState({
-                    type: 'error',
-                    error: 'Network error??????' //TODO! improve this error message
-                  });
+                  setError(error.toString());
                 }
               }
             );
@@ -290,7 +197,6 @@ const User: React.FC = _ => {
           } else {
             setError(error.toString());
           }
-          setLoading(false);
         }
       }
     );
@@ -299,33 +205,17 @@ const User: React.FC = _ => {
     };
   }, [username]);
 
-  const theme = useTheme();
-
-  const cardRef = useRef<HTMLElement>(null);
-  const cardSpaceRef = useRef<HTMLDivElement>(null);
-  const bottomSpaceRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    if (cardSpaceRef.current && cardRef.current) {
-      cardSpaceRef.current.style.height =
-        cardRef.current.clientHeight + theme.spacing(cardMarginRatio) + 'px';
+    if (timeline != null) {
+      window.scrollTo(
+        0,
+        document.body.scrollHeight || document.documentElement.scrollHeight
+      );
     }
-  });
-
-  useEffect(() => {
-    if (timelineState.type === 'done') {
-      setTimeout(() => {
-        window.scrollTo(
-          0,
-          document.body.scrollHeight || document.documentElement.scrollHeight
-        );
-      });
-    }
-  }, [timelineState]);
+  }, [timeline]);
 
   const [snackBar, setSnackBar] = useState<string | null>(null);
 
-  let body: React.ReactElement;
   let dialogElement: React.ReactElement | undefined;
 
   const closeDialogHandler = (): void => {
@@ -339,7 +229,10 @@ const User: React.FC = _ => {
         user={user!}
         close={closeDialogHandler}
         onChanged={newNickname => {
-          setNickname(newNickname);
+          setUserInfo({
+            ...userInfo!,
+            nickname: newNickname
+          });
         }}
       />
     );
@@ -366,8 +259,8 @@ const User: React.FC = _ => {
       <TimelinePropertyChangeDialog
         open
         close={closeDialogHandler}
-        description={timelineInfo!.description}
-        visibility={timelineInfo!.visibility}
+        description={userInfo!.description}
+        visibility={userInfo!.timelineVisibility}
         process={async req => {
           await axios.post(
             `${apiBaseUrl}/users/${username}/timeline/op/property?token=${
@@ -375,14 +268,14 @@ const User: React.FC = _ => {
             }`,
             req
           );
-          const newTimelineInfo: BaseTimelineInfo = { ...timelineInfo! };
+          const newUserInfo: UserPageUserInfoBase = { ...userInfo! };
           if (req.visibility != null) {
-            newTimelineInfo.visibility = req.visibility;
+            newUserInfo.timelineVisibility = req.visibility;
           }
           if (req.description != null) {
-            newTimelineInfo.description = req.description;
+            newUserInfo.description = req.description;
           }
-          setTimelineInfo(newTimelineInfo);
+          setUserInfo(newUserInfo);
         }}
       />
     );
@@ -407,164 +300,63 @@ const User: React.FC = _ => {
     );
   }
 
-  if (loading) {
-    body = (
-      <div className={classes.loadingBody}>
-        <CircularProgress />
-        <div>Loading...</div>
-      </div>
-    );
-  } else {
-    if (error) {
-      body = (
-        <Typography variant="h5" color="error" className={classes.errorBody}>
-          An error occured: {error}
-        </Typography>
-      );
-    } else {
-      body = (
-        <>
-          {(() => {
-            return (
-              <>
-                <Card
-                  ref={cardRef}
-                  classes={{
-                    root: clsx(classes.userInfoCard)
-                  }}
-                >
-                  <img
-                    key={avatarKey}
-                    className={classes.avatar}
-                    src={generateAvatarUrl(username)}
-                  />
-                  <div className={classes.userInfoBody}>
-                    <Typography
-                      variant="h6"
-                      className={classes.userInfoNickname}
-                    >
-                      {nickname}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      color="textSecondary"
-                      className={classes.userInfoUsername}
-                    >
-                      @{username}
-                    </Typography>
-                    <TimelineVisibilityIcon
-                      className={classes.userInfoVisibilityIcon}
-                      visibility={timelineInfo!.visibility}
-                    />
-                    <Typography variant="body2">
-                      {timelineInfo!.description}
-                    </Typography>
-                  </div>
-                  {editable ? (
-                    <IconButton
-                      color="secondary"
-                      classes={{ root: classes.userInfoEditButton }}
-                      onClick={() => {
-                        setDialog('editselect');
-                      }}
-                    >
-                      <Icon>edit</Icon>
-                    </IconButton>
-                  ) : (
-                    undefined
-                  )}
-                </Card>
-                <div ref={cardSpaceRef} className={classes.fixHeight} />
-              </>
-            );
-          })()}
-          {(() => {
-            if (timelineState.type === 'load') {
-              return <CircularProgress />;
-            } else if (timelineState.type === 'error') {
-              return (
-                <Typography color="error">{timelineState.error}</Typography>
-              );
-            } else {
-              return (
-                <>
-                  <Timeline
-                    className={classes.timeline}
-                    key={avatarKey}
-                    posts={timelineState.data}
-                    onDelete={(index, id) => {
-                      deletePersonalTimelinePost(
-                        username,
-                        id,
-                        user!.token
-                      ).then(
-                        _ => {
-                          const newData = timelineState.data.slice();
-                          newData.splice(index, 1);
-                          setTimelineState({
-                            type: 'done',
-                            data: newData
-                          });
-                        },
-                        error => {
-                          setSnackBar('Failed to delete post.'); // TODO: Translation
-                        }
-                      );
-                    }}
-                  />
-                  {(() => {
-                    if (timelinePostable) {
-                      return (
-                        <>
-                          <div
-                            ref={bottomSpaceRef}
-                            className={classes.fixHeight}
-                          />
-                          <TimelinePostEdit
-                            onPost={async content => {
-                              const newPost = await createPersonalTimelinePost(
-                                username,
-                                user!,
-                                {
-                                  content: content
-                                }
-                              );
-                              const posts = timelineState.data;
-                              const newPostList = posts.slice();
-                              newPostList.push({
-                                ...newPost,
-                                deletable: true
-                              });
-                              setTimelineState({
-                                type: 'done',
-                                data: newPostList
-                              });
-                            }}
-                            onHeightChange={height => {
-                              if (bottomSpaceRef.current) {
-                                bottomSpaceRef.current.style.height =
-                                  height + 'px';
-                              }
-                            }}
-                          />
-                        </>
-                      );
-                    }
-                  })()}
-                </>
-              );
-            }
-          })()}
-        </>
-      );
-    }
-  }
-
   return (
     <>
-      <AppBar />
-      <div style={{ height: appBarHeight }} className={classes.fixHeight} />
-      {body}
+      <UserPage
+        avatarKey={avatarKey}
+        error={error}
+        userInfo={
+          userInfo != null
+            ? {
+                ...userInfo,
+                onEdit: () => {
+                  setDialog('editselect');
+                }
+              }
+            : undefined
+        }
+        timeline={
+          timeline != null
+            ? {
+                ...timeline,
+                onDelete: (index, id) => {
+                  deletePersonalTimelinePost(username, id, user!.token).then(
+                    _ => {
+                      const newPosts = timeline.posts.slice();
+                      newPosts.splice(index, 1);
+                      setTimeline({
+                        ...timeline,
+                        posts: newPosts
+                      });
+                    },
+                    () => {
+                      setSnackBar('Failed to delete post.'); // TODO: Translation
+                    }
+                  );
+                },
+                onPost: async content => {
+                  const newPost = await createPersonalTimelinePost(
+                    username,
+                    user!,
+                    {
+                      content: content
+                    }
+                  );
+                  const posts = timeline.posts;
+                  const newPostList = posts.slice();
+                  newPostList.push({
+                    ...newPost,
+                    deletable: true
+                  });
+                  setTimeline({
+                    ...timeline,
+                    posts: newPostList
+                  });
+                }
+              }
+            : undefined
+        }
+      />
       {dialogElement}
       {snackBar && (
         <Snackbar

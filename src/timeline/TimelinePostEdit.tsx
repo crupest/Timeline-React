@@ -12,9 +12,11 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 
+export type TimelinePostSendCallback = (content: string) => Promise<void>;
+
 export interface TimelinePostEditProps {
   className?: string;
-  onPost: (content: string) => Promise<void>;
+  onPost: TimelinePostSendCallback;
   onHeightChange?: (height: number) => void;
 }
 

@@ -133,6 +133,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface TimelineItemProps {
   post: TimelinePostInfo;
+  avatarKey?: string | number;
   showDeleteButton?: boolean;
   current?: boolean;
   onClick?: () => void;
@@ -164,6 +165,7 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
         </div>
         <div className={classes.contentAreaBody}>
           <img
+            key={props.avatarKey}
             src={generateAvatarUrl(props.post.author)}
             className={classes.avatar}
           />
