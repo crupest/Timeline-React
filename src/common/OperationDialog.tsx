@@ -18,17 +18,14 @@ import {
   MenuItem,
   ListItemIcon
 } from '@material-ui/core';
-import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { TextFieldProps } from '@material-ui/core/TextField';
 
 export interface OperationTextInputInfo {
   type: 'text';
   label: string;
-  password?: boolean;
   initValue?: string;
-  variant?: TextFieldProps['variant'];
-  multiline?: boolean;
+  textFieldProps?: TextFieldProps;
 }
 
 export interface OperationBoolInputInfo {
@@ -55,8 +52,22 @@ export type OperationInputInfo =
   | OperationBoolInputInfo
   | OperationSelectInputInfo;
 
-export interface OperationInputErrorInfo {
-  [index: number]: ((t: TFunction) => string) | null | undefined;
+interface OperationResult {
+  type: 'success' | 'failure';
+  data: unknown;
+}
+
+interface OperationDialogProps {
+  open: boolean;
+  close: () => void;
+  title: React.ReactNode;
+  titleColor: 'default' | 'dangerous' | 'create';
+  inputScheme?: OperationInputInfo[];
+  inputPrompt?: React.ReactNode;
+  onConfirm: (inputs: (string | boolean)[]) => Promise<unknown>;
+  processPrompt?: () => React.ReactNode;
+  successPrompt?: (data: unknown) => React.ReactNode;
+  failurePrompt?: (error: unknown) => React.ReactNode;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -87,37 +98,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-interface OperationResult {
-  type: 'success' | 'failure';
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any;
-}
-
-interface OperationDialogProps {
-  title: React.ReactNode;
-  titleColor: 'default' | 'dangerous' | 'create';
-  inputPrompt?: React.ReactNode;
-  inputScheme?: OperationInputInfo[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onConfirm: (inputs: (string | boolean)[]) => Promise<any>;
-  processPrompt?: () => React.ReactNode;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  successPrompt?: (value: any) => React.ReactNode;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  failurePrompt?: (error: any) => React.ReactNode;
-  open: boolean;
-  close: () => void;
-  validator?: (
-    inputs: (string | boolean)[],
-    index?: number
-  ) => OperationInputErrorInfo | void;
-}
-
 const OperationDialog: React.FC<OperationDialogProps> = props => {
   const inputScheme = props.inputScheme;
-  if (!inputScheme) {
+  if (inputScheme == null) {
     throw new Error(
-      'InputScheme of operation dialog is falsy. Use empty array if no input needed, which is the default value.'
+      'InputScheme of operation dialog is null or undefined. Use empty array if no input needed, which is the default value.'
     );
   }
 
@@ -148,12 +133,45 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   });
   const isProcessing = step === 'process';
 
+  const onConfirm = (): void => {
+    setStep('process');
+    props.onConfirm(values).then(
+      d => {
+        setStep({
+          type: 'success',
+          data: d
+        });
+      },
+      e => {
+        setStep({
+          type: 'failure',
+          data: e
+        });
+      }
+    );
+  };
+
   let body: React.ReactNode;
   if (step === 'input') {
     let inputPrompt = props.inputPrompt;
-    if (typeof inputPrompt === 'string' || React.isValidElement(inputPrompt)) {
+    if (typeof inputPrompt === 'string') {
       inputPrompt = <Typography variant="subtitle2">{inputPrompt}</Typography>;
     }
+
+    const canConfirm: boolean = (() => {
+      if (props.inputScheme != null) {
+        const inputScheme = props.inputScheme;
+        for (let i = 0; i < inputScheme.length; i++) {
+          if (inputScheme[i].type === 'text' && inputError[i] != null) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        return true;
+      }
+    })();
+
     body = (
       <>
         <DialogContent classes={{ root: classes.content }}>
@@ -178,30 +196,28 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
             };
 
             const value = values[index];
-            const error = inputError[index];
+            const error: string | undefined = (e => {
+              if (typeof e === 'string') {
+                return t(e);
+              } else {
+                return undefined;
+              }
+            })(inputError[index]);
 
             if (item.type === 'text') {
-              const variant = item.variant || 'standard';
               return (
-                // I don't known what's wrong with typescript.
-                // With any way I can come up with, I can't get this component pass type check.
-                // The only lucky thing is that I find a way to disable it.
-                // eslint-disable-next-line
-                // @ts-ignore
                 <TextField
                   key={index}
-                  variant={variant}
-                  classes={{root: classes.inputText}}
+                  classes={{ root: classes.inputText }}
                   fullWidth
-                  multiline={item.multiline}
                   label={item.label}
-                  value={values[index]}
-                  type={item.password === true ? 'password' : undefined}
+                  value={value}
                   error={error != null}
-                  helperText={error && error(t)}
+                  helperText={error}
                   onChange={e => {
                     setValue(e.target.value);
                   }}
+                  {...item.textFieldProps}
                 />
               );
             } else if (item.type === 'bool') {
@@ -243,44 +259,9 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
           })}
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.close}>Cancel</Button>
-          <Button
-            color="secondary"
-            disabled={
-              props.inputScheme
-                ? (() => {
-                    const inputScheme = props.inputScheme;
-                    for (let i = 0; i < inputScheme.length; i++) {
-                      if (
-                        inputScheme[i].type === 'text' &&
-                        inputError[i] != null
-                      ) {
-                        return true;
-                      }
-                    }
-                    return false;
-                  })()
-                : false
-            }
-            onClick={() => {
-              setStep('process');
-              props.onConfirm(values).then(
-                v => {
-                  setStep({
-                    type: 'success',
-                    value: v
-                  });
-                },
-                e => {
-                  setStep({
-                    type: 'failure',
-                    value: e
-                  });
-                }
-              );
-            }}
-          >
-            Confirm
+          <Button onClick={props.close}>{t('operationDialog.cancel')}</Button>
+          <Button color="primary" disabled={!canConfirm} onClick={onConfirm}>
+            {t('operationDialog.confirm')}
           </Button>
         </DialogActions>
       </>
@@ -295,11 +276,11 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
     let content: React.ReactNode;
     const result = step;
     if (result.type === 'success') {
-      content = props.successPrompt && props.successPrompt(result.value);
+      content = props.successPrompt && props.successPrompt(result.data);
       if (typeof content === 'string' || React.isValidElement(content))
         content = <Typography variant="body1">{content}</Typography>;
     } else {
-      content = props.failurePrompt && props.failurePrompt(result.value);
+      content = props.failurePrompt && props.failurePrompt(result.data);
       if (typeof content === 'string' || React.isValidElement(content))
         content = (
           <Typography color="error" variant="body1">
@@ -314,7 +295,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
         </DialogContent>
         <DialogActions>
           <Button color="secondary" onClick={props.close}>
-            Ok
+            {t('operationDialog.ok')}
           </Button>
         </DialogActions>
       </>

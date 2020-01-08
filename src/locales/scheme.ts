@@ -4,6 +4,11 @@ export default interface TranslationResource {
     guide: string;
     description: string;
   };
+  operationDialog: {
+    confirm: string;
+    cancel: string;
+    ok: string;
+  };
   timeline: {
     messageCantSee: string;
     visibility: {
