@@ -69,45 +69,49 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
         {
           type: 'text',
           label: t('settings.dialogChangePassword.inputOldPassword'),
-          password: true
+          textFieldProps: {
+            type: 'password'
+          },
+          validator: v =>
+            v === ''
+              ? 'settings.dialogChangePassword.errorEmptyOldPassword'
+              : null
         },
         {
           type: 'text',
           label: t('settings.dialogChangePassword.inputNewPassword'),
-          password: true
+          textFieldProps: {
+            type: 'password'
+          },
+          validator: (v, values) => {
+            const error: OperationInputErrorInfo = {};
+            error[1] =
+              v === ''
+                ? 'settings.dialogChangePassword.errorEmptyNewPassword'
+                : null;
+            if (v === values[2]) {
+              error[2] = null;
+            } else {
+              if (values[2] !== '') {
+                error[2] = 'settings.dialogChangePassword.errorRetypeNotMatch';
+              }
+            }
+            return error;
+          }
         },
         {
           type: 'text',
           label: t('settings.dialogChangePassword.inputRetypeNewPassword'),
-          password: true
+          textFieldProps: {
+            type: 'password'
+          },
+          validator: (v, values) =>
+            v !== values[1]
+              ? 'settings.dialogChangePassword.errorRetypeNotMatch'
+              : null
         }
       ]}
-      validator={(inputs, index) => {
-        const result: OperationInputErrorInfo = {};
-        if (index == null || index === 0) {
-          if (inputs[0]) {
-            result[0] = null;
-          } else {
-            result[0] = t =>
-              t('settings.dialogChangePassword.errorEmptyOldPassword');
-          }
-        }
-        if (index == null || index === 1 || index === 2) {
-          result[1] = null;
-          result[2] = null;
-          if (inputs[1] !== inputs[2]) {
-            result[1] = () => '';
-            result[2] = t =>
-              t('settings.dialogChangePassword.errorRetypeNotMatch');
-          }
-          if (!inputs[1]) {
-            result[1] = t =>
-              t('settings.dialogChangePassword.errorEmptyNewPassword');
-          }
-        }
-        return result;
-      }}
-      onConfirm={async ([oldPassword, newPassword]) => {
+      onProcess={async ([oldPassword, newPassword]) => {
         await changePassword(
           oldPassword as string,
           newPassword as string,

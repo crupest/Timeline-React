@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const UserPage: React.FunctionComponent<UserPageProps> = props => {
+const UserPage: React.FC<UserPageProps> = props => {
   const classes = useStyles();
   const theme = useTheme();
   const { t } = useTranslation();

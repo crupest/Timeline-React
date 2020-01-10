@@ -8,6 +8,9 @@ export default interface TranslationResource {
     confirm: string;
     cancel: string;
     ok: string;
+    processing: string;
+    success: string;
+    error:string;
   };
   timeline: {
     messageCantSee: string;

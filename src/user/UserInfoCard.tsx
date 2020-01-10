@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const UserInfoCard: React.FunctionComponent<UserInfoCardProps> = props => {
+const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const classes = useStyles();
   const cardRef = useRef<HTMLElement>();
 

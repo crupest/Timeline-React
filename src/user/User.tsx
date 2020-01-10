@@ -110,7 +110,7 @@ const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
       inputScheme={[
         { type: 'text', label: t('userPage.dialogChangeNickname.inputLabel') }
       ]}
-      onConfirm={async ([newNickname]) => {
+      onProcess={async ([newNickname]) => {
         await changeNickname(
           props.user.username,
           newNickname as string,

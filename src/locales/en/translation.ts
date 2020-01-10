@@ -10,7 +10,10 @@ const translation: TranslationResource = {
   operationDialog: {
     confirm: 'Confirm',
     cancel: 'Cancel',
-    ok: 'OK!'
+    ok: 'OK!',
+    processing: 'Processing...',
+    success: 'Success!',
+    error: 'An error occured.'
   },
   timeline: {
     messageCantSee: 'Sorry, you are not allowed to see this timeline.😅',

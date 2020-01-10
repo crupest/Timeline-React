@@ -183,7 +183,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = props => {
         { type: 'text', label: 'Password' },
         { type: 'bool', label: 'Administrator' }
       ]}
-      onConfirm={([username, password, administrator]) =>
+      onProcess={([username, password, administrator]) =>
         props.process({
           username: username as string,
           password: password as string,
@@ -212,14 +212,14 @@ const UserDeleteDialog: React.FC<UserDeleteDialogProps> = props => {
       close={props.close}
       title="Dangerous"
       titleColor="dangerous"
-      inputPrompt={
+      inputPrompt={() => (
         <>
           {'You are deleting user '}
           <UsernameLabel>{props.username}</UsernameLabel>
           {' !'}
         </>
-      }
-      onConfirm={props.process}
+      )}
+      onProcess={props.process}
     />
   );
 };
@@ -238,15 +238,15 @@ const UserChangeUsernameDialog: React.FC<UserModifyDialogProps<
       close={props.close}
       title="Caution"
       titleColor="dangerous"
-      inputPrompt={
+      inputPrompt={() => (
         <>
           {'You are change the username of user '}
           <UsernameLabel>{props.username}</UsernameLabel>
           {' !'}
         </>
-      }
+      )}
       inputScheme={[{ type: 'text', label: 'New Username' }]}
-      onConfirm={([newUsername]) => {
+      onProcess={([newUsername]) => {
         return props.process(newUsername as string);
       }}
     />
@@ -262,15 +262,15 @@ const UserChangePasswordDialog: React.FC<UserModifyDialogProps<
       close={props.close}
       title="Caution"
       titleColor="dangerous"
-      inputPrompt={
+      inputPrompt={() => (
         <>
           {'You are change the password of user '}
           <UsernameLabel>{props.username}</UsernameLabel>
           {' !'}
         </>
-      }
+      )}
       inputScheme={[{ type: 'text', label: 'New Password' }]}
-      onConfirm={([newPassword]) => {
+      onProcess={([newPassword]) => {
         return props.process(newPassword as string);
       }}
     />
@@ -290,7 +290,7 @@ const UserChangePermissionDialog: React.FC<UserChangePermissionDialogProps> = pr
       close={props.close}
       title="Caution"
       titleColor="dangerous"
-      inputPrompt={
+      inputPrompt={() => (
         <>
           {'You are change user '}
           <UsernameLabel>{props.username}</UsernameLabel>
@@ -300,8 +300,8 @@ const UserChangePermissionDialog: React.FC<UserChangePermissionDialogProps> = pr
           </span>
           {' !'}
         </>
-      }
-      onConfirm={props.process}
+      )}
+      onProcess={props.process}
     />
   );
 };

@@ -38,13 +38,11 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
           type: 'select',
           label: t('timeline.dialogChangeProperty.visibility'),
           options: kTimelineVisibilities.map<OperationSelectInputInfoOption>(
-            v => {
-              return {
-                label: t(labelMap[v]),
-                value: v,
-                icon: <TimelineVisibilityIcon visibility={v} />
-              };
-            }
+            v => ({
+              label: t(labelMap[v]),
+              value: v,
+              icon: <TimelineVisibilityIcon visibility={v} />
+            })
           ),
           initValue: props.visibility
         },
@@ -52,13 +50,12 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
           type: 'text',
           label: t('timeline.dialogChangeProperty.description'),
           initValue: props.description,
-          variant: 'outlined',
-          multiline: true
+          textFieldProps: { variant: 'outlined', multiline: true }
         }
       ]}
       open={props.open}
       close={props.close}
-      onConfirm={async ([newVisibility, newDescription]) => {
+      onProcess={async ([newVisibility, newDescription]) => {
         const req: ChangePropertyRequest = {};
         if (newVisibility !== props.visibility) {
           req.visibility = newVisibility as TimelineVisibility;

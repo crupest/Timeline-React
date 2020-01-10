@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import {
   Dialog,
@@ -21,11 +21,74 @@ import {
 import { useTranslation } from 'react-i18next';
 import { TextFieldProps } from '@material-ui/core/TextField';
 
+const useProcessStyles = makeStyles({
+  processContent: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  processText: {
+    margin: '0 10px'
+  }
+});
+
+const DefaultProcessPrompt: React.FC = _ => {
+  const classes = useProcessStyles();
+  const { t } = useTranslation();
+  return (
+    <div className={classes.processContent}>
+      <CircularProgress />
+      <span className={classes.processText}>
+        {t('operationDialog.processing')}
+      </span>
+    </div>
+  );
+};
+
+interface DefaultErrorPromptProps {
+  error?: string;
+}
+
+const DefaultErrorPrompt: React.FC<DefaultErrorPromptProps> = props => {
+  const { t } = useTranslation();
+
+  let result = (
+    <Typography color="error" variant="body1">
+      {t('operationDialog.error')}
+    </Typography>
+  );
+
+  if (props.error != null) {
+    result = (
+      <>
+        {result}
+        <Typography color="error" variant="body1">
+          {props.error}
+        </Typography>
+      </>
+    );
+  }
+
+  return result;
+};
+
+export type OperationInputOptionalError = undefined | null | string;
+
+export interface OperationInputErrorInfo {
+  [index: number]: OperationInputOptionalError;
+}
+
+export type OperationInputValidator<TValue> = (
+  value: TValue,
+  values: (string | boolean)[]
+) => OperationInputOptionalError | OperationInputErrorInfo;
+
 export interface OperationTextInputInfo {
   type: 'text';
   label: string;
   initValue?: string;
   textFieldProps?: TextFieldProps;
+  validator?: OperationInputValidator<string>;
 }
 
 export interface OperationBoolInputInfo {
@@ -61,10 +124,10 @@ interface OperationDialogProps {
   open: boolean;
   close: () => void;
   title: React.ReactNode;
-  titleColor: 'default' | 'dangerous' | 'create';
+  titleColor?: 'default' | 'dangerous' | 'create';
+  onProcess: (inputs: (string | boolean)[]) => Promise<unknown>;
   inputScheme?: OperationInputInfo[];
-  inputPrompt?: React.ReactNode;
-  onConfirm: (inputs: (string | boolean)[]) => Promise<unknown>;
+  inputPrompt?: string | (() => React.ReactNode);
   processPrompt?: () => React.ReactNode;
   successPrompt?: (data: unknown) => React.ReactNode;
   failurePrompt?: (error: unknown) => React.ReactNode;
@@ -109,33 +172,25 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const initValues = useMemo(() => {
-    return inputScheme.map(i => {
+  type Step = 'input' | 'process' | OperationResult;
+  const [step, setStep] = useState<Step>('input');
+  const [values, setValues] = useState<(boolean | string)[]>(
+    inputScheme.map(i => {
       if (i.type === 'bool') {
-        return i.initValue || false;
+        return i.initValue ?? false;
       } else if (i.type === 'text' || i.type === 'select') {
-        return i.initValue || '';
+        return i.initValue ?? '';
       } else {
         throw new Error('Unknown input scheme.');
       }
-    });
-  }, [inputScheme]);
-
-  type Step = 'input' | 'process' | OperationResult;
-  const [step, setStep] = useState<Step>('input');
-  const [values, setValues] = useState<(boolean | string)[]>(initValues);
-  const [inputError, setInputError] = useState<OperationInputErrorInfo>(() => {
-    if (props.validator) {
-      const result = props.validator(initValues);
-      return result ? result : {};
-    }
-    return {};
-  });
+    })
+  );
+  const [inputError, setInputError] = useState<OperationInputErrorInfo>({});
   const isProcessing = step === 'process';
 
   const onConfirm = (): void => {
     setStep('process');
-    props.onConfirm(values).then(
+    props.onProcess(values).then(
       d => {
         setStep({
           type: 'success',
@@ -153,56 +208,85 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
 
   let body: React.ReactNode;
   if (step === 'input') {
-    let inputPrompt = props.inputPrompt;
+    let inputPrompt =
+      typeof props.inputPrompt === 'function'
+        ? props.inputPrompt()
+        : props.inputPrompt;
     if (typeof inputPrompt === 'string') {
       inputPrompt = <Typography variant="subtitle2">{inputPrompt}</Typography>;
     }
 
-    const canConfirm: boolean = (() => {
+    const updateValue = (
+      index: number,
+      newValue: string | boolean
+    ): (string | boolean)[] => {
+      const oldValues = values;
+      const newValues = oldValues.slice();
+      newValues[index] = newValue;
+      setValues(newValues);
+      return newValues;
+    };
+
+    const testErrorInfo = (errorInfo: OperationInputErrorInfo): boolean => {
       if (props.inputScheme != null) {
         const inputScheme = props.inputScheme;
         for (let i = 0; i < inputScheme.length; i++) {
-          if (inputScheme[i].type === 'text' && inputError[i] != null) {
-            return false;
+          if (inputScheme[i].type === 'text' && errorInfo[i] != null) {
+            return true;
           }
         }
-        return true;
+        return false;
       } else {
-        return true;
+        return false;
       }
-    })();
+    };
+
+    const calculateError = (
+      oldError: OperationInputErrorInfo,
+      index: number,
+      newError: OperationInputOptionalError | OperationInputErrorInfo
+    ): OperationInputErrorInfo => {
+      if (newError === undefined) {
+        return oldError;
+      } else if (newError === null || typeof newError === 'string') {
+        return { ...oldError, [index]: newError };
+      } else {
+        const newInputError: OperationInputErrorInfo = { ...oldError };
+        for (const [index, error] of Object.entries(newError)) {
+          if (error !== undefined) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (newInputError as any)[index] = error;
+          }
+        }
+        return newInputError;
+      }
+    };
+
+    const validateAll = (): boolean => {
+      let newInputError = inputError;
+      for (let i = 0; i < inputScheme.length; i++) {
+        const item = inputScheme[i];
+        if (item.type === 'text') {
+          newInputError = calculateError(
+            newInputError,
+            i,
+            item.validator?.(values[i] as string, values)
+          );
+        }
+      }
+      const result = !testErrorInfo(newInputError);
+      setInputError(newInputError);
+      return result;
+    };
 
     body = (
       <>
         <DialogContent classes={{ root: classes.content }}>
           {inputPrompt}
           {inputScheme.map((item, index) => {
-            const setValue = (
-              newValue: string | boolean
-            ): (string | boolean)[] => {
-              const oldValues = values;
-              const newValues = oldValues.slice();
-              newValues[index] = newValue;
-              setValues(newValues);
-              if (props.validator) {
-                const result = props.validator(newValues, index);
-                if (result) {
-                  setInputError(oldError => {
-                    return { ...oldError, ...result };
-                  });
-                }
-              }
-              return newValues;
-            };
-
             const value = values[index];
-            const error: string | undefined = (e => {
-              if (typeof e === 'string') {
-                return t(e);
-              } else {
-                return undefined;
-              }
-            })(inputError[index]);
+            const error: string | undefined = (e =>
+              typeof e === 'string' ? t(e) : undefined)(inputError?.[index]);
 
             if (item.type === 'text') {
               return (
@@ -215,7 +299,15 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                   error={error != null}
                   helperText={error}
                   onChange={e => {
-                    setValue(e.target.value);
+                    const v = e.target.value;
+                    const newValues = updateValue(index, v);
+                    setInputError(
+                      calculateError(
+                        inputError,
+                        index,
+                        item.validator?.(v, newValues)
+                      )
+                    );
                   }}
                   {...item.textFieldProps}
                 />
@@ -224,9 +316,9 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
               return (
                 <FormControlLabel
                   key={index}
-                  value={values[index]}
+                  value={value}
                   onChange={e => {
-                    setValue((e.target as HTMLInputElement).checked);
+                    updateValue(index, (e.target as HTMLInputElement).checked);
                   }}
                   control={<Checkbox />}
                   label={item.label}
@@ -239,7 +331,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                   <Select
                     value={value}
                     onChange={event => {
-                      setValue(event.target.value as string);
+                      updateValue(index, event.target.value as string);
                     }}
                   >
                     {item.options.map((option, i) => {
@@ -260,7 +352,15 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
         </DialogContent>
         <DialogActions>
           <Button onClick={props.close}>{t('operationDialog.cancel')}</Button>
-          <Button color="primary" disabled={!canConfirm} onClick={onConfirm}>
+          <Button
+            color="primary"
+            disabled={testErrorInfo(inputError)}
+            onClick={() => {
+              if (validateAll()) {
+                onConfirm();
+              }
+            }}
+          >
             {t('operationDialog.confirm')}
           </Button>
         </DialogActions>
@@ -269,24 +369,21 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   } else if (step === 'process') {
     body = (
       <DialogContent classes={{ root: classes.content }}>
-        {props.processPrompt && props.processPrompt()}
+        {props.processPrompt?.() ?? <DefaultProcessPrompt />}
       </DialogContent>
     );
   } else {
     let content: React.ReactNode;
     const result = step;
     if (result.type === 'success') {
-      content = props.successPrompt && props.successPrompt(result.data);
-      if (typeof content === 'string' || React.isValidElement(content))
+      content =
+        props.successPrompt?.(result.data) ?? t('operationDialog.success');
+      if (typeof content === 'string')
         content = <Typography variant="body1">{content}</Typography>;
     } else {
-      content = props.failurePrompt && props.failurePrompt(result.data);
-      if (typeof content === 'string' || React.isValidElement(content))
-        content = (
-          <Typography color="error" variant="body1">
-            {content}
-          </Typography>
-        );
+      content = props.failurePrompt?.(result.data) ?? <DefaultErrorPrompt />;
+      if (typeof content === 'string')
+        content = <DefaultErrorPrompt error={content} />;
     }
     body = (
       <>
@@ -323,36 +420,6 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
       {body}
     </Dialog>
   );
-};
-
-const useProcessStyles = makeStyles({
-  processContent: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  processText: {
-    margin: '0 10px'
-  }
-});
-
-const DefaultProcessPrompt: React.FC = _ => {
-  const classes = useProcessStyles();
-  return (
-    <div className={classes.processContent}>
-      <CircularProgress />
-      <span className={classes.processText}>Processing!</span>
-    </div>
-  );
-};
-
-OperationDialog.defaultProps = {
-  titleColor: 'default',
-  inputScheme: [],
-  // eslint-disable-next-line react/display-name
-  processPrompt: () => <DefaultProcessPrompt />,
-  successPrompt: _ => 'Ok!',
-  failurePrompt: e => e.toString()
 };
 
 export default OperationDialog;

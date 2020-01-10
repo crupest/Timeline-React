@@ -11,7 +11,10 @@ const translation: TranslationResource = {
   operationDialog: {
     confirm: '确定',
     cancel: '取消',
-    ok: '好的！'
+    ok: '好的！',
+    processing: '处理中...',
+    success: '成功！',
+    error: '出错啦！'
   },
   timeline: {
     messageCantSee: '不好意思，你没有权限查看这个时间线。😅',
