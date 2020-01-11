@@ -90,8 +90,11 @@ export async function userLogin(
   if (getCurrentUser()) {
     throw new Error('Already login.');
   }
-  const res = await axios.post(createTokenUrl, credentials);
-  const body = res.data as CreateTokenResponse;
+  const res = await axios.post<CreateTokenResponse>(
+    createTokenUrl,
+    credentials
+  );
+  const body = res.data;
   const token = body.token;
   if (rememberMe) {
     window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
@@ -120,7 +123,9 @@ export function generateAvatarUrl(username: string): string {
 }
 
 export function useUser(): UserWithToken | null | undefined {
-  const [user, setUser] = useState<UserWithToken | null | undefined>(userSubject.value);
+  const [user, setUser] = useState<UserWithToken | null | undefined>(
+    userSubject.value
+  );
   useEffect(() => {
     const sub = user$.subscribe(u => setUser(u));
     return () => {

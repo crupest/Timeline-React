@@ -120,6 +120,7 @@ const UserPage: React.FC<UserPageProps> = props => {
       body = (
         <>
           <UserInfoCard
+            avatarKey={props.avatarKey}
             className={classes.userInfoCard}
             {...props.userInfo}
             onHeight={height => {

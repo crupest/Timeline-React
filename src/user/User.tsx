@@ -8,21 +8,21 @@ import {
   MenuItem,
   Snackbar
 } from '@material-ui/core';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 
-import { apiBaseUrl } from '../config';
 import { fetchNickname, useUser, generateAvatarUrl } from '../data/user';
 import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
-  fetchPersonalTimeline,
   canSee,
-  fetchPersonalTimelinePosts,
-  canPost,
-  createPersonalTimelinePost,
   canDelete,
+  canPost,
+  fetchPersonalTimeline,
+  fetchPersonalTimelinePosts,
+  createPersonalTimelinePost,
   deletePersonalTimelinePost
 } from '../data/timeline';
+import { changeNickname, changeTimelineProperty, changeAvatar } from './http';
 
 import { kEditItems, EditItem } from './EditItem';
 
@@ -33,22 +33,6 @@ import UserPage, {
   UserPageTimelineBase
 } from './UserPage';
 import ChangeNicknameDialog from './ChangeNicknameDialog';
-
-function changeNickname(
-  username: string,
-  newNickname: string,
-  token: string
-): Promise<void> {
-  return axios.put(
-    `${apiBaseUrl}/users/${username}/nickname?token=${token}`,
-    newNickname,
-    {
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }
-  );
-}
 
 interface EditSelectDialogProps {
   open: boolean;
@@ -176,8 +160,7 @@ const User: React.FC = _ => {
         open
         close={closeDialogHandler}
         onProcess={newNickname => {
-          const u = user!;
-          const p = changeNickname(u.username, newNickname, u.token);
+          const p = changeNickname(user!.token, username, newNickname);
           p.then(_ => {
             setUserInfo({
               ...userInfo!,
@@ -207,13 +190,8 @@ const User: React.FC = _ => {
           visibility: userInfo!.timelineVisibility,
           description: userInfo!.description
         }}
-        process={async req => {
-          await axios.post(
-            `${apiBaseUrl}/users/${username}/timeline/op/property?token=${
-              user!.token
-            }`,
-            req
-          );
+        onProcess={async req => {
+          await changeTimelineProperty(user!.token, username, req);
           const newUserInfo: UserPageUserInfoBase = { ...userInfo! };
           if (req.visibility != null) {
             newUserInfo.timelineVisibility = req.visibility;
@@ -231,15 +209,7 @@ const User: React.FC = _ => {
         open
         close={closeDialogHandler}
         process={async file => {
-          await axios.put(
-            `${apiBaseUrl}/users/${username}/avatar?token=${user!.token}`,
-            file,
-            {
-              headers: {
-                'Content-Type': file.type
-              }
-            }
-          );
+          await changeAvatar(user!.token, username, file, file.type);
           setAvatarKey(avatarKey + 1);
         }}
       />

@@ -12,7 +12,7 @@ export interface TimelinePropertyInfo {
   description: string;
 }
 
-export interface ChangePropertyRequest {
+export interface TimelineChangePropertyRequest {
   visibility?: TimelineVisibility;
   description?: string;
 }
@@ -21,7 +21,7 @@ export interface TimelinePropertyChangeDialogProps {
   open: boolean;
   close: () => void;
   oldInfo: TimelinePropertyInfo;
-  process: (request: ChangePropertyRequest) => Promise<void>;
+  onProcess: (request: TimelineChangePropertyRequest) => Promise<void>;
 }
 
 const labelMap: { [key in TimelineVisibility]: string } = {
@@ -57,15 +57,15 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
       ]}
       open={props.open}
       close={props.close}
-      onProcess={async ([newVisibility, newDescription]) => {
-        const req: ChangePropertyRequest = {};
+      onProcess={([newVisibility, newDescription]) => {
+        const req: TimelineChangePropertyRequest = {};
         if (newVisibility !== props.oldInfo.visibility) {
           req.visibility = newVisibility as TimelineVisibility;
         }
         if (newDescription !== props.oldInfo.description) {
           req.description = newDescription as string;
         }
-        await props.process(req);
+        return props.onProcess(req);
       }}
     />
   );
