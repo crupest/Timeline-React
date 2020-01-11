@@ -12,12 +12,7 @@ import axios, { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 
 import { apiBaseUrl } from '../config';
-import {
-  fetchNickname,
-  useUser,
-  generateAvatarUrl,
-  UserWithToken
-} from '../data/user';
+import { fetchNickname, useUser, generateAvatarUrl } from '../data/user';
 import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
   fetchPersonalTimeline,
@@ -29,53 +24,15 @@ import {
   deletePersonalTimelinePost
 } from '../data/timeline';
 
-import OperationDialog from '../common/OperationDialog';
+import { kEditItems, EditItem } from './EditItem';
+
 import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 import ChangeAvatarDialog from './ChangeAvatarDialog';
 import UserPage, {
   UserPageUserInfoBase,
   UserPageTimelineBase
 } from './UserPage';
-
-type EditItem = 'nickname' | 'avatar' | 'timelineproperty';
-
-interface EditSelectDialogProps {
-  open: boolean;
-  close: () => void;
-  onSelect: (item: EditItem) => void;
-}
-
-const EditSelectDialog: React.FC<EditSelectDialogProps> = props => {
-  const { t } = useTranslation();
-  return (
-    <Dialog open={props.open} onClose={props.close}>
-      <DialogTitle> {t('userPage.dialogEditSelect.title')}</DialogTitle>
-      <MenuList>
-        <MenuItem
-          onClick={() => {
-            props.onSelect('nickname');
-          }}
-        >
-          {t('userPage.dialogEditSelect.nickname')}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            props.onSelect('avatar');
-          }}
-        >
-          {t('userPage.dialogEditSelect.avatar')}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            props.onSelect('timelineproperty');
-          }}
-        >
-          {t('userPage.dialogEditSelect.timelineProperty')}
-        </MenuItem>
-      </MenuList>
-    </Dialog>
-  );
-};
+import ChangeNicknameDialog from './ChangeNicknameDialog';
 
 function changeNickname(
   username: string,
@@ -93,33 +50,30 @@ function changeNickname(
   );
 }
 
-interface ChangeNicknameDialogProps {
-  user: UserWithToken;
+interface EditSelectDialogProps {
   open: boolean;
   close: () => void;
-  onChanged: (newNickname: string) => void;
+  onSelect: (item: EditItem) => void;
 }
 
-const ChangeNicknameDialog: React.FC<ChangeNicknameDialogProps> = props => {
+const EditSelectDialog: React.FC<EditSelectDialogProps> = props => {
   const { t } = useTranslation();
   return (
-    <OperationDialog
-      open={props.open}
-      title={t('userPage.dialogChangeNickname.title')}
-      titleColor="default"
-      inputScheme={[
-        { type: 'text', label: t('userPage.dialogChangeNickname.inputLabel') }
-      ]}
-      onProcess={async ([newNickname]) => {
-        await changeNickname(
-          props.user.username,
-          newNickname as string,
-          props.user.token
-        );
-        props.onChanged(newNickname as string);
-      }}
-      close={props.close}
-    />
+    <Dialog open={props.open} onClose={props.close}>
+      <DialogTitle> {t('userPage.dialogEditSelect.title')}</DialogTitle>
+      <MenuList>
+        {kEditItems.map(v => (
+          <MenuItem
+            key={v}
+            onClick={() => {
+              props.onSelect(v);
+            }}
+          >
+            {t(`userPage.dialogEditSelect.${v}`)}
+          </MenuItem>
+        ))}
+      </MenuList>
+    </Dialog>
   );
 };
 
@@ -128,13 +82,7 @@ const User: React.FC = _ => {
 
   const user = useUser();
 
-  const [dialog, setDialog] = useState<
-    | null
-    | 'editselect'
-    | 'changenickname'
-    | 'changeavatar'
-    | 'changetimelineproperty'
-  >(null);
+  const [dialog, setDialog] = useState<null | 'editselect' | EditItem>(null);
   const [userInfo, setUserInfo] = useState<UserPageUserInfoBase>();
   const [timeline, setTimeline] = useState<UserPageTimelineBase>();
   const [error, setError] = useState<string | undefined>(undefined);
@@ -222,17 +170,21 @@ const User: React.FC = _ => {
     setDialog(null);
   };
 
-  if (dialog === 'changenickname') {
+  if (dialog === 'nickname') {
     dialogElement = (
       <ChangeNicknameDialog
         open
-        user={user!}
         close={closeDialogHandler}
-        onChanged={newNickname => {
-          setUserInfo({
-            ...userInfo!,
-            nickname: newNickname
+        onProcess={newNickname => {
+          const u = user!;
+          const p = changeNickname(u.username, newNickname, u.token);
+          p.then(_ => {
+            setUserInfo({
+              ...userInfo!,
+              nickname: newNickname
+            });
           });
+          return p;
         }}
       />
     );
@@ -242,25 +194,19 @@ const User: React.FC = _ => {
         open
         close={closeDialogHandler}
         onSelect={item => {
-          if (item === 'nickname') {
-            setDialog('changenickname');
-          } else if (item === 'timelineproperty') {
-            setDialog('changetimelineproperty');
-          } else if (item === 'avatar') {
-            setDialog('changeavatar');
-          } else {
-            setDialog(null);
-          }
+          setDialog(item);
         }}
       />
     );
-  } else if (dialog === 'changetimelineproperty') {
+  } else if (dialog === 'timelineproperty') {
     dialogElement = (
       <TimelinePropertyChangeDialog
         open
         close={closeDialogHandler}
-        description={userInfo!.description}
-        visibility={userInfo!.timelineVisibility}
+        oldInfo={{
+          visibility: userInfo!.timelineVisibility,
+          description: userInfo!.description
+        }}
         process={async req => {
           await axios.post(
             `${apiBaseUrl}/users/${username}/timeline/op/property?token=${
@@ -279,7 +225,7 @@ const User: React.FC = _ => {
         }}
       />
     );
-  } else if (dialog === 'changeavatar') {
+  } else if (dialog === 'avatar') {
     dialogElement = (
       <ChangeAvatarDialog
         open

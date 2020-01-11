@@ -1,3 +1,5 @@
+import { EditItem as UserPageEditSelectDialogItem } from '../user/EditItem';
+
 export default interface TranslationResource {
   welcome: string;
   home: {
@@ -10,7 +12,7 @@ export default interface TranslationResource {
     ok: string;
     processing: string;
     success: string;
-    error:string;
+    error: string;
   };
   timeline: {
     messageCantSee: string;
@@ -42,10 +44,7 @@ export default interface TranslationResource {
   userPage: {
     dialogEditSelect: {
       title: string;
-      avatar: string;
-      nickname: string;
-      timelineProperty: string;
-    };
+    } & { [K in UserPageEditSelectDialogItem]: string };
     dialogChangeNickname: {
       title: string;
       inputLabel: string;

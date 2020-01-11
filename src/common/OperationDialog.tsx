@@ -294,7 +294,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                   key={index}
                   classes={{ root: classes.inputText }}
                   fullWidth
-                  label={item.label}
+                  label={t(item.label)}
                   value={value}
                   error={error != null}
                   helperText={error}
@@ -321,13 +321,13 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                     updateValue(index, (e.target as HTMLInputElement).checked);
                   }}
                   control={<Checkbox />}
-                  label={item.label}
+                  label={t(item.label)}
                 />
               );
             } else if (item.type === 'select') {
               return (
                 <FormControl key={index}>
-                  <InputLabel>{item.label}</InputLabel>
+                  <InputLabel>{t(item.label)}</InputLabel>
                   <Select
                     value={value}
                     onChange={event => {
@@ -340,7 +340,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                           {option.icon && (
                             <ListItemIcon>{option.icon}</ListItemIcon>
                           )}
-                          {option.label}
+                          {t(option.label)}
                         </MenuItem>
                       );
                     })}
@@ -399,6 +399,8 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
     );
   }
 
+  const title = typeof props.title === 'string' ? t(props.title) : props.title;
+
   return (
     <Dialog
       open={props.open}
@@ -415,7 +417,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
           )
         }}
       >
-        {props.title}
+        {title}
       </DialogTitle>
       {body}
     </Dialog>

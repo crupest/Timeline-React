@@ -49,7 +49,7 @@ const translation: TranslationResource = {
       title: 'Change what?',
       avatar: 'Avatar',
       nickname: 'Nickname',
-      timelineProperty: 'Timeline properties'
+      timelineproperty: 'Timeline properties'
     },
     dialogChangeNickname: {
       title: 'Change Nickname',

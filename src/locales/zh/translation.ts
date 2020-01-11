@@ -48,7 +48,7 @@ const translation: TranslationResource = {
       title: '修改什么？',
       avatar: '头像',
       nickname: '昵称',
-      timelineProperty: '时间线属性'
+      timelineproperty: '时间线属性'
     },
     dialogChangeNickname: {
       title: '更改昵称',

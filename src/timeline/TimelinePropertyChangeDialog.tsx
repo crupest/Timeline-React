@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { TimelineVisibility, kTimelineVisibilities } from '../data/timeline';
 
@@ -7,6 +6,11 @@ import TimelineVisibilityIcon from './TimelineVisibilityIcon';
 import OperationDialog, {
   OperationSelectInputInfoOption
 } from '../common/OperationDialog';
+
+export interface TimelinePropertyInfo {
+  visibility: TimelineVisibility;
+  description: string;
+}
 
 export interface ChangePropertyRequest {
   visibility?: TimelineVisibility;
@@ -16,8 +20,7 @@ export interface ChangePropertyRequest {
 export interface TimelinePropertyChangeDialogProps {
   open: boolean;
   close: () => void;
-  visibility: TimelineVisibility;
-  description: string;
+  oldInfo: TimelinePropertyInfo;
   process: (request: ChangePropertyRequest) => Promise<void>;
 }
 
@@ -28,28 +31,27 @@ const labelMap: { [key in TimelineVisibility]: string } = {
 };
 
 const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> = props => {
-  const { t } = useTranslation();
   return (
     <OperationDialog
-      title={t('timeline.dialogChangeProperty.title')}
+      title={'timeline.dialogChangeProperty.title'}
       titleColor="default"
       inputScheme={[
         {
           type: 'select',
-          label: t('timeline.dialogChangeProperty.visibility'),
+          label: 'timeline.dialogChangeProperty.visibility',
           options: kTimelineVisibilities.map<OperationSelectInputInfoOption>(
             v => ({
-              label: t(labelMap[v]),
+              label: labelMap[v],
               value: v,
               icon: <TimelineVisibilityIcon visibility={v} />
             })
           ),
-          initValue: props.visibility
+          initValue: props.oldInfo.visibility
         },
         {
           type: 'text',
-          label: t('timeline.dialogChangeProperty.description'),
-          initValue: props.description,
+          label: 'timeline.dialogChangeProperty.description',
+          initValue: props.oldInfo.description,
           textFieldProps: { variant: 'outlined', multiline: true }
         }
       ]}
@@ -57,10 +59,10 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
       close={props.close}
       onProcess={async ([newVisibility, newDescription]) => {
         const req: ChangePropertyRequest = {};
-        if (newVisibility !== props.visibility) {
+        if (newVisibility !== props.oldInfo.visibility) {
           req.visibility = newVisibility as TimelineVisibility;
         }
-        if (newDescription !== props.description) {
+        if (newDescription !== props.oldInfo.description) {
           req.description = newDescription as string;
         }
         await props.process(req);
