@@ -27,7 +27,7 @@ const TimelineVisibilityIcon: React.FC<TimelineVisibilityIconProps> = props => {
   else if (props.visibility === 'Private')
     return (
       <Tooltip title={t("timeline.visibilityTooltip.private")}>
-        <Icon className={props.className}>group</Icon>
+        <Icon className={props.className}>lock</Icon>
       </Tooltip>
     );
   else throw new Error('Unknown visibility.');

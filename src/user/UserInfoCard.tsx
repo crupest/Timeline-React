@@ -20,6 +20,7 @@ export interface UserInfoCardProps {
   timelineVisibility: TimelineVisibility;
   editable: boolean;
   onEdit: () => void;
+  onMember: () => void;
   className?: string;
   avatarKey?: string | number;
   onHeight?: (height: number) => void;
@@ -33,7 +34,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex'
   },
   body: {
-    padding: theme.spacing(1)
+    padding: theme.spacing(1),
+    flexGrow: 1
   },
   nickname: {
     display: 'inline-block'
@@ -44,6 +46,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   visibilityIcon: {
     verticalAlign: 'text-top'
+  },
+  memberButton: {
+    alignSelf: 'flex-start',
+    color: 'skyblue'
   },
   editButton: {
     position: 'absolute',
@@ -91,6 +97,12 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
         />
         <Typography variant="body2">{props.description}</Typography>
       </div>
+      <IconButton
+        classes={{ root: classes.memberButton }}
+        onClick={props.onMember}
+      >
+        <Icon>group</Icon>
+      </IconButton>
       {props.editable ? (
         <IconButton
           color="secondary"

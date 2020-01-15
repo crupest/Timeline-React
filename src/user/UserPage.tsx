@@ -31,6 +31,7 @@ export interface UserPageUserInfoBase {
 
 export interface UserPageUserInfo extends UserPageUserInfoBase {
   onEdit: () => void;
+  onMember: () => void;
 }
 
 export interface UserPageTimelineBase {

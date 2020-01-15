@@ -11,7 +11,12 @@ import {
 import { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 
-import { fetchNickname, useUser, generateAvatarUrl } from '../data/user';
+import {
+  fetchNickname,
+  useUser,
+  generateAvatarUrl,
+  getNickname
+} from '../data/user';
 import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
   canSee,
@@ -33,6 +38,7 @@ import UserPage, {
   UserPageTimelineBase
 } from './UserPage';
 import ChangeNicknameDialog from './ChangeNicknameDialog';
+import { TimelineMemberDialog, UserInfo } from '../timeline/TimelineMember';
 
 interface EditSelectDialogProps {
   open: boolean;
@@ -66,8 +72,15 @@ const User: React.FC = _ => {
 
   const user = useUser();
 
-  const [dialog, setDialog] = useState<null | 'editselect' | EditItem>(null);
-  const [userInfo, setUserInfo] = useState<UserPageUserInfoBase>();
+  interface UserInfoData extends UserPageUserInfoBase {
+    members: string[];
+  }
+
+  const [dialog, setDialog] = useState<
+    null | 'editselect' | EditItem | 'member'
+  >(null);
+  const [dialogData, setDialogData] = useState<unknown>(null);
+  const [userInfo, setUserInfo] = useState<UserInfoData>();
   const [timeline, setTimeline] = useState<UserPageTimelineBase>();
   const [error, setError] = useState<string | undefined>(undefined);
   const [avatarKey, setAvatarKey] = useState<number>(0);
@@ -92,7 +105,8 @@ const User: React.FC = _ => {
               timelineVisibility: ti.visibility,
               editable:
                 user != null &&
-                (user.username === username || user.administrator)
+                (user.username === username || user.administrator),
+              members: ti.members
             });
             fetchPersonalTimelinePosts(username, user?.token).then(
               data => {
@@ -146,6 +160,30 @@ const User: React.FC = _ => {
     }
   }, [timeline]);
 
+  useEffect(() => {
+    if (dialog === 'member') {
+      if (userInfo == null) {
+        throw new Error('No user info but open member dialog.');
+      }
+      setDialogData(null);
+      Promise.all(
+        userInfo.members.map(memberUsername => {
+          return getNickname(memberUsername).then(
+            memberNickname =>
+              ({
+                username: memberUsername,
+                nickname: memberNickname,
+                avatarUrl: generateAvatarUrl(memberUsername)
+              } as UserInfo)
+          );
+        })
+      ).then(members => {
+        members.unshift(userInfo);
+        setDialogData(members);
+      });
+    }
+  }, [dialog]);
+
   const [snackBar, setSnackBar] = useState<string | null>(null);
 
   let dialogElement: React.ReactElement | undefined;
@@ -192,7 +230,7 @@ const User: React.FC = _ => {
         }}
         onProcess={async req => {
           await changeTimelineProperty(user!.token, username, req);
-          const newUserInfo: UserPageUserInfoBase = { ...userInfo! };
+          const newUserInfo: UserInfoData = { ...userInfo! };
           if (req.visibility != null) {
             newUserInfo.timelineVisibility = req.visibility;
           }
@@ -214,6 +252,43 @@ const User: React.FC = _ => {
         }}
       />
     );
+  } else if (dialog === 'member') {
+    dialogElement = (
+      <TimelineMemberDialog
+        open
+        onClose={closeDialogHandler}
+        members={dialogData as UserInfo[]}
+        edit={
+          userInfo!.editable
+            ? {
+                onCheckUser: u => {
+                  return getNickname(u)
+                    .catch(e => {
+                      if (
+                        extractStatusCode(e) === 404 ||
+                        extractErrorCode(e) === 11020101
+                      ) {
+                        return null;
+                      } else {
+                        Promise.reject(e);
+                      }
+                    })
+                    .then(nickname => {
+                      return nickname === null
+                        ? null
+                        : ({
+                            username: u,
+                            nickname: nickname,
+                            avatarUrl: generateAvatarUrl(u)
+                          } as UserInfo);
+                    });
+                }
+                // TODO!!!
+              }
+            : null
+        }
+      />
+    );
   }
 
   return (
@@ -227,6 +302,9 @@ const User: React.FC = _ => {
                 ...userInfo,
                 onEdit: () => {
                   setDialog('editselect');
+                },
+                onMember: () => {
+                  setDialog('member');
                 }
               }
             : undefined

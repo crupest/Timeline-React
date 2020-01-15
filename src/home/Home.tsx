@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
-import {
-  makeStyles,
-  Typography,
-  Link,
-  Paper,
-  InputBase,
-  Theme,
-  IconButton,
-  Icon
-} from '@material-ui/core';
+import { makeStyles, Typography, Link, Theme, Icon } from '@material-ui/core';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router';
 
 import AppBar from '../common/AppBar';
+import SearchInput from '../common/SearchInput';
 
 const hToColor = (h: number): string => `hsl(${h} 70% 70%)`;
 
@@ -53,22 +45,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     animationDuration: '10s',
     animationIterationCount: 'infinite'
   },
-  navRoot: {
-    padding: '2px 4px',
-    display: 'flex',
+  navInput: {
     alignSelf: 'stretch',
-    alignItems: 'center',
     margin: `${theme.spacing(2)}px 0`,
     [theme.breakpoints.down('sm')]: {
       margin: `${theme.spacing(2)}px`
     }
-  },
-  navInput: {
-    marginLeft: theme.spacing(1),
-    flex: 1
-  },
-  navButton: {
-    padding: 10
   }
 }));
 
@@ -96,25 +78,24 @@ const Home: React.FC = _ => {
             <Typography>0</Typography>
             <Typography>1</Typography>
           </Trans>
-          <Paper component="div" className={classes.navRoot}>
-            <InputBase
-              autoFocus
-              className={classes.navInput}
-              placeholder="crupest"
-              value={navText}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setNavText(event.currentTarget.value);
-              }}
-              onKeyPress={(event: React.KeyboardEvent<HTMLInputElement>) => {
+          <SearchInput
+            className={classes.navInput}
+            value={navText}
+            onChange={v => {
+              setNavText(v);
+            }}
+            onButtonClick={goto}
+            buttonIcon={<Icon>arrow_forward</Icon>}
+            inputProps={{
+              autoFocus: true,
+              placeholder: 'crupest',
+              onKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => {
                 if (event.key === 'Enter') {
                   goto();
                 }
-              }}
-            />
-            <IconButton className={classes.navButton} onClick={goto}>
-              <Icon>arrow_forward</Icon>
-            </IconButton>
-          </Paper>
+              }
+            }}
+          />
         </div>
 
         <div>

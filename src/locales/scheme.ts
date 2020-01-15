@@ -44,7 +44,7 @@ export default interface TranslationResource {
   userPage: {
     dialogEditSelect: {
       title: string;
-    } & { [K in UserPageEditSelectDialogItem]: string };
+    } & Record<UserPageEditSelectDialogItem, string>;
     dialogChangeNickname: {
       title: string;
       inputLabel: string;
