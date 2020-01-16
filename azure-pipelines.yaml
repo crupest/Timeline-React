@@ -18,10 +18,8 @@ stages:
       - script: yarn build
         displayName: Webpack Build
 
-      - task: PublishPipelineArtifact@1
-        inputs:
-          artifactName: 'timeline'
-          targetPath: dist
+      - publish: dist
+        artifact: timeline
 
 - stage: deploy
   displayName: Deploy
@@ -31,11 +29,18 @@ stages:
   jobs:
   - deployment: deploy
     displayName: Deploy to Server
-    pool:
-      name: 'Default'
-    environment: 'timeline-server'
+    environment: 
+      name: timeline-server
+      resourceType: VirtualMachine
+      tags: linux
     strategy:
       runOnce:
+        preDeploy:
+          steps:
+          - download: none
+
+          - download: current
+            artifact: timeline
         deploy:
           steps:
           - script: |
