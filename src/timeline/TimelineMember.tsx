@@ -40,13 +40,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   memberList: {
     minHeight: 100,
-    maxHeight: '60vh',
+    maxHeight: '50vh',
     overflowY: 'auto'
   },
   addArea: {
     display: 'flex',
     flexDirection: 'column',
     padding: theme.spacing(1)
+  },
+  errorText: {
+    alignSelf: 'center'
   }
 }));
 
@@ -145,32 +148,37 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                     const addable =
                       members.findIndex(m => m.username === u.username) === -1;
                     return (
-                      <ListItem dense>
-                        <ListItemAvatar>
-                          <Avatar src={u.avatarUrl} />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={u.nickname}
-                          secondary={'@' + u.username}
-                        />
-                        <IconButton
-                          edge="end"
-                          disabled={!addable}
-                          onClick={() => {
-                            edit.onAddUser(u).then(_ => {
-                              setUserSearchText('');
-                              setUserSearchState({ type: 'init' });
-                            });
-                          }}
-                          color="primary"
-                        >
-                          <Icon>add</Icon>
-                        </IconButton>
-                      </ListItem>
+                      <>
+                        <Typography color="error" className={classes.errorText}>
+                          {t("timeline.member.alreadyMember")}
+                        </Typography>
+                        <ListItem dense>
+                          <ListItemAvatar>
+                            <Avatar src={u.avatarUrl} />
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={u.nickname}
+                            secondary={'@' + u.username}
+                          />
+                          <IconButton
+                            edge="end"
+                            disabled={!addable}
+                            onClick={() => {
+                              edit.onAddUser(u).then(_ => {
+                                setUserSearchText('');
+                                setUserSearchState({ type: 'init' });
+                              });
+                            }}
+                            color="primary"
+                          >
+                            <Icon>add</Icon>
+                          </IconButton>
+                        </ListItem>
+                      </>
                     );
                   } else if (userSearchState.type === 'error') {
                     return (
-                      <Typography color="error">
+                      <Typography color="error" className={classes.errorText}>
                         {t(userSearchState.data)}
                       </Typography>
                     );

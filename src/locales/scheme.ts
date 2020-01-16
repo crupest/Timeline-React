@@ -32,6 +32,9 @@ export default interface TranslationResource {
       visibility: string;
       description: string;
     };
+    member: {
+      alreadyMember: string;
+    }
   };
   user: {
     username: string;

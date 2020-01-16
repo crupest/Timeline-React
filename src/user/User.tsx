@@ -269,9 +269,9 @@ const User: React.FC = _ => {
                         extractStatusCode(e) === 404 ||
                         extractErrorCode(e) === 11020101
                       ) {
-                        return null;
+                        return Promise.resolve(null);
                       } else {
-                        Promise.reject(e);
+                        return Promise.reject(e);
                       }
                     })
                     .then(nickname => {

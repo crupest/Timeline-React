@@ -33,6 +33,9 @@ const translation: TranslationResource = {
       title: '修改时间线属性',
       visibility: '可见性',
       description: '描述'
+    },
+    member: {
+      alreadyMember: '该用户已经是一个成员。'
     }
   },
   user: {

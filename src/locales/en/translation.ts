@@ -34,6 +34,9 @@ const translation: TranslationResource = {
       title: 'Change Timeline Properties',
       visibility: 'Visibility',
       description: 'Description'
+    },
+    member: {
+      alreadyMember: 'The user is already a member.'
     }
   },
   user: {

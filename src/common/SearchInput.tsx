@@ -52,6 +52,11 @@ const SearchInput: React.FC<SearchInputProps> = props => {
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           props.onChange(event.currentTarget.value);
         }}
+        onKeyPress={(event: React.KeyboardEvent<HTMLInputElement>) => {
+          if (event.key === 'Enter') {
+            props.onButtonClick();
+          }
+        }}
         {...props.inputProps}
       />
       {props.loading ? (

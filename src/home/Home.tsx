@@ -88,12 +88,7 @@ const Home: React.FC = _ => {
             buttonIcon={<Icon>arrow_forward</Icon>}
             inputProps={{
               autoFocus: true,
-              placeholder: 'crupest',
-              onKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => {
-                if (event.key === 'Enter') {
-                  goto();
-                }
-              }
+              placeholder: 'crupest'
             }}
           />
         </div>
