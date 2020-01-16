@@ -18,6 +18,7 @@ const translation: TranslationResource = {
   },
   timeline: {
     messageCantSee: '不好意思，你没有权限查看这个时间线。😅',
+    userNotExist: '该用户不存在！',
     visibility: {
       public: '对所有人公开',
       register: '仅注册可见',

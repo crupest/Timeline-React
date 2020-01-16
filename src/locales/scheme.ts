@@ -16,6 +16,7 @@ export default interface TranslationResource {
   };
   timeline: {
     messageCantSee: string;
+    userNotExist: string;
     visibility: {
       public: string;
       register: string;

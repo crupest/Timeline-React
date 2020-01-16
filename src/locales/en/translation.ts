@@ -17,6 +17,7 @@ const translation: TranslationResource = {
   },
   timeline: {
     messageCantSee: 'Sorry, you are not allowed to see this timeline.😅',
+    userNotExist: 'The user does not exist!',
     visibility: {
       public: 'public to everyone',
       register: 'only registed people can see',

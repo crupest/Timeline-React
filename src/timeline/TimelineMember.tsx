@@ -14,6 +14,8 @@ import {
   IconButton,
   Icon
 } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
+
 import SearchInput from '../common/SearchInput';
 
 export interface UserInfo {
@@ -50,6 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const TimelineMember: React.FC<TimelineMemberProps> = props => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const [userSearchText, setUserSearchText] = useState<string>('');
   const [userSearchState, setUserSearchState] = useState<
@@ -121,7 +124,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                         if (u == null) {
                           setUserSearchState({
                             type: 'error',
-                            data: 'Not found.'
+                            data: 'timeline.userNotExist'
                           });
                         } else {
                           setUserSearchState({ type: 'user', data: u });
@@ -168,7 +171,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                   } else if (userSearchState.type === 'error') {
                     return (
                       <Typography color="error">
-                        {userSearchState.data}
+                        {t(userSearchState.data)}
                       </Typography>
                     );
                   }
