@@ -149,9 +149,14 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                       members.findIndex(m => m.username === u.username) === -1;
                     return (
                       <>
-                        <Typography color="error" className={classes.errorText}>
-                          {t("timeline.member.alreadyMember")}
-                        </Typography>
+                        {!addable ? (
+                          <Typography
+                            color="error"
+                            className={classes.errorText}
+                          >
+                            {t('timeline.member.alreadyMember')}
+                          </Typography>
+                        ) : null}
                         <ListItem dense>
                           <ListItemAvatar>
                             <Avatar src={u.avatarUrl} />
