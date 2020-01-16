@@ -37,7 +37,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'column'
   },
   memberList: {
-    minHeight: 100
+    minHeight: 100,
+    maxHeight: '60vh',
+    overflowY: 'auto'
   },
   addArea: {
     display: 'flex',
