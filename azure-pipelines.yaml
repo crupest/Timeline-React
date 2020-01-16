@@ -35,14 +35,11 @@ stages:
       tags: linux
     strategy:
       runOnce:
-        preDeploy:
-          steps:
-          - download: none
-
-          - download: current
-            artifact: timeline
         deploy:
           steps:
+          - download: current
+            artifact: timeline
+
           - script: |
               rm -rf /var/www/timeline/*
               cp -r $PIPELINE_WORKSPACE/timeline/. /var/www/timeline/
