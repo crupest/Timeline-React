@@ -9,7 +9,10 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemAvatar
+  ListItemAvatar,
+  Typography,
+  IconButton,
+  Icon
 } from '@material-ui/core';
 import SearchInput from '../common/SearchInput';
 
@@ -23,7 +26,7 @@ export interface TimelineMemberProps {
   members: UserInfo[] | null;
   edit: {
     onCheckUser: (username: string) => Promise<UserInfo | null>;
-    onAddUser: (username: string) => void;
+    onAddUser: (user: UserInfo) => Promise<void>;
     onRemoveUser: (username: string) => void;
   } | null;
 }
@@ -47,8 +50,15 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
   const classes = useStyles();
 
   const [userSearchText, setUserSearchText] = useState<string>('');
-
-  const editable = props.edit != null;
+  const [userSearchState, setUserSearchState] = useState<
+    | {
+        type: 'user';
+        data: UserInfo;
+      }
+    | { type: 'error'; data: string }
+    | { type: 'loading' }
+    | { type: 'init' }
+  >({ type: 'init' });
 
   const members = props.members;
   if (members == null) {
@@ -58,7 +68,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
   return (
     <div className={classes.container}>
       <List classes={{ root: classes.memberList }} dense>
-        {members.map(member => (
+        {members.map((member, index) => (
           <ListItem key={member.username} dense>
             <ListItemAvatar>
               <Avatar src={member.avatarUrl} />
@@ -67,27 +77,107 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
               primary={member.nickname}
               secondary={'@' + member.username}
             />
+            {(() => {
+              if (index === 0) {
+                return null;
+              }
+              const onRemove = props.edit?.onRemoveUser;
+              if (onRemove == null) {
+                return null;
+              }
+              return (
+                <IconButton
+                  color="secondary"
+                  onClick={() => {
+                    onRemove(member.username);
+                  }}
+                >
+                  <Icon>remove</Icon>
+                </IconButton>
+              );
+            })()}
           </ListItem>
         ))}
       </List>
-      {editable ? (
-        <>
-          <Divider />
-          <div className={classes.addArea}>
-            <SearchInput
-              value={userSearchText}
-              onChange={v => {
-                setUserSearchText(v);
-              }}
-              onButtonClick={() => {
-                // TODO!!!
-              }}
-            />
-          </div>
-        </>
-      ) : (
-        undefined
-      )}
+      {(() => {
+        const edit = props.edit;
+        if (edit != null) {
+          return (
+            <>
+              <Divider />
+              <div className={classes.addArea}>
+                <SearchInput
+                  value={userSearchText}
+                  onChange={v => {
+                    setUserSearchText(v);
+                  }}
+                  loading={userSearchState.type === 'loading'}
+                  onButtonClick={() => {
+                    setUserSearchState({ type: 'loading' });
+                    edit.onCheckUser(userSearchText).then(
+                      u => {
+                        if (u == null) {
+                          setUserSearchState({
+                            type: 'error',
+                            data: 'Not found.'
+                          });
+                        } else {
+                          setUserSearchState({ type: 'user', data: u });
+                        }
+                      },
+                      e => {
+                        setUserSearchState({
+                          type: 'error',
+                          data: e.toString()
+                        });
+                      }
+                    );
+                  }}
+                />
+                {(() => {
+                  if (userSearchState.type === 'user') {
+                    const u = userSearchState.data;
+                    const addable =
+                      members.findIndex(m => m.username === u.username) === -1;
+                    return (
+                      <ListItem dense>
+                        <ListItemAvatar>
+                          <Avatar src={u.avatarUrl} />
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={u.nickname}
+                          secondary={'@' + u.username}
+                        />
+                        <IconButton
+                          edge="end"
+                          disabled={!addable}
+                          onClick={() => {
+                            edit.onAddUser(u).then(_ => {
+                              setUserSearchText('');
+                              setUserSearchState({ type: 'init' });
+                            });
+                          }}
+                          color="primary"
+                        >
+                          <Icon>add</Icon>
+                        </IconButton>
+                      </ListItem>
+                    );
+                  } else if (userSearchState.type === 'error') {
+                    return (
+                      <Typography color="error">
+                        {userSearchState.data}
+                      </Typography>
+                    );
+                  }
+                })()}
+              </div>
+            </>
+          );
+        } else {
+          return null;
+        }
+      })()}
     </div>
   );
 };

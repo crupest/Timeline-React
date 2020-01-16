@@ -25,7 +25,8 @@ import {
   fetchPersonalTimeline,
   fetchPersonalTimelinePosts,
   createPersonalTimelinePost,
-  deletePersonalTimelinePost
+  deletePersonalTimelinePost,
+  changePersonalTimelineMember
 } from '../data/timeline';
 import { changeNickname, changeTimelineProperty, changeAvatar } from './http';
 
@@ -282,8 +283,42 @@ const User: React.FC = _ => {
                             avatarUrl: generateAvatarUrl(u)
                           } as UserInfo);
                     });
+                },
+                onAddUser: u => {
+                  return changePersonalTimelineMember(
+                    username,
+                    { add: [u.username] },
+                    user!.token
+                  ).then(_ => {
+                    const oldMembers = dialogData as UserInfo[];
+                    const newMembers = oldMembers.slice();
+                    newMembers.push(u);
+                    setUserInfo({
+                      ...userInfo!,
+                      members: newMembers.map(m => m.username).slice(1)
+                    });
+                    setDialogData(newMembers);
+                  });
+                },
+                onRemoveUser: u => {
+                  changePersonalTimelineMember(
+                    username,
+                    { remove: [u] },
+                    user!.token
+                  ).then(_ => {
+                    const oldMembers = dialogData as UserInfo[];
+                    const newMembers = oldMembers.slice();
+                    newMembers.splice(
+                      newMembers.findIndex(m => m.username === u),
+                      1
+                    );
+                    setUserInfo({
+                      ...userInfo!,
+                      members: newMembers.map(m => m.username).slice(1)
+                    });
+                    setDialogData(newMembers);
+                  });
                 }
-                // TODO!!!
               }
             : null
         }

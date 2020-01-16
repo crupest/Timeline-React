@@ -147,3 +147,19 @@ export async function deletePersonalTimelinePost(
     } as TimelineDeleteRequest
   );
 }
+
+export interface TimelineMemberChangeRequest {
+  add?: string[];
+  remove?: string[];
+}
+
+export async function changePersonalTimelineMember(
+  username: string,
+  request: TimelineMemberChangeRequest,
+  token: string
+): Promise<void> {
+  await axios.post(
+    `${apiBaseUrl}/users/${username}/timeline/op/member?token=${token}`,
+    request
+  );
+}
