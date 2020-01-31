@@ -10,16 +10,12 @@ import {
 } from '@material-ui/core';
 
 import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
-import { TimelineVisibility } from '../data/timeline';
+import { BaseTimelineInfo } from '../data/timeline';
 
 export interface UserInfoCardProps {
-  username: string;
-  nickname: string;
-  description: string;
-  avatarUrl: string;
-  timelineVisibility: TimelineVisibility;
-  editable: boolean;
-  onEdit: () => void;
+  timeline: BaseTimelineInfo;
+  manageable: boolean;
+  onManage: () => void;
   onMember: () => void;
   className?: string;
   avatarKey?: string | number;
@@ -78,24 +74,24 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
       <img
         key={props.avatarKey}
         className={classes.avatar}
-        src={props.avatarUrl}
+        src={props.timeline.owner._links.avatar}
       />
       <div className={classes.body}>
         <Typography variant="h6" className={classes.nickname}>
-          {props.nickname}
+          {props.timeline.owner.nickname}
         </Typography>
         <Typography
           variant="caption"
           color="textSecondary"
           className={classes.username}
         >
-          @{props.username}
+          @{props.timeline.owner.username}
         </Typography>
         <TimelineVisibilityIcon
           className={classes.visibilityIcon}
-          visibility={props.timelineVisibility}
+          visibility={props.timeline.visibility}
         />
-        <Typography variant="body2">{props.description}</Typography>
+        <Typography variant="body2">{props.timeline.description}</Typography>
       </div>
       <IconButton
         classes={{ root: classes.memberButton }}
@@ -103,11 +99,11 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
       >
         <Icon>group</Icon>
       </IconButton>
-      {props.editable ? (
+      {props.manageable ? (
         <IconButton
           color="secondary"
           classes={{ root: classes.editButton }}
-          onClick={props.onEdit}
+          onClick={props.onManage}
         >
           <Icon>edit</Icon>
         </IconButton>

@@ -9,7 +9,8 @@ import {
   makeStyles
 } from '@material-ui/core';
 
-import { TimelineVisibility } from '../data/timeline';
+import { BaseTimelineInfo } from '../data/timeline';
+
 import Timeline, {
   TimelinePostInfoEx,
   TimelineDeleteCallback
@@ -20,34 +21,16 @@ import TimelinePostEdit, {
   TimelinePostSendCallback
 } from '../timeline/TimelinePostEdit';
 
-export interface UserPageUserInfoBase {
-  username: string;
-  nickname: string;
-  description: string;
-  avatarUrl: string;
-  timelineVisibility: TimelineVisibility;
-  editable: boolean;
-}
-
-export interface UserPageUserInfo extends UserPageUserInfoBase {
-  onEdit: () => void;
-  onMember: () => void;
-}
-
-export interface UserPageTimelineBase {
-  posts: TimelinePostInfoEx[];
-  postable: boolean;
-}
-
-export interface UserPageTimeline extends UserPageTimelineBase {
-  onDelete: TimelineDeleteCallback;
-  onPost: TimelinePostSendCallback;
-}
-
 export interface UserPageProps {
   avatarKey?: string | number;
-  userInfo?: UserPageUserInfo;
-  timeline?: UserPageTimeline;
+  timeline?: BaseTimelineInfo;
+  posts?: TimelinePostInfoEx[];
+  manageable: boolean;
+  postable: boolean;
+  onManage: () => void;
+  onMember: () => void;
+  onDelete: TimelineDeleteCallback;
+  onPost: TimelinePostSendCallback;
   error?: string;
 }
 
@@ -88,24 +71,24 @@ const UserPage: React.FC<UserPageProps> = props => {
   if (props.error != null) {
     body = <Typography color="error">{t(props.error)}</Typography>;
   } else {
-    if (props.userInfo != null) {
+    if (props.timeline != null) {
       let timelineBody: React.ReactElement;
-      if (props.timeline != null) {
+      if (props.posts != null) {
         timelineBody = (
           <Timeline
             className={classes.timeline}
             avatarKey={props.avatarKey}
-            posts={props.timeline.posts}
-            onDelete={props.timeline.onDelete}
+            posts={props.posts}
+            onDelete={props.onDelete}
           />
         );
-        if (props.timeline.postable) {
+        if (props.postable) {
           timelineBody = (
             <>
               {timelineBody}
               <div ref={bottomSpaceRef} className={classes.fixHeight} />
               <TimelinePostEdit
-                onPost={props.timeline.onPost}
+                onPost={props.onPost}
                 onHeightChange={height => {
                   if (bottomSpaceRef.current) {
                     bottomSpaceRef.current.style.height = height + 'px';
@@ -123,7 +106,10 @@ const UserPage: React.FC<UserPageProps> = props => {
           <UserInfoCard
             avatarKey={props.avatarKey}
             className={classes.userInfoCard}
-            {...props.userInfo}
+            timeline={props.timeline}
+            manageable={props.manageable}
+            onManage={props.onManage}
+            onMember={props.onMember}
             onHeight={height => {
               if (cardSpaceRef.current) {
                 cardSpaceRef.current.style.height =

@@ -1,12 +1,22 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { apiBaseUrl } from '../config';
 
+export interface UserAuthInfo {
+  username: string;
+  administrator: boolean;
+}
+
 export interface User {
   username: string;
   administrator: boolean;
+  nickname: string;
+  _links: {
+    avatar: string;
+    timeline: string;
+  };
 }
 
 export interface UserWithToken extends User {
@@ -118,10 +128,6 @@ export function userLogout(): void {
   userSubject.next(null);
 }
 
-export function generateAvatarUrl(username: string): string {
-  return `${apiBaseUrl}/users/${username}/avatar`;
-}
-
 export function useUser(): UserWithToken | null | undefined {
   const [user, setUser] = useState<UserWithToken | null | undefined>(
     userSubject.value
@@ -135,32 +141,7 @@ export function useUser(): UserWithToken | null | undefined {
   return user;
 }
 
-// area : nickname cache
-
-export async function fetchNickname(
-  username: string
-): Promise<AxiosResponse<string>> {
-  return axios.get(`${apiBaseUrl}/users/${username}/nickname`);
-}
-
-class NicknameManager {
-  private cache: Map<string, string> = new Map();
-
-  async get(username: string): Promise<string> {
-    const cacheName = this.cache.get(username);
-    if (cacheName) {
-      return cacheName;
-    } else {
-      const res = await fetchNickname(username);
-      const nickname = res.data;
-      this.cache.set(username, nickname);
-      return nickname;
-    }
-  }
-}
-
-const nicknameManager = new NicknameManager();
-
-export async function getNickname(username: string): Promise<string> {
-  return await nicknameManager.get(username);
+export async function fetchUser(username: string): Promise<User> {
+  const res = await axios.get<User>(`${apiBaseUrl}/users/${username}`);
+  return res.data;
 }

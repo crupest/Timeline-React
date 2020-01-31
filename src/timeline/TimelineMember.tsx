@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Avatar,
-  CircularProgress,
   Dialog,
   Divider,
   makeStyles,
@@ -16,19 +15,15 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
+import { User } from '../data/user';
+
 import SearchInput from '../common/SearchInput';
 
-export interface UserInfo {
-  username: string;
-  nickname: string;
-  avatarUrl: string;
-}
-
 export interface TimelineMemberProps {
-  members: UserInfo[] | null;
+  members: User[];
   edit: {
-    onCheckUser: (username: string) => Promise<UserInfo | null>;
-    onAddUser: (user: UserInfo) => Promise<void>;
+    onCheckUser: (username: string) => Promise<User | null>;
+    onAddUser: (user: User) => Promise<void>;
     onRemoveUser: (username: string) => void;
   } | null;
 }
@@ -61,7 +56,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
   const [userSearchState, setUserSearchState] = useState<
     | {
         type: 'user';
-        data: UserInfo;
+        data: User;
       }
     | { type: 'error'; data: string }
     | { type: 'loading' }
@@ -69,9 +64,6 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
   >({ type: 'init' });
 
   const members = props.members;
-  if (members == null) {
-    return <CircularProgress />;
-  }
 
   return (
     <div className={classes.container}>
@@ -79,7 +71,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
         {members.map((member, index) => (
           <ListItem key={member.username} dense>
             <ListItemAvatar>
-              <Avatar src={member.avatarUrl} />
+              <Avatar src={member._links.avatar} />
             </ListItemAvatar>
             <ListItemText
               primary={member.nickname}
@@ -159,7 +151,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                         ) : null}
                         <ListItem dense>
                           <ListItemAvatar>
-                            <Avatar src={u.avatarUrl} />
+                            <Avatar src={u._links.avatar} />
                           </ListItemAvatar>
                           <ListItemText
                             primary={u.nickname}

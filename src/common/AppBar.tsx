@@ -14,12 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 import logo from './logo.svg';
 
-import {
-  UserWithToken,
-  generateAvatarUrl,
-  userLogout,
-  useUser
-} from '../data/user';
+import { UserWithToken, userLogout, useUser } from '../data/user';
 
 const useActionIconStyles = makeStyles({
   icon: {
@@ -75,7 +70,7 @@ const UserArea: React.FC<UserAreaProps> = props => {
   const user = props.user;
   let popupContent;
   if (user) {
-    const avatarUrl = generateAvatarUrl(user.username);
+    const avatarUrl = user._links.avatar;
     popupContent = (
       <Fragment>
         <img className={classes.avatar} src={avatarUrl} />

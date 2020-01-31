@@ -1,33 +1,34 @@
 import axios from 'axios';
 
 import { apiBaseUrl } from '../config';
+import { User } from '../data/user';
+import { BaseTimelineInfo } from '../data/timeline';
 import { TimelineChangePropertyRequest } from '../timeline/TimelinePropertyChangeDialog';
 
-export function changeNickname(
+export async function changeNickname(
   token: string,
   username: string,
   newNickname: string
-): Promise<void> {
-  return axios.put(
-    `${apiBaseUrl}/users/${username}/nickname?token=${token}`,
-    newNickname,
+): Promise<User> {
+  const res = await axios.patch<User>(
+    `${apiBaseUrl}/users/${username}?token=${token}`,
     {
-      headers: {
-        'Content-Type': 'text/plain'
-      }
+      nickname: newNickname
     }
   );
+  return res.data;
 }
 
-export function changeTimelineProperty(
+export async function changeTimelineProperty(
   token: string,
   username: string,
   req: TimelineChangePropertyRequest
-): Promise<void> {
-  return axios.post(
-    `${apiBaseUrl}/users/${username}/timeline/op/property?token=${token}`,
+): Promise<BaseTimelineInfo> {
+  const res = await axios.patch<BaseTimelineInfo>(
+    `${apiBaseUrl}/users/${username}/timeline?token=${token}`,
     req
   );
+  return res.data;
 }
 
 export function changeAvatar(

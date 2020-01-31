@@ -11,22 +11,20 @@ import {
 import { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 
-import {
-  fetchNickname,
-  useUser,
-  generateAvatarUrl,
-  getNickname
-} from '../data/user';
+import { useUser, fetchUser } from '../data/user';
 import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
   canSee,
-  canDelete,
+  canModifyPost,
   canPost,
   fetchPersonalTimeline,
   fetchPersonalTimelinePosts,
   createPersonalTimelinePost,
   deletePersonalTimelinePost,
-  changePersonalTimelineMember
+  canManage,
+  BaseTimelineInfo,
+  addPersonalTimelineMember,
+  removePersonalTimelineMember
 } from '../data/timeline';
 import { changeNickname, changeTimelineProperty, changeAvatar } from './http';
 
@@ -34,12 +32,10 @@ import { kEditItems, EditItem } from './EditItem';
 
 import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 import ChangeAvatarDialog from './ChangeAvatarDialog';
-import UserPage, {
-  UserPageUserInfoBase,
-  UserPageTimelineBase
-} from './UserPage';
+import UserPage from './UserPage';
 import ChangeNicknameDialog from './ChangeNicknameDialog';
-import { TimelineMemberDialog, UserInfo } from '../timeline/TimelineMember';
+import { TimelineMemberDialog } from '../timeline/TimelineMember';
+import { TimelinePostInfoEx } from '../timeline/Timeline';
 
 interface EditSelectDialogProps {
   open: boolean;
@@ -73,56 +69,37 @@ const User: React.FC = _ => {
 
   const user = useUser();
 
-  interface UserInfoData extends UserPageUserInfoBase {
-    members: string[];
-  }
-
   const [dialog, setDialog] = useState<
     null | 'editselect' | EditItem | 'member'
   >(null);
-  const [dialogData, setDialogData] = useState<unknown>(null);
-  const [userInfo, setUserInfo] = useState<UserInfoData>();
-  const [timeline, setTimeline] = useState<UserPageTimelineBase>();
+  const [timeline, setTimeline] = useState<BaseTimelineInfo | undefined>(
+    undefined
+  );
+  const [posts, setPosts] = useState<TimelinePostInfoEx[] | undefined>(
+    undefined
+  );
   const [error, setError] = useState<string | undefined>(undefined);
   const [avatarKey, setAvatarKey] = useState<number>(0);
 
   useEffect(() => {
     let subscribe = true;
-    Promise.all([
-      fetchPersonalTimeline(username),
-      fetchNickname(username)
-    ]).then(
-      ([res1, res2]) => {
+    fetchPersonalTimeline(username).then(
+      res => {
         if (subscribe) {
-          const ti = res1.data;
-          if (!canSee(user?.username, ti)) {
+          const ti = res.data;
+          if (!canSee(user, ti)) {
             setError('timeline.messageCantSee');
           } else {
-            setUserInfo({
-              username: username,
-              nickname: res2.data,
-              avatarUrl: generateAvatarUrl(username),
-              description: ti.description,
-              timelineVisibility: ti.visibility,
-              editable:
-                user != null &&
-                (user.username === username || user.administrator),
-              members: ti.members
-            });
+            setTimeline(ti);
             fetchPersonalTimelinePosts(username, user?.token).then(
               data => {
                 if (subscribe) {
-                  setTimeline({
-                    posts: data.map(post => ({
+                  setPosts(
+                    data.map(post => ({
                       ...post,
-                      deletable: canDelete(
-                        user && user.username,
-                        username,
-                        post.author
-                      )
-                    })),
-                    postable: canPost(user?.username, ti)
-                  });
+                      deletable: canModifyPost(user, ti, post)
+                    }))
+                  );
                 }
               },
               error => {
@@ -161,30 +138,6 @@ const User: React.FC = _ => {
     }
   }, [timeline]);
 
-  useEffect(() => {
-    if (dialog === 'member') {
-      if (userInfo == null) {
-        throw new Error('No user info but open member dialog.');
-      }
-      setDialogData(null);
-      Promise.all(
-        userInfo.members.map(memberUsername => {
-          return getNickname(memberUsername).then(
-            memberNickname =>
-              ({
-                username: memberUsername,
-                nickname: memberNickname,
-                avatarUrl: generateAvatarUrl(memberUsername)
-              } as UserInfo)
-          );
-        })
-      ).then(members => {
-        members.unshift(userInfo);
-        setDialogData(members);
-      });
-    }
-  }, [dialog]);
-
   const [snackBar, setSnackBar] = useState<string | null>(null);
 
   let dialogElement: React.ReactElement | undefined;
@@ -200,13 +153,12 @@ const User: React.FC = _ => {
         close={closeDialogHandler}
         onProcess={newNickname => {
           const p = changeNickname(user!.token, username, newNickname);
-          p.then(_ => {
-            setUserInfo({
-              ...userInfo!,
-              nickname: newNickname
+          return p.then(u => {
+            setTimeline({
+              ...timeline!,
+              owner: u
             });
           });
-          return p;
         }}
       />
     );
@@ -226,19 +178,16 @@ const User: React.FC = _ => {
         open
         close={closeDialogHandler}
         oldInfo={{
-          visibility: userInfo!.timelineVisibility,
-          description: userInfo!.description
+          visibility: timeline!.visibility,
+          description: timeline!.description
         }}
         onProcess={async req => {
-          await changeTimelineProperty(user!.token, username, req);
-          const newUserInfo: UserInfoData = { ...userInfo! };
-          if (req.visibility != null) {
-            newUserInfo.timelineVisibility = req.visibility;
-          }
-          if (req.description != null) {
-            newUserInfo.description = req.description;
-          }
-          setUserInfo(newUserInfo);
+          const newTimeline = await changeTimelineProperty(
+            user!.token,
+            username,
+            req
+          );
+          setTimeline(newTimeline);
         }}
       />
     );
@@ -258,66 +207,52 @@ const User: React.FC = _ => {
       <TimelineMemberDialog
         open
         onClose={closeDialogHandler}
-        members={dialogData as UserInfo[]}
+        members={[timeline!.owner, ...timeline!.members]}
         edit={
-          userInfo!.editable
+          canManage(user, timeline!)
             ? {
                 onCheckUser: u => {
-                  return getNickname(u)
-                    .catch(e => {
-                      if (
-                        extractStatusCode(e) === 404 ||
-                        extractErrorCode(e) === 11020101
-                      ) {
-                        return Promise.resolve(null);
-                      } else {
-                        return Promise.reject(e);
-                      }
-                    })
-                    .then(nickname => {
-                      return nickname === null
-                        ? null
-                        : ({
-                            username: u,
-                            nickname: nickname,
-                            avatarUrl: generateAvatarUrl(u)
-                          } as UserInfo);
-                    });
+                  return fetchUser(u).catch(e => {
+                    if (
+                      extractStatusCode(e) === 404 ||
+                      extractErrorCode(e) === 11020101
+                    ) {
+                      return Promise.resolve(null);
+                    } else {
+                      return Promise.reject(e);
+                    }
+                  });
                 },
                 onAddUser: u => {
-                  return changePersonalTimelineMember(
+                  return addPersonalTimelineMember(
                     username,
-                    { add: [u.username] },
+                    u.username,
                     user!.token
                   ).then(_ => {
-                    const oldMembers = dialogData as UserInfo[];
+                    const oldMembers = timeline!.members;
                     const newMembers = oldMembers.slice();
                     newMembers.push(u);
-                    setUserInfo({
-                      ...userInfo!,
-                      members: newMembers.map(m => m.username).slice(1)
+                    setTimeline({
+                      ...timeline!,
+                      members: newMembers
                     });
-                    setDialogData(newMembers);
                   });
                 },
                 onRemoveUser: u => {
-                  changePersonalTimelineMember(
-                    username,
-                    { remove: [u] },
-                    user!.token
-                  ).then(_ => {
-                    const oldMembers = dialogData as UserInfo[];
-                    const newMembers = oldMembers.slice();
-                    newMembers.splice(
-                      newMembers.findIndex(m => m.username === u),
-                      1
-                    );
-                    setUserInfo({
-                      ...userInfo!,
-                      members: newMembers.map(m => m.username).slice(1)
-                    });
-                    setDialogData(newMembers);
-                  });
+                  removePersonalTimelineMember(username, u, user!.token).then(
+                    _ => {
+                      const oldMembers = timeline!.members;
+                      const newMembers = oldMembers.slice();
+                      newMembers.splice(
+                        newMembers.findIndex(m => m.username === u),
+                        1
+                      );
+                      setTimeline({
+                        ...timeline!,
+                        members: newMembers
+                      });
+                    }
+                  );
                 }
               }
             : null
@@ -331,60 +266,39 @@ const User: React.FC = _ => {
       <UserPage
         avatarKey={avatarKey}
         error={error}
-        userInfo={
-          userInfo != null
-            ? {
-                ...userInfo,
-                onEdit: () => {
-                  setDialog('editselect');
-                },
-                onMember: () => {
-                  setDialog('member');
-                }
-              }
-            : undefined
-        }
-        timeline={
-          timeline != null
-            ? {
-                ...timeline,
-                onDelete: (index, id) => {
-                  deletePersonalTimelinePost(username, id, user!.token).then(
-                    _ => {
-                      const newPosts = timeline.posts.slice();
-                      newPosts.splice(index, 1);
-                      setTimeline({
-                        ...timeline,
-                        posts: newPosts
-                      });
-                    },
-                    () => {
-                      setSnackBar('Failed to delete post.'); // TODO: Translation
-                    }
-                  );
-                },
-                onPost: async content => {
-                  const newPost = await createPersonalTimelinePost(
-                    username,
-                    user!,
-                    {
-                      content: content
-                    }
-                  );
-                  const posts = timeline.posts;
-                  const newPostList = posts.slice();
-                  newPostList.push({
-                    ...newPost,
-                    deletable: true
-                  });
-                  setTimeline({
-                    ...timeline,
-                    posts: newPostList
-                  });
-                }
-              }
-            : undefined
-        }
+        timeline={timeline}
+        posts={posts}
+        manageable={timeline != null && canManage(user, timeline)}
+        postable={timeline != null && canPost(user, timeline)}
+        onDelete={(index, id) => {
+          deletePersonalTimelinePost(username, id, user!.token).then(
+            _ => {
+              const newPosts = posts!.slice();
+              newPosts.splice(index, 1);
+              setPosts(newPosts);
+            },
+            () => {
+              setSnackBar('Failed to delete post.'); // TODO: Translation
+            }
+          );
+        }}
+        onPost={async content => {
+          const newPost = await createPersonalTimelinePost(username, user!, {
+            content: content
+          });
+          const newPosts = posts!.slice();
+          newPosts.push({
+            ...newPost,
+            deletable: true
+          });
+          setPosts(newPosts);
+        }}
+        onManage={() => {
+          setDialog('editselect');
+        }}
+        onMember={() => {
+          setDialog('member');
+        }}
       />
       {dialogElement}
       {snackBar && (

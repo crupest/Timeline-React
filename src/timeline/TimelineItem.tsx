@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import Color from 'color';
 
-import { generateAvatarUrl } from '../data/user';
 import { TimelinePostInfo } from '../data/timeline';
 
 const timelineColor = Color('#0089ff');
@@ -160,13 +159,13 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
             {props.post.time.toLocaleString(i18n.languages)}
           </Typography>
           <Typography variant="body2" className={classes.nickname}>
-            {props.post.author}
+            {props.post.author.nickname}
           </Typography>
         </div>
         <div className={classes.contentAreaBody}>
           <img
             key={props.avatarKey}
-            src={generateAvatarUrl(props.post.author)}
+            src={props.post.author._links.avatar}
             className={classes.avatar}
           />
           <Typography className={classes.trueContent} variant="body1">

@@ -17,8 +17,8 @@ import OperationDialog from '../common/OperationDialog';
 import { User, UserWithToken } from '../data/user';
 import { apiBaseUrl } from '../config';
 
-async function fetchUserList(token: string): Promise<User[]> {
-  const res = await axios.get(`${apiBaseUrl}/users?token=${token}`);
+async function fetchUserList(_token: string): Promise<User[]> {
+  const res = await axios.get(`${apiBaseUrl}/users`);
   return res.data;
 }
 
@@ -28,11 +28,12 @@ interface CreateUserInfo {
   administrator: boolean;
 }
 
-function createUser(user: CreateUserInfo, token: string): Promise<void> {
-  return axios.put(`${apiBaseUrl}/users/${user.username}?token=${token}`, {
+async function createUser(user: CreateUserInfo, _token: string): Promise<User> {
+  const res = await axios.post<User>(`${apiBaseUrl}/users/${user.username}`, {
     password: user.password,
     administrator: user.administrator
   });
+  return res.data;
 }
 
 function deleteUser(username: string, token: string): Promise<void> {
@@ -44,9 +45,8 @@ function changeUsername(
   newUsername: string,
   token: string
 ): Promise<void> {
-  return axios.post(`${apiBaseUrl}/userop/changeusername?token=${token}`, {
-    oldUsername,
-    newUsername
+  return axios.patch(`${apiBaseUrl}/users/${oldUsername}?token=${token}`, {
+    username: newUsername
   });
 }
 
@@ -375,8 +375,8 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
             open
             close={() => setDialog(null)}
             process={async user => {
-              await createUser(user, token);
-              setUsers(oldUsers => [...oldUsers!, user]);
+              const u = await createUser(user, token);
+              setUsers(oldUsers => [...oldUsers!, u]);
             }}
           />
         );

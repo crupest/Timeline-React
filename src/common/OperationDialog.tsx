@@ -162,12 +162,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const OperationDialog: React.FC<OperationDialogProps> = props => {
-  const inputScheme = props.inputScheme;
-  if (inputScheme == null) {
-    throw new Error(
-      'InputScheme of operation dialog is null or undefined. Use empty array if no input needed, which is the default value.'
-    );
-  }
+  const inputScheme = props.inputScheme ?? [];
 
   const classes = useStyles();
   const { t } = useTranslation();
@@ -228,17 +223,12 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
     };
 
     const testErrorInfo = (errorInfo: OperationInputErrorInfo): boolean => {
-      if (props.inputScheme != null) {
-        const inputScheme = props.inputScheme;
-        for (let i = 0; i < inputScheme.length; i++) {
-          if (inputScheme[i].type === 'text' && errorInfo[i] != null) {
-            return true;
-          }
+      for (let i = 0; i < inputScheme.length; i++) {
+        if (inputScheme[i].type === 'text' && errorInfo[i] != null) {
+          return true;
         }
-        return false;
-      } else {
-        return false;
       }
+      return false;
     };
 
     const calculateError = (
