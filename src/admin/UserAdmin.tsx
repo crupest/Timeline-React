@@ -28,11 +28,8 @@ interface CreateUserInfo {
   administrator: boolean;
 }
 
-async function createUser(user: CreateUserInfo, _token: string): Promise<User> {
-  const res = await axios.post<User>(`${apiBaseUrl}/users/${user.username}`, {
-    password: user.password,
-    administrator: user.administrator
-  });
+async function createUser(user: CreateUserInfo, token: string): Promise<User> {
+  const res = await axios.post<User>(`${apiBaseUrl}/userop/createuser?token=${token}`, user);
   return res.data;
 }
 
