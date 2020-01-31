@@ -130,13 +130,13 @@ const User: React.FC = _ => {
   }, [username]);
 
   useEffect(() => {
-    if (timeline != null) {
+    if (posts != null) {
       window.scrollTo(
         0,
         document.body.scrollHeight || document.documentElement.scrollHeight
       );
     }
-  }, [timeline]);
+  }, [posts]);
 
   const [snackBar, setSnackBar] = useState<string | null>(null);
 
