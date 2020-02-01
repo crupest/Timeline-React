@@ -58,36 +58,39 @@ const kVerifyTokenUrl = '/token/verify';
 const createTokenUrl = apiBaseUrl + kCreateTokenUrl;
 const verifyTokenUrl = apiBaseUrl + kVerifyTokenUrl;
 
-async function verifyToken(token: string): Promise<User> {
-  const res = await axios.post(verifyTokenUrl, {
-    token: token
-  } as VerifyTokenRequest);
-  const d = res.data as VerifyTokenResponse;
-  return d.user;
+function verifyToken(token: string): Promise<User> {
+  return axios
+    .post<VerifyTokenResponse>(verifyTokenUrl, {
+      token: token
+    } as VerifyTokenRequest)
+    .then(res => res.data.user);
 }
 
 const TOKEN_STORAGE_KEY = 'token';
 
-export async function checkUserLoginState(): Promise<UserWithToken | null> {
+export function checkUserLoginState(): Promise<UserWithToken | null> {
   if (getCurrentUser() !== undefined)
     throw new Error("Already checked user. Can't check twice.");
 
   const savedToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
-  let user: UserWithToken | null = null;
-  try {
-    if (savedToken) {
-      const res = await verifyToken(savedToken);
-      user = {
-        ...res,
-        token: savedToken
-      };
-    }
-  } catch (e) {
-    console.error(e);
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+  if (savedToken) {
+    return verifyToken(savedToken).then(
+      u => {
+        const user: UserWithToken = {
+          ...u,
+          token: savedToken
+        };
+        userSubject.next(user);
+        return user;
+      },
+      e => {
+        console.error(e);
+        window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+        return null;
+      }
+    );
   }
-  userSubject.next(user);
-  return user;
+  return Promise.resolve(null);
 }
 
 export class BadCredentialError {
@@ -154,7 +157,8 @@ export function useUser(): UserWithToken | null | undefined {
   return user;
 }
 
-export async function fetchUser(username: string): Promise<User> {
-  const res = await axios.get<User>(`${apiBaseUrl}/users/${username}`);
-  return res.data;
+export function fetchUser(username: string): Promise<User> {
+  return axios
+    .get<User>(`${apiBaseUrl}/users/${username}`)
+    .then(res => res.data);
 }
