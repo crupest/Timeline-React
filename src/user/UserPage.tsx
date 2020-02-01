@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import clsx from 'clsx';
 import {
   Theme,
   CircularProgress,
@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   topSpace: {
     height: appBarHeight + 'px'
   },
-
   userInfoCard: {
     margin: theme.spacing(cardMarginRatio),
     width: `calc(100% - ${theme.spacing(cardMarginRatio) * 2}px)`,
@@ -129,7 +128,7 @@ const UserPage: React.FC<UserPageProps> = props => {
   return (
     <>
       <AppBar />
-      <div className={(classes.fixHeight, classes.topSpace)} />
+      <div className={clsx(classes.fixHeight, classes.topSpace)} />
       {body}
     </>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
-import { createMuiTheme, CircularProgress } from '@material-ui/core';
+import { createMuiTheme } from '@material-ui/core';
 import { ThemeProvider, StylesProvider } from '@material-ui/styles';
 import { teal, orange } from '@material-ui/core/colors';
 
@@ -12,10 +12,7 @@ import Settings from './settings/Settings';
 import User from './user/User';
 
 import { useUser } from './data/user';
-
-const LoadingPage: React.FC = () => {
-  return <CircularProgress />;
-};
+import LoadingPage from './common/LoadingPage';
 
 const NoMatch: React.FC = () => {
   return (
