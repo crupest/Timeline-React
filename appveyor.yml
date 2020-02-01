@@ -1,4 +1,6 @@
-imgage: Ubuntu
+version: 0.0.{build}
+
+image: Ubuntu
 
 cache:
   - node_modules 
