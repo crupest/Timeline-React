@@ -1,0 +1,17 @@
+imgage: Ubuntu
+
+cache:
+  - node_modules 
+
+init:
+  - yarn --version
+
+install:
+  - yarn
+
+build_script:
+  - yarn build
+
+artifacts:
+  - path: dist
+    name: web
