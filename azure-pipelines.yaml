@@ -48,4 +48,3 @@ stages:
         ssh timeline@crupest.xyz 'rm -rf /var/www/timeline/*'
         scp -r $PIPELINE_WORKSPACE/timeline/* timeline@crupest.xyz:/var/www/timeline/
       displayName: Copy Files
-      failOnStderr: true
