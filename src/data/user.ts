@@ -74,22 +74,27 @@ export function checkUserLoginState(): Promise<UserWithToken | null> {
 
   const savedToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
   if (savedToken) {
-    return verifyToken(savedToken).then(
-      u => {
-        const user: UserWithToken = {
-          ...u,
-          token: savedToken
-        };
-        userSubject.next(user);
-        return user;
-      },
-      e => {
-        console.error(e);
-        window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-        return null;
-      }
-    );
+    return verifyToken(savedToken)
+      .then(
+        u => {
+          const user: UserWithToken = {
+            ...u,
+            token: savedToken
+          };
+          return user;
+        },
+        e => {
+          console.error(e);
+          window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+          return null;
+        }
+      )
+      .then(u => {
+        userSubject.next(u);
+        return u;
+      });
   }
+  userSubject.next(null);
   return Promise.resolve(null);
 }
 
