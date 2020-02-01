@@ -11,20 +11,13 @@ code {
     monospace;
 }
 
-html {
-  height: 100%;
-}
-
 body {
   margin: 0;
-  height: 100%;
 }
 
 #app {
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  height: 100%;
 }
 
 .fill-remaining-space {

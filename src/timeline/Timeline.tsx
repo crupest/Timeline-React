@@ -22,8 +22,7 @@ export interface TimelineProps {
 const useStyles = makeStyles((_: Theme) => ({
   container: {
     display: 'flex',
-    flexDirection: 'column',
-    overflow: 'auto'
+    flexDirection: 'column'
   }
 }));
 
