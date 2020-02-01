@@ -48,6 +48,11 @@ const translation: TranslationResource = {
     logout: 'logout',
     rememberMe: 'Remember Me'
   },
+  login: {
+    emptyUsername: "Username can't be empty.",
+    emptyPassword: "Password can't be empty.",
+    badCredential: 'Username or password is invalid.'
+  },
   userPage: {
     dialogEditSelect: {
       title: 'Change what?',

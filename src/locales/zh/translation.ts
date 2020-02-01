@@ -47,6 +47,11 @@ const translation: TranslationResource = {
     logout: '注销',
     rememberMe: '记住我'
   },
+  login: {
+    emptyUsername: '用户名不能为空。',
+    emptyPassword: '密码不能为空。',
+    badCredential: '用户名或密码错误。'
+  },
   userPage: {
     dialogEditSelect: {
       title: '修改什么？',

@@ -45,6 +45,11 @@ export default interface TranslationResource {
     logout: string;
     rememberMe: string;
   };
+  login: {
+    emptyUsername: string;
+    emptyPassword: string;
+    badCredential: string;
+  };
   userPage: {
     dialogEditSelect: {
       title: string;

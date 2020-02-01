@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useState, useEffect } from 'react';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -90,7 +90,13 @@ export async function checkUserLoginState(): Promise<UserWithToken | null> {
   return user;
 }
 
-export async function userLogin(
+export class BadCredentialError {
+  constructor(public innerError: Error) {}
+
+  message = 'login.badCredential';
+}
+
+export function userLogin(
   credentials: LoginCredentials,
   rememberMe: boolean
 ): Promise<UserWithToken> {
@@ -100,21 +106,28 @@ export async function userLogin(
   if (getCurrentUser()) {
     throw new Error('Already login.');
   }
-  const res = await axios.post<CreateTokenResponse>(
-    createTokenUrl,
-    credentials
-  );
-  const body = res.data;
-  const token = body.token;
-  if (rememberMe) {
-    window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
-  }
-  const user = {
-    ...body.user,
-    token
-  };
-  userSubject.next(user);
-  return user;
+  return axios
+    .post<CreateTokenResponse>(createTokenUrl, credentials)
+    .catch(e => {
+      const error = e as AxiosError;
+      if (error.response?.data?.code === 11010101) {
+        throw new BadCredentialError(e);
+      }
+      throw e;
+    })
+    .then(res => {
+      const body = res.data;
+      const token = body.token;
+      if (rememberMe) {
+        window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
+      }
+      const user = {
+        ...body.user,
+        token
+      };
+      userSubject.next(user);
+      return user;
+    });
 }
 
 export function userLogout(): void {

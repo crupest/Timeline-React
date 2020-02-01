@@ -53,12 +53,20 @@ const Login: React.FC = _ => {
   const { t } = useTranslation();
   const history = useHistory();
   const [username, setUsername] = useState<string>('');
+  const [usernameDirty, setUsernameDirty] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
+  const [passwordDirty, setPasswordDirty] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [process, setProcess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   function onSubmit(event: React.SyntheticEvent): void {
+    if (username === '' || password === '') {
+      setUsernameDirty(true);
+      setPasswordDirty(true);
+      return;
+    }
+
     setProcess(true);
     userLogin(
       {
@@ -72,7 +80,7 @@ const Login: React.FC = _ => {
       },
       e => {
         setProcess(false);
-        setError(e.toString());
+        setError(e.message);
       }
     );
     event.preventDefault();
@@ -93,8 +101,15 @@ const Login: React.FC = _ => {
               disabled={process}
               onChange={e => {
                 setUsername(e.target.value);
+                setUsernameDirty(true);
               }}
               value={username}
+              error={usernameDirty && username === ''}
+              helperText={
+                usernameDirty && username === ''
+                  ? t('login.emptyUsername')
+                  : undefined
+              }
               fullWidth
             />
             <TextField
@@ -103,8 +118,15 @@ const Login: React.FC = _ => {
               type="password"
               onChange={e => {
                 setPassword(e.target.value);
+                setPasswordDirty(true);
               }}
               value={password}
+              error={passwordDirty && password === ''}
+              helperText={
+                passwordDirty && password === ''
+                  ? t('login.emptyPassword')
+                  : undefined
+              }
               fullWidth
             />
             <FormControlLabel
@@ -116,7 +138,7 @@ const Login: React.FC = _ => {
               control={<Checkbox />}
               label={t('user.rememberMe')}
             />
-            {error ? <div className={classes.error}>{error}</div> : null}
+            {error ? <div className={classes.error}>{t(error)}</div> : null}
             <div className={classes.submitBox}>
               {process ? (
                 <CircularProgress size={50} />
