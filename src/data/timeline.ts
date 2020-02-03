@@ -1,17 +1,20 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 import { apiBaseUrl } from '../config';
-import { User, UserAuthInfo } from './user';
+import { User, UserAuthInfo, getCurrentUser, UserWithToken } from './user';
 
 export const kTimelineVisibilities = ['Public', 'Register', 'Private'] as const;
 
 export type TimelineVisibility = typeof kTimelineVisibilities[number];
 
-export interface BaseTimelineInfo {
+export interface PersonalTimelineInfo {
   description: string;
   owner: User;
   visibility: TimelineVisibility;
   members: User[];
+  _links: {
+    posts: string;
+  };
 }
 
 export interface TimelinePostInfo {
@@ -21,12 +24,50 @@ export interface TimelinePostInfo {
   author: User;
 }
 
-export function fetchPersonalTimeline(
-  username: string
-): Promise<AxiosResponse<BaseTimelineInfo>> {
-  return axios.get<BaseTimelineInfo>(
-    `${apiBaseUrl}/users/${username}/timeline`
-  );
+export interface CreatePostRequest {
+  content: string;
+  time?: Date;
+}
+
+export interface TimelineChangePropertyRequest {
+  visibility?: TimelineVisibility;
+  description?: string;
+}
+
+interface TimelineServiceTemplate<
+  TTimeline,
+  TChangePropertyRequest,
+  TPost = TimelinePostInfo
+> {
+  changeProperty(
+    name: string,
+    request: TChangePropertyRequest
+  ): Promise<TTimeline>;
+  fetch(name: string): Promise<TTimeline>;
+  fetchPosts(name: string): Promise<TPost[]>;
+  createPost(name: string, post: CreatePostRequest): Promise<TPost>;
+  deletePost(name: string, id: number): Promise<void>;
+  addMember(name: string, username: string): Promise<void>;
+  removeMember(name: string, username: string): Promise<void>;
+
+  isMemberOf(username: string, timeline: TTimeline): boolean;
+  hasReadPermission(
+    user: UserAuthInfo | null | undefined,
+    timeline: TTimeline
+  ): boolean;
+  hasPostPermission(
+    user: UserAuthInfo | null | undefined,
+    timeline: TTimeline
+  ): boolean;
+  hasManagePermission(
+    user: UserAuthInfo | null | undefined,
+    timeline: TTimeline
+  ): boolean;
+  hasModifyPostPermission(
+    user: UserAuthInfo | null | undefined,
+    timeline: TTimeline,
+    post: TPost
+  ): boolean;
 }
 
 interface RawTimelinePostInfo {
@@ -34,6 +75,11 @@ interface RawTimelinePostInfo {
   content: string;
   time: string;
   author: User;
+}
+
+interface RawCreatePostRequest {
+  content: string;
+  time?: string;
 }
 
 function processRawTimelinePostInfo(
@@ -45,142 +91,151 @@ function processRawTimelinePostInfo(
   };
 }
 
-export async function fetchPersonalTimelinePosts(
-  username: string,
-  token: string | null | undefined
-): Promise<TimelinePostInfo[]> {
-  const res = await axios.get<RawTimelinePostInfo[]>(
-    token == null
-      ? `${apiBaseUrl}/users/${username}/timeline/posts`
-      : `${apiBaseUrl}/users/${username}/timeline/posts?token=${token}`
-  );
-  return res.data.map(p => processRawTimelinePostInfo(p));
-}
+export class PersonalTimelineService
+  implements
+    TimelineServiceTemplate<
+      PersonalTimelineInfo,
+      TimelineChangePropertyRequest
+    > {
+  private checkUser(): UserWithToken {
+    const user = getCurrentUser();
+    if (user == null) {
+      throw new Error('You must login to perform the operation.');
+    }
+    return user;
+  }
 
-export function isMemberOf(
-  user: UserAuthInfo | null | undefined,
-  timeline: BaseTimelineInfo
-): boolean {
-  if (user == null) {
-    return false;
-  } else {
-    const { username } = user;
+  changeProperty(
+    name: string,
+    req: TimelineChangePropertyRequest
+  ): Promise<PersonalTimelineInfo> {
+    const user = this.checkUser();
+
+    return axios
+      .patch<PersonalTimelineInfo>(
+        `${apiBaseUrl}/users/${name}/timeline?token=${user.token}`,
+        req
+      )
+      .then(res => res.data);
+  }
+
+  fetch(name: string): Promise<PersonalTimelineInfo> {
+    return axios
+      .get<PersonalTimelineInfo>(`${apiBaseUrl}/users/${name}/timeline`)
+      .then(res => res.data);
+  }
+
+  fetchPosts(name: string): Promise<TimelinePostInfo[]> {
+    const token = getCurrentUser()?.token;
+    return axios
+      .get<RawTimelinePostInfo[]>(
+        token == null
+          ? `${apiBaseUrl}/users/${name}/timeline/posts`
+          : `${apiBaseUrl}/users/${name}/timeline/posts?token=${token}`
+      )
+      .then(res => res.data.map(p => processRawTimelinePostInfo(p)));
+  }
+
+  createPost(
+    name: string,
+    request: CreatePostRequest
+  ): Promise<TimelinePostInfo> {
+    const user = this.checkUser();
+
+    const rawReq: RawCreatePostRequest = { content: request.content };
+    if (request.time != null) {
+      rawReq.time = request.time.toISOString();
+    }
+    return axios
+      .post<RawTimelinePostInfo>(
+        `${apiBaseUrl}/users/${name}/timeline/posts?token=${user.token}`,
+        rawReq
+      )
+      .then(res => processRawTimelinePostInfo(res.data));
+  }
+
+  deletePost(name: string, id: number): Promise<void> {
+    const user = this.checkUser();
+
+    return axios.delete(
+      `${apiBaseUrl}/users/${name}/timeline/posts/${id}?token=${user.token}`
+    );
+  }
+
+  addMember(name: string, username: string): Promise<void> {
+    const user = this.checkUser();
+
+    return axios.put(
+      `${apiBaseUrl}/users/${name}/timeline/members/${username}?token=${user.token}`
+    );
+  }
+
+  removeMember(name: string, username: string): Promise<void> {
+    const user = this.checkUser();
+
+    return axios.delete(
+      `${apiBaseUrl}/users/${name}/timeline/members/${username}?token=${user.token}`
+    );
+  }
+
+  isMemberOf(username: string, timeline: PersonalTimelineInfo): boolean {
     return timeline.members.findIndex(m => m.username == username) >= 0;
   }
-}
 
-export function canSee(
-  user: UserAuthInfo | null | undefined,
-  timeline: BaseTimelineInfo
-): boolean {
-  if (user != null && user.administrator) return true;
+  hasReadPermission(
+    user: UserAuthInfo | null | undefined,
+    timeline: PersonalTimelineInfo
+  ): boolean {
+    if (user != null && user.administrator) return true;
 
-  const { visibility } = timeline;
-  if (visibility === 'Public') {
-    return true;
-  } else if (visibility === 'Register') {
-    if (user != null) return true;
-  } else if (visibility === 'Private') {
-    if (isMemberOf(user, timeline)) {
+    const { visibility } = timeline;
+    if (visibility === 'Public') {
       return true;
+    } else if (visibility === 'Register') {
+      if (user != null) return true;
+    } else if (visibility === 'Private') {
+      if (user != null && this.isMemberOf(user.username, timeline)) {
+        return true;
+      }
     }
+    return false;
   }
-  return false;
-}
 
-export function canManage(
-  user: UserAuthInfo | null | undefined,
-  timeline: BaseTimelineInfo
-): boolean {
-  if (user != null && user.administrator) return true;
+  hasPostPermission(
+    user: UserAuthInfo | null | undefined,
+    timeline: PersonalTimelineInfo
+  ): boolean {
+    if (user != null && user.administrator) return true;
 
-  return user != null && user.username == timeline.owner.username;
-}
-
-export function canPost(
-  user: UserAuthInfo | null | undefined,
-  timeline: BaseTimelineInfo
-): boolean {
-  if (user != null && user.administrator) return true;
-
-  return (
-    user != null &&
-    (timeline.owner.username === user.username || isMemberOf(user, timeline))
-  );
-}
-
-export function canModifyPost(
-  user: UserAuthInfo | null | undefined,
-  timeline: BaseTimelineInfo,
-  post: TimelinePostInfo
-): boolean {
-  if (user != null && user.administrator) return true;
-
-  return (
-    user != null &&
-    (user.username === timeline.owner.username ||
-      user.username === post.author.username)
-  );
-}
-
-interface RawCreatePostRequest {
-  content: string;
-  time?: string;
-}
-
-export interface CreatePostAuthor {
-  username: string;
-  token: string;
-}
-
-export interface CreatePostRequest {
-  content: string;
-  time?: Date;
-}
-
-export async function createPersonalTimelinePost(
-  username: string,
-  author: CreatePostAuthor,
-  request: CreatePostRequest
-): Promise<TimelinePostInfo> {
-  const rawReq: RawCreatePostRequest = { content: request.content };
-  if (request.time != null) {
-    rawReq.time = request.time.toISOString();
+    return (
+      user != null &&
+      (timeline.owner.username === user.username ||
+        this.isMemberOf(user.username, timeline))
+    );
   }
-  const res = await axios.post<RawTimelinePostInfo>(
-    `${apiBaseUrl}/users/${username}/timeline/posts?token=${author.token}`,
-    rawReq
-  );
-  const body = res.data;
-  return processRawTimelinePostInfo(body);
+
+  hasManagePermission(
+    user: UserAuthInfo | null | undefined,
+    timeline: PersonalTimelineInfo
+  ): boolean {
+    if (user != null && user.administrator) return true;
+
+    return user != null && user.username == timeline.owner.username;
+  }
+
+  hasModifyPostPermission(
+    user: UserAuthInfo | null | undefined,
+    timeline: PersonalTimelineInfo,
+    post: TimelinePostInfo
+  ): boolean {
+    if (user != null && user.administrator) return true;
+
+    return (
+      user != null &&
+      (user.username === timeline.owner.username ||
+        user.username === post.author.username)
+    );
+  }
 }
 
-export async function deletePersonalTimelinePost(
-  username: string,
-  id: number,
-  token: string
-): Promise<void> {
-  await axios.delete(
-    `${apiBaseUrl}/users/${username}/timeline/posts/${id}?token=${token}`
-  );
-}
-
-export async function addPersonalTimelineMember(
-  username: string,
-  memberUsername: string,
-  token: string
-): Promise<void> {
-  await axios.put(
-    `${apiBaseUrl}/users/${username}/timeline/members/${memberUsername}?token=${token}`
-  );
-}
-
-export async function removePersonalTimelineMember(
-  username: string,
-  memberUsername: string,
-  token: string
-): Promise<void> {
-  await axios.delete(
-    `${apiBaseUrl}/users/${username}/timeline/members/${memberUsername}?token=${token}`
-  );
-}
+export const personalTimelineService = new PersonalTimelineService();

@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { TimelineVisibility, kTimelineVisibilities } from '../data/timeline';
+import {
+  TimelineVisibility,
+  kTimelineVisibilities,
+  TimelineChangePropertyRequest
+} from '../data/timeline';
 
 import TimelineVisibilityIcon from './TimelineVisibilityIcon';
 import OperationDialog, {
@@ -10,11 +14,6 @@ import OperationDialog, {
 export interface TimelinePropertyInfo {
   visibility: TimelineVisibility;
   description: string;
-}
-
-export interface TimelineChangePropertyRequest {
-  visibility?: TimelineVisibility;
-  description?: string;
 }
 
 export interface TimelinePropertyChangeDialogProps {

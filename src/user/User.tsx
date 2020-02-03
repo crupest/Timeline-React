@@ -14,19 +14,10 @@ import { useTranslation } from 'react-i18next';
 import { useUser, fetchUser } from '../data/user';
 import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
-  canSee,
-  canModifyPost,
-  canPost,
-  fetchPersonalTimeline,
-  fetchPersonalTimelinePosts,
-  createPersonalTimelinePost,
-  deletePersonalTimelinePost,
-  canManage,
-  BaseTimelineInfo,
-  addPersonalTimelineMember,
-  removePersonalTimelineMember
+  personalTimelineService,
+  PersonalTimelineInfo
 } from '../data/timeline';
-import { changeNickname, changeTimelineProperty, changeAvatar } from './http';
+import { changeNickname, changeAvatar } from './http';
 
 import { kEditItems, EditItem } from './EditItem';
 
@@ -72,7 +63,7 @@ const User: React.FC = _ => {
   const [dialog, setDialog] = useState<
     null | 'editselect' | EditItem | 'member'
   >(null);
-  const [timeline, setTimeline] = useState<BaseTimelineInfo | undefined>(
+  const [timeline, setTimeline] = useState<PersonalTimelineInfo | undefined>(
     undefined
   );
   const [posts, setPosts] = useState<TimelinePostInfoEx[] | undefined>(
@@ -83,21 +74,24 @@ const User: React.FC = _ => {
 
   useEffect(() => {
     let subscribe = true;
-    fetchPersonalTimeline(username).then(
-      res => {
+    personalTimelineService.fetch(username).then(
+      ti => {
         if (subscribe) {
-          const ti = res.data;
-          if (!canSee(user, ti)) {
+          if (!personalTimelineService.hasReadPermission(user, ti)) {
             setError('timeline.messageCantSee');
           } else {
             setTimeline(ti);
-            fetchPersonalTimelinePosts(username, user?.token).then(
+            personalTimelineService.fetchPosts(username).then(
               data => {
                 if (subscribe) {
                   setPosts(
                     data.map(post => ({
                       ...post,
-                      deletable: canModifyPost(user, ti, post)
+                      deletable: personalTimelineService.hasModifyPostPermission(
+                        user,
+                        ti,
+                        post
+                      )
                     }))
                   );
                 }
@@ -181,13 +175,12 @@ const User: React.FC = _ => {
           visibility: timeline!.visibility,
           description: timeline!.description
         }}
-        onProcess={async req => {
-          const newTimeline = await changeTimelineProperty(
-            user!.token,
-            username,
-            req
-          );
-          setTimeline(newTimeline);
+        onProcess={req => {
+          return personalTimelineService
+            .changeProperty(username, req)
+            .then(newTimeline => {
+              setTimeline(newTimeline);
+            });
         }}
       />
     );
@@ -196,9 +189,12 @@ const User: React.FC = _ => {
       <ChangeAvatarDialog
         open
         close={closeDialogHandler}
-        process={async file => {
-          await changeAvatar(user!.token, username, file, file.type);
-          setAvatarKey(avatarKey + 1);
+        process={file => {
+          return changeAvatar(user!.token, username, file, file.type).then(
+            _ => {
+              setAvatarKey(avatarKey + 1);
+            }
+          );
         }}
       />
     );
@@ -209,7 +205,7 @@ const User: React.FC = _ => {
         onClose={closeDialogHandler}
         members={[timeline!.owner, ...timeline!.members]}
         edit={
-          canManage(user, timeline!)
+          personalTimelineService.hasManagePermission(user, timeline!)
             ? {
                 onCheckUser: u => {
                   return fetchUser(u).catch(e => {
@@ -224,35 +220,31 @@ const User: React.FC = _ => {
                   });
                 },
                 onAddUser: u => {
-                  return addPersonalTimelineMember(
-                    username,
-                    u.username,
-                    user!.token
-                  ).then(_ => {
+                  return personalTimelineService
+                    .addMember(username, u.username)
+                    .then(_ => {
+                      const oldMembers = timeline!.members;
+                      const newMembers = oldMembers.slice();
+                      newMembers.push(u);
+                      setTimeline({
+                        ...timeline!,
+                        members: newMembers
+                      });
+                    });
+                },
+                onRemoveUser: u => {
+                  personalTimelineService.removeMember(username, u).then(_ => {
                     const oldMembers = timeline!.members;
                     const newMembers = oldMembers.slice();
-                    newMembers.push(u);
+                    newMembers.splice(
+                      newMembers.findIndex(m => m.username === u),
+                      1
+                    );
                     setTimeline({
                       ...timeline!,
                       members: newMembers
                     });
                   });
-                },
-                onRemoveUser: u => {
-                  removePersonalTimelineMember(username, u, user!.token).then(
-                    _ => {
-                      const oldMembers = timeline!.members;
-                      const newMembers = oldMembers.slice();
-                      newMembers.splice(
-                        newMembers.findIndex(m => m.username === u),
-                        1
-                      );
-                      setTimeline({
-                        ...timeline!,
-                        members: newMembers
-                      });
-                    }
-                  );
                 }
               }
             : null
@@ -268,10 +260,16 @@ const User: React.FC = _ => {
         error={error}
         timeline={timeline}
         posts={posts}
-        manageable={timeline != null && canManage(user, timeline)}
-        postable={timeline != null && canPost(user, timeline)}
+        manageable={
+          timeline != null &&
+          personalTimelineService.hasManagePermission(user, timeline)
+        }
+        postable={
+          timeline != null &&
+          personalTimelineService.hasPostPermission(user, timeline)
+        }
         onDelete={(index, id) => {
-          deletePersonalTimelinePost(username, id, user!.token).then(
+          personalTimelineService.deletePost(username, id).then(
             _ => {
               const newPosts = posts!.slice();
               newPosts.splice(index, 1);
@@ -282,16 +280,19 @@ const User: React.FC = _ => {
             }
           );
         }}
-        onPost={async content => {
-          const newPost = await createPersonalTimelinePost(username, user!, {
-            content: content
-          });
-          const newPosts = posts!.slice();
-          newPosts.push({
-            ...newPost,
-            deletable: true
-          });
-          setPosts(newPosts);
+        onPost={content => {
+          return personalTimelineService
+            .createPost(username, {
+              content: content
+            })
+            .then(newPost => {
+              const newPosts = posts!.slice();
+              newPosts.push({
+                ...newPost,
+                deletable: true
+              });
+              setPosts(newPosts);
+            });
         }}
         onManage={() => {
           setDialog('editselect');

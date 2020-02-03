@@ -2,8 +2,6 @@ import axios from 'axios';
 
 import { apiBaseUrl } from '../config';
 import { User } from '../data/user';
-import { BaseTimelineInfo } from '../data/timeline';
-import { TimelineChangePropertyRequest } from '../timeline/TimelinePropertyChangeDialog';
 
 export async function changeNickname(
   token: string,
@@ -15,18 +13,6 @@ export async function changeNickname(
     {
       nickname: newNickname
     }
-  );
-  return res.data;
-}
-
-export async function changeTimelineProperty(
-  token: string,
-  username: string,
-  req: TimelineChangePropertyRequest
-): Promise<BaseTimelineInfo> {
-  const res = await axios.patch<BaseTimelineInfo>(
-    `${apiBaseUrl}/users/${username}/timeline?token=${token}`,
-    req
   );
   return res.data;
 }

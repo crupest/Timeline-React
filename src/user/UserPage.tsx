@@ -9,7 +9,7 @@ import {
   makeStyles
 } from '@material-ui/core';
 
-import { BaseTimelineInfo } from '../data/timeline';
+import { PersonalTimelineInfo } from '../data/timeline';
 
 import Timeline, {
   TimelinePostInfoEx,
@@ -23,7 +23,7 @@ import TimelinePostEdit, {
 
 export interface UserPageProps {
   avatarKey?: string | number;
-  timeline?: BaseTimelineInfo;
+  timeline?: PersonalTimelineInfo;
   posts?: TimelinePostInfoEx[];
   manageable: boolean;
   postable: boolean;

@@ -10,10 +10,10 @@ import {
 } from '@material-ui/core';
 
 import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
-import { BaseTimelineInfo } from '../data/timeline';
+import { PersonalTimelineInfo } from '../data/timeline';
 
 export interface UserInfoCardProps {
-  timeline: BaseTimelineInfo;
+  timeline: PersonalTimelineInfo;
   manageable: boolean;
   onManage: () => void;
   onMember: () => void;
