@@ -17,6 +17,17 @@ export interface PersonalTimelineInfo {
   };
 }
 
+export interface TimelineInfo {
+  name: string;
+  description: string;
+  owner: User;
+  visibility: TimelineVisibility;
+  members: User[];
+  _links: {
+    posts: string;
+  };
+}
+
 export interface TimelinePostInfo {
   id: number;
   content: string;
