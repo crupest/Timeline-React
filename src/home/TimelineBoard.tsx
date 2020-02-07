@@ -7,9 +7,11 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
   CircularProgress,
   CardHeader
 } from '@material-ui/core';
+import timelineImg from './timeline.svg';
 
 import { TimelineInfo } from '../data/timeline';
 
@@ -29,6 +31,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  timelineIcon: {
+    width: '24px',
+    height: '24px',
+    flexShrink: 0,
+    marginRight: `${theme.spacing(0.5)}px`
   }
 }));
 
@@ -55,6 +63,7 @@ const TimelineBoard: React.FC<TimelineBoardProps> = props => {
               {props.timelines.map(t => {
                 return (
                   <ListItem key={t.name}>
+                    <img src={timelineImg} className={classes.timelineIcon} />
                     <ListItemText primary={t.name} />
                   </ListItem>
                 );

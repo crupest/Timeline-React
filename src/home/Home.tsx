@@ -31,13 +31,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   boardBox: {
     width: '100%',
-    height: '300px',
+    minHeight: '300px',
     padding: `${theme.spacing(1)}px`,
     boxSizing: 'border-box',
     display: 'flex',
     [theme.breakpoints.up('sm')]: {
-      width: '50%',
-      height: '400px'
+      width: '50%'
     }
   },
   boardBoxFullWidth: {
