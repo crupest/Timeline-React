@@ -12,9 +12,9 @@ import { History } from 'history';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
-import logo from './logo.svg';
-
 import { UserWithToken, userLogout, useUser } from '../data/user';
+
+import TimelineLogo from './TimelineLogo';
 
 const useActionIconStyles = makeStyles({
   icon: {
@@ -183,7 +183,7 @@ const AppBar: React.FC<AppBarProps> = props => {
     <MDAppBar>
       <div className={classes.body}>
         <LinkButton to="/" history={history}>
-          <img className={classes.logo} src={logo} alt="logo" />
+          <TimelineLogo className={classes.logo} />
           Timeline
         </LinkButton>
         {user && user.administrator && (

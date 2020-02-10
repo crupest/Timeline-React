@@ -6,14 +6,15 @@ import {
   Card,
   List,
   ListItem,
-  ListItemText,
-  ListItemIcon,
   CircularProgress,
   CardHeader
 } from '@material-ui/core';
-import timelineImg from './timeline.svg';
+
+import TimelineLogo from '../common/TimelineLogo';
 
 import { TimelineInfo } from '../data/timeline';
+import UserTimelineLogo from '../common/UserTimelineLogo';
+import { Link } from 'react-router-dom';
 
 export interface TimelineBoardProps {
   title: string;
@@ -26,6 +27,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column'
   },
+  title: {
+    background: 'beige'
+  },
   progressBox: {
     height: '100%',
     display: 'flex',
@@ -36,7 +40,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '24px',
     height: '24px',
     flexShrink: 0,
-    marginRight: `${theme.spacing(0.5)}px`
+    marginRight: `${theme.spacing(0.5)}px`,
+    color: '#464545'
+  },
+  link: {
+    color: '#1f82fe',
+    textDecoration: 'none'
   }
 }));
 
@@ -49,7 +58,7 @@ const TimelineBoard: React.FC<TimelineBoardProps> = props => {
         root: clsx(props.className, classes.root)
       }}
     >
-      <CardHeader title={props.title} />
+      <CardHeader title={props.title} className={classes.title} />
       {(() => {
         if (props.timelines == null) {
           return (
@@ -61,10 +70,25 @@ const TimelineBoard: React.FC<TimelineBoardProps> = props => {
           return (
             <List>
               {props.timelines.map(t => {
+                const isPersonal = t.name == null;
+                const name = isPersonal ? '@' + t.owner.username : t.name;
                 return (
-                  <ListItem key={t.name}>
-                    <img src={timelineImg} className={classes.timelineIcon} />
-                    <ListItemText primary={t.name} />
+                  <ListItem key={name}>
+                    {isPersonal ? (
+                      <UserTimelineLogo className={classes.timelineIcon} />
+                    ) : (
+                      <TimelineLogo className={classes.timelineIcon} />
+                    )}
+                    <Link
+                      className={classes.link}
+                      to={
+                        isPersonal
+                          ? `/users/${t.owner.username}`
+                          : `/timelines/${t.name}`
+                      }
+                    >
+                      {name}
+                    </Link>
                   </ListItem>
                 );
               })}

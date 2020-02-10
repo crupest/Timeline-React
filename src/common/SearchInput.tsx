@@ -15,7 +15,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     padding: '2px 4px',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    boxSizing: 'border-box'
   },
   input: {
     marginLeft: theme.spacing(1),

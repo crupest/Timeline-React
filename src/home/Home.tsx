@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
-import clsx from 'clsx';
-import { makeStyles, Typography, Link, Theme, Icon } from '@material-ui/core';
-import { useTranslation, Trans } from 'react-i18next';
+import { makeStyles, Theme, Icon } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import axios from 'axios';
 
 import AppBar from '../common/AppBar';
 import SearchInput from '../common/SearchInput';
 import { useUser } from '../data/user';
-import TimelineBoard from './TimelineBoard';
 import TimelineBoardAreaWithoutUser from './TimelineBoardAreaWithoutUser';
 import { apiBaseUrl } from '../config';
 import { TimelineInfo } from '../data/timeline';
+import TimelineBoardAreaWithUser from './TimelineBoardAreaWithUser';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     marginTop: '56px',
     display: 'flex',
-    flexWrap: 'wrap'
+    flexDirection: 'column'
   },
   searchBox: {
     width: '100%',
     padding: `${theme.spacing(1)}px`,
+    boxSizing: 'border-box',
     display: 'flex',
     justifyContent: 'center'
   },
@@ -39,9 +39,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       width: '50%'
     }
   },
-  boardBoxFullWidth: {
-    width: '100%'
-  },
   board: {
     width: '100%'
   }
@@ -50,7 +47,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Home: React.FC = _ => {
   const classes = useStyles();
   const history = useHistory();
-  const { t } = useTranslation();
 
   const user = useUser();
 
@@ -88,37 +84,32 @@ const Home: React.FC = _ => {
         {(() => {
           if (user == null) {
             return (
-              <div
-                className={clsx(classes.boardBox, classes.boardBoxFullWidth)}
-              >
-                <TimelineBoardAreaWithoutUser
-                  className={classes.board}
-                  fetch={() =>
-                    axios
-                      .get<TimelineInfo[]>(`${apiBaseUrl}/timelines`)
-                      .then(res => {
-                        const data = res.data;
-                        data.forEach(t => {
-                          if (t.name == null) {
-                            t.name = '@' + t.owner.username;
-                          }
-                        });
-                        return data;
-                      })
-                  }
-                />
-              </div>
+              <TimelineBoardAreaWithoutUser
+                fetch={() =>
+                  axios
+                    .get<TimelineInfo[]>(`${apiBaseUrl}/timelines`)
+                    .then(res => res.data)
+                }
+              />
             );
           } else {
             return (
-              <>
-                <div className={classes.boardBox}>
-                  <TimelineBoard className={classes.board} title="aaaaa" />
-                </div>
-                <div className={classes.boardBox}>
-                  <TimelineBoard className={classes.board} title="aaaaa" />
-                </div>
-              </>
+              <TimelineBoardAreaWithUser
+                fetchOwn={() =>
+                  axios
+                    .get<TimelineInfo[]>(
+                      `${apiBaseUrl}/timelines?relate=${user.username}&relateType=own`
+                    )
+                    .then(res => res.data)
+                }
+                fetchJoin={() =>
+                  axios
+                    .get<TimelineInfo[]>(
+                      `${apiBaseUrl}/timelines?relate=${user.username}&relateType=join`
+                    )
+                    .then(res => res.data)
+                }
+              />
             );
           }
         })()}
