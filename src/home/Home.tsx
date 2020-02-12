@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { makeStyles, Theme, Icon } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import axios from 'axios';
 

@@ -10,9 +10,10 @@ import Login from './user/Login';
 import Home from './home/Home';
 import Settings from './settings/Settings';
 import User from './user/User';
+import TimelinePage from './timelinePage/TimelinePage';
+import LoadingPage from './common/LoadingPage';
 
 import { useUser } from './data/user';
-import LoadingPage from './common/LoadingPage';
 
 const NoMatch: React.FC = () => {
   return (
@@ -60,6 +61,9 @@ const App: React.FC = _ => {
           </Route>
           <Route path="/settings">
             <Settings />
+          </Route>
+          <Route path="/timelines/:name">
+            <TimelinePage />
           </Route>
           <Route path="/users/:username">
             <User />

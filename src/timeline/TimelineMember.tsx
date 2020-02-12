@@ -19,13 +19,15 @@ import { User } from '../data/user';
 
 import SearchInput from '../common/SearchInput';
 
+export interface TimelineMemberCallbacks {
+  onCheckUser: (username: string) => Promise<User | null>;
+  onAddUser: (user: User) => Promise<void>;
+  onRemoveUser: (username: string) => void;
+}
+
 export interface TimelineMemberProps {
   members: User[];
-  edit: {
-    onCheckUser: (username: string) => Promise<User | null>;
-    onAddUser: (user: User) => Promise<void>;
-    onRemoveUser: (username: string) => void;
-  } | null;
+  edit: TimelineMemberCallbacks | null | undefined;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
