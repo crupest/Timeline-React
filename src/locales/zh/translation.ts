@@ -3,10 +3,15 @@ import TranslationResource from '../scheme';
 const translation: TranslationResource = {
   welcome: '欢迎！',
   home: {
+    /*
     guide:
       '<0>输入用户名，然后回车，进入他的时间线！</0><1>没主意？啥也别输，直接回车，去看看网站作者的时间线！</1>',
     description:
       '<0>这是我，<1>crupest</1>，创建的第一个 Web App 。这个网站就是它的前端。你可以在 Github 上找到它的源代码（<3>前端</3>，<5>后端</5>）。现在我正在努力开发它，欢迎在 Github 上留下任何想法！</0>'
+    */
+    allTimeline: '所有的时间线',
+    joinTimeline: '加入的时间线',
+    ownTimeline: '拥有的时间线'
   },
   operationDialog: {
     confirm: '确定',

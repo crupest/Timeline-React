@@ -1,6 +1,7 @@
 import React from 'react';
 import { from } from 'rxjs';
 import { makeStyles, Theme } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 import TimelineBoard from './TimelineBoard';
 import { TimelineInfo } from '../data/timeline';
@@ -27,6 +28,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const TimelineBoardAreaWithoutUser: React.FC<TimelineBoardAreaWithoutUserProps> = props => {
   const classes = useStyles();
 
+  const { t } = useTranslation();
+
   const [timelines, setTimelines] = React.useState<TimelineInfo[] | undefined>(
     undefined
   );
@@ -42,7 +45,7 @@ const TimelineBoardAreaWithoutUser: React.FC<TimelineBoardAreaWithoutUserProps> 
     <div className={classes.boardBox}>
       <TimelineBoard
         className={classes.board}
-        title="All Timelines"
+        title={t('home.allTimeline')}
         timelines={timelines}
       />
     </div>

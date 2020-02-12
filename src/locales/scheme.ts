@@ -3,8 +3,13 @@ import { EditItem as UserPageEditSelectDialogItem } from '../user/EditItem';
 export default interface TranslationResource {
   welcome: string;
   home: {
+    allTimeline: string;
+    joinTimeline: string;
+    ownTimeline: string;
+    /*
     guide: string;
     description: string;
+    */
   };
   operationDialog: {
     confirm: string;
@@ -34,7 +39,7 @@ export default interface TranslationResource {
     };
     member: {
       alreadyMember: string;
-    }
+    };
   };
   user: {
     username: string;

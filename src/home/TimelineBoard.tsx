@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'column'
   },
   title: {
-    background: 'beige'
+    background: '#f3f3b7'
   },
   progressBox: {
     height: '100%',
