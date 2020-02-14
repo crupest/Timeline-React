@@ -7,8 +7,8 @@ import LoadingPage from './common/LoadingPage';
 import Home from './home/Home';
 import Login from './user/Login';
 import Settings from './settings/Settings';
-/*
 import User from './user/User';
+/*
 import TimelinePage from './timelinePage/TimelinePage';
 */
 
@@ -78,6 +78,9 @@ const App: React.FC = _ => {
           </Route>
           <Route exact path="/settings">
             <Settings />
+          </Route>
+          <Route path="/users/:username">
+            <User />
           </Route>
           <Route>
             <NoMatch />

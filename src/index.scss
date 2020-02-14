@@ -4,6 +4,7 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 
 @import './home/home.scss';
+@import './timeline/timeline.scss';
 
 body {
   margin: 0;
@@ -16,4 +17,21 @@ body {
 
 .appbar {
   background: #009de8;
+}
+
+.flex-fix-length {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 60px;
+}
+
+.avatar.large {
+  width: 100px;
+}
+
+.mt-appbar {
+  margin-top: 56px;
 }

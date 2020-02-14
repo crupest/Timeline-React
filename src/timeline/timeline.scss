@@ -1,0 +1,95 @@
+@use 'sass:color';
+
+$timeline-line-width: 8px;
+$timeline-line-color: #0089ff;
+$timeline-line-halo-color: white;
+$timeline-line-current-color: #4f4dff;
+$timeline-line-node-radius: 35px;
+
+.timeline-line-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 60px;
+}
+
+.timeline-line {
+  width: $timeline-line-width;
+  background: $timeline-line-color;
+}
+
+.timeline-line.start {
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+.timeline-line.end {
+  flex: 1 1 auto;
+}
+
+@keyframes timeline-line-node-halo {
+  to {
+    box-shadow: 0 0 5px 3px $timeline-line-halo-color;
+  }
+}
+@keyframes timeline-line-node-halo-noncurrent {
+  from {
+    border-color: $timeline-line-color;
+  }
+  to {
+    border-color: color.adjust($timeline-line-color, $lightness: +20%);
+  }
+}
+@keyframes timeline-line-node-halo-current {
+  from {
+    border-color: $timeline-line-current-color;
+  }
+  to {
+    border-color: color.adjust($timeline-line-current-color, $lightness: +20%);
+  }
+}
+
+.timeline-line-node {
+  width: $timeline-line-node-radius;
+  height: $timeline-line-node-radius;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: $timeline-line-width solid $timeline-line-color;
+  box-sizing: border-box;
+  z-index: 1;
+  animation: 0.6s infinite alternate;
+  animation-name: timeline-line-node-halo, timeline-line-node-halo-noncurrent;
+}
+
+.timeline-line.current-end {
+  height: 20px;
+  flex: 0 0 auto;
+  background: linear-gradient($timeline-line-current-color, transparent);
+}
+
+.current {
+  .timeline-line.start {
+    background: linear-gradient(
+      $timeline-line-color,
+      $timeline-line-current-color
+    );
+  }
+  .timeline-line-node {
+    border-color: $timeline-line-current-color;
+    animation-name: timeline-line-node-halo, timeline-line-node-halo-current;
+  }
+  .timeline-line.end {
+    background: $timeline-line-current-color;
+  }
+}
+
+.timeline-item-delete-button {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.timeline-content {
+  white-space: pre-line;
+}

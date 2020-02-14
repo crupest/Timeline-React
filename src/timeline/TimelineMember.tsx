@@ -1,23 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Avatar,
-  Dialog,
-  Divider,
-  makeStyles,
-  Theme,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Typography,
-  IconButton,
-  Icon
-} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
 import { User } from '../data/user';
 
 import SearchInput from '../common/SearchInput';
+import { Container, ListGroup, ListGroupItem, Modal } from 'reactstrap';
 
 export interface TimelineMemberCallbacks {
   onCheckUser: (username: string) => Promise<User | null>;
@@ -30,28 +17,7 @@ export interface TimelineMemberProps {
   edit: TimelineMemberCallbacks | null | undefined;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  memberList: {
-    minHeight: 100,
-    maxHeight: '50vh',
-    overflowY: 'auto'
-  },
-  addArea: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(1)
-  },
-  errorText: {
-    alignSelf: 'center'
-  }
-}));
-
 const TimelineMember: React.FC<TimelineMemberProps> = props => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const [userSearchText, setUserSearchText] = useState<string>('');
@@ -68,17 +34,13 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
   const members = props.members;
 
   return (
-    <div className={classes.container}>
-      <List classes={{ root: classes.memberList }} dense>
+    <Container>
+      <ListGroup>
         {members.map((member, index) => (
-          <ListItem key={member.username} dense>
-            <ListItemAvatar>
-              <Avatar src={member._links.avatar} />
-            </ListItemAvatar>
-            <ListItemText
-              primary={member.nickname}
-              secondary={'@' + member.username}
-            />
+          <ListGroupItem key={member.username}>
+            <img src={member._links.avatar} />
+            <p>{member.nickname}</p>
+            <p>{'@' + member.username}</p>
             {(() => {
               if (index === 0) {
                 return null;
@@ -88,26 +50,23 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                 return null;
               }
               return (
-                <IconButton
-                  color="secondary"
+                <i
+                  className="fas fa-minus"
                   onClick={() => {
                     onRemove(member.username);
                   }}
-                >
-                  <Icon>remove</Icon>
-                </IconButton>
+                />
               );
             })()}
-          </ListItem>
+          </ListGroupItem>
         ))}
-      </List>
+      </ListGroup>
       {(() => {
         const edit = props.edit;
         if (edit != null) {
           return (
             <>
-              <Divider />
-              <div className={classes.addArea}>
+              <div>
                 <SearchInput
                   value={userSearchText}
                   onChange={v => {
@@ -144,23 +103,13 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                     return (
                       <>
                         {!addable ? (
-                          <Typography
-                            color="error"
-                            className={classes.errorText}
-                          >
-                            {t('timeline.member.alreadyMember')}
-                          </Typography>
+                          <p>{t('timeline.member.alreadyMember')}</p>
                         ) : null}
-                        <ListItem dense>
-                          <ListItemAvatar>
-                            <Avatar src={u._links.avatar} />
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={u.nickname}
-                            secondary={'@' + u.username}
-                          />
-                          <IconButton
-                            edge="end"
+                        <Container>
+                          <img src={u._links.avatar} />
+                          <p>{u.nickname}</p>
+                          <p>{'@' + u.username}</p>
+                          <i
                             disabled={!addable}
                             onClick={() => {
                               edit.onAddUser(u).then(_ => {
@@ -169,18 +118,12 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                               });
                             }}
                             color="primary"
-                          >
-                            <Icon>add</Icon>
-                          </IconButton>
-                        </ListItem>
+                          />
+                        </Container>
                       </>
                     );
                   } else if (userSearchState.type === 'error') {
-                    return (
-                      <Typography color="error" className={classes.errorText}>
-                        {t(userSearchState.data)}
-                      </Typography>
-                    );
+                    return <p color="error">{t(userSearchState.data)}</p>;
                   }
                 })()}
               </div>
@@ -190,7 +133,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
           return null;
         }
       })()}
-    </div>
+    </Container>
   );
 };
 
@@ -201,33 +144,10 @@ export interface TimelineMemberDialogProps extends TimelineMemberProps {
   onClose: () => void;
 }
 
-const useDialogStyles = makeStyles((theme: Theme) => ({
-  dialog: (props: { loading: boolean }) => ({
-    minWidth: 500,
-    minHeight: 200,
-    [theme.breakpoints.down('sm')]: {
-      minWidth: 250
-    },
-    display: 'flex',
-    ...(props.loading
-      ? {
-          justifyContent: 'center',
-          alignItems: 'center'
-        }
-      : {})
-  })
-}));
-
 export const TimelineMemberDialog: React.FC<TimelineMemberDialogProps> = props => {
-  const classes = useDialogStyles({ loading: props.members == null });
-
   return (
-    <Dialog
-      classes={{ paper: classes.dialog }}
-      open={props.open}
-      onClose={props.onClose}
-    >
+    <Modal isOpen={props.open} toggle={props.onClose}>
       <TimelineMember {...props} />
-    </Dialog>
+    </Modal>
   );
 };

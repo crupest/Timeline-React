@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
 
 import { TimelinePostInfo } from '../data/timeline';
 
 import TimelineItem from './TimelineItem';
+import { Container } from 'reactstrap';
 
 export interface TimelinePostInfoEx extends TimelinePostInfo {
   deletable: boolean;
@@ -19,16 +19,7 @@ export interface TimelineProps {
   onDelete: TimelineDeleteCallback;
 }
 
-const useStyles = makeStyles((_: Theme) => ({
-  container: {
-    display: 'flex',
-    flexDirection: 'column'
-  }
-}));
-
 const Timeline: React.FC<TimelineProps> = props => {
-  const classes = useStyles();
-
   const [indexShowDeleteButton, setIndexShowDeleteButton] = useState<number>(
     -1
   );
@@ -36,12 +27,7 @@ const Timeline: React.FC<TimelineProps> = props => {
   const posts = props.posts;
 
   return (
-    <div
-      className={clsx(classes.container, props.className)}
-      onLoad={e => {
-        e.currentTarget.scrollTo(0, e.currentTarget.scrollHeight);
-      }}
-    >
+    <Container fluid className={clsx('d-flex', 'flex-column', props.className)}>
       {(() => {
         const length = posts.length;
         return posts.map((post, i) => {
@@ -66,7 +52,7 @@ const Timeline: React.FC<TimelineProps> = props => {
           );
         });
       })()}
-    </div>
+    </Container>
   );
 };
 

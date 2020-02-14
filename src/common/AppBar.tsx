@@ -67,7 +67,7 @@ const AppBar: React.FC<{}> = _ => {
   }
 
   return (
-    <Navbar dark className="position-fixed w-100 appbar">
+    <Navbar dark className="fixed-top w-100 appbar">
       <Link to="/" className="navbar-brand">
         <TimelineLogo style={{ height: '1em' }} />
         Timeline

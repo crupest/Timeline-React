@@ -1,42 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  AppBar,
-  Toolbar,
-  Typography,
-  makeStyles,
-  Theme,
-  IconButton,
-  Icon,
-  Button,
-  CircularProgress
-} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    alignItems: 'center'
-  },
-  body: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    maxWidth: '500px'
-  },
-  fileInput: {
-    marginTop: theme.spacing(2)
-  },
-  imagePreview: {
-    height: 200
-  },
-  bottomPrompt: {
-    margin: `${theme.spacing(2)}px 0`
-  },
-  uploadButton: {
-    alignSelf: 'flex-end',
-    margin: `${theme.spacing(2)}px ${theme.spacing(2)}px`
-  }
-}));
 
 export interface ChangeAvatarDialogProps {
   open: boolean;
@@ -45,7 +8,6 @@ export interface ChangeAvatarDialogProps {
 }
 
 const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const [file, setFile] = useState<File | null>(null);

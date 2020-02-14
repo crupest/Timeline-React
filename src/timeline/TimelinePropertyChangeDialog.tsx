@@ -6,7 +6,6 @@ import {
   TimelineChangePropertyRequest
 } from '../data/timeline';
 
-import TimelineVisibilityIcon from './TimelineVisibilityIcon';
 import OperationDialog, {
   OperationSelectInputInfoOption
 } from '../common/OperationDialog';
@@ -41,8 +40,7 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
           options: kTimelineVisibilities.map<OperationSelectInputInfoOption>(
             v => ({
               label: labelMap[v],
-              value: v,
-              icon: <TimelineVisibilityIcon visibility={v} />
+              value: v
             })
           ),
           initValue: props.oldInfo.visibility
@@ -50,8 +48,7 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
         {
           type: 'text',
           label: 'timeline.dialogChangeProperty.description',
-          initValue: props.oldInfo.description,
-          textFieldProps: { variant: 'outlined', multiline: true }
+          initValue: props.oldInfo.description
         }
       ]}
       open={props.open}

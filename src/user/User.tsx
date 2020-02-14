@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  MenuList,
-  MenuItem,
-  Snackbar
-} from '@material-ui/core';
 import { AxiosError } from 'axios';
-import { useTranslation } from 'react-i18next';
 
 import { useUser, fetchUser } from '../data/user';
 import { extractStatusCode, extractErrorCode } from '../data/common';
@@ -19,41 +10,13 @@ import {
 } from '../data/timeline';
 import { changeNickname, changeAvatar } from './http';
 
-import { kEditItems, EditItem } from './EditItem';
+import { PersonalTimelineManageItem } from './EditItem';
 
 import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
-import ChangeAvatarDialog from './ChangeAvatarDialog';
 import UserPage from './UserPage';
 import ChangeNicknameDialog from './ChangeNicknameDialog';
 import { TimelineMemberDialog } from '../timeline/TimelineMember';
 import { TimelinePostInfoEx } from '../timeline/Timeline';
-
-interface EditSelectDialogProps {
-  open: boolean;
-  close: () => void;
-  onSelect: (item: EditItem) => void;
-}
-
-const EditSelectDialog: React.FC<EditSelectDialogProps> = props => {
-  const { t } = useTranslation();
-  return (
-    <Dialog open={props.open} onClose={props.close}>
-      <DialogTitle> {t('userPage.dialogEditSelect.title')}</DialogTitle>
-      <MenuList>
-        {kEditItems.map(v => (
-          <MenuItem
-            key={v}
-            onClick={() => {
-              props.onSelect(v);
-            }}
-          >
-            {t(`userPage.dialogEditSelect.${v}`)}
-          </MenuItem>
-        ))}
-      </MenuList>
-    </Dialog>
-  );
-};
 
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
@@ -61,7 +24,7 @@ const User: React.FC = _ => {
   const user = useUser();
 
   const [dialog, setDialog] = useState<
-    null | 'editselect' | EditItem | 'member'
+    null | PersonalTimelineManageItem | 'member'
   >(null);
   const [timeline, setTimeline] = useState<PersonalTimelineInfo | undefined>(
     undefined
@@ -132,8 +95,6 @@ const User: React.FC = _ => {
     }
   }, [posts]);
 
-  const [snackBar, setSnackBar] = useState<string | null>(null);
-
   let dialogElement: React.ReactElement | undefined;
 
   const closeDialogHandler = (): void => {
@@ -156,17 +117,7 @@ const User: React.FC = _ => {
         }}
       />
     );
-  } else if (dialog === 'editselect') {
-    dialogElement = (
-      <EditSelectDialog
-        open
-        close={closeDialogHandler}
-        onSelect={item => {
-          setDialog(item);
-        }}
-      />
-    );
-  } else if (dialog === 'timelineproperty') {
+  } else if (dialog === 'property') {
     dialogElement = (
       <TimelinePropertyChangeDialog
         open
@@ -185,7 +136,7 @@ const User: React.FC = _ => {
       />
     );
   } else if (dialog === 'avatar') {
-    dialogElement = (
+    /*dialogElement = (
       <ChangeAvatarDialog
         open
         close={closeDialogHandler}
@@ -197,7 +148,7 @@ const User: React.FC = _ => {
           );
         }}
       />
-    );
+    );*/
   } else if (dialog === 'member') {
     dialogElement = (
       <TimelineMemberDialog
@@ -260,14 +211,6 @@ const User: React.FC = _ => {
         error={error}
         timeline={timeline}
         posts={posts}
-        manageable={
-          timeline != null &&
-          personalTimelineService.hasManagePermission(user, timeline)
-        }
-        postable={
-          timeline != null &&
-          personalTimelineService.hasPostPermission(user, timeline)
-        }
         onDelete={(index, id) => {
           personalTimelineService.deletePost(username, id).then(
             _ => {
@@ -276,52 +219,42 @@ const User: React.FC = _ => {
               setPosts(newPosts);
             },
             () => {
-              setSnackBar('Failed to delete post.'); // TODO: Translation
+              // TODO: Do something.
             }
           );
         }}
-        onPost={content => {
-          return personalTimelineService
-            .createPost(username, {
-              content: content
-            })
-            .then(newPost => {
-              const newPosts = posts!.slice();
-              newPosts.push({
-                ...newPost,
-                deletable: true
-              });
-              setPosts(newPosts);
-            });
-        }}
-        onManage={() => {
-          setDialog('editselect');
-        }}
+        onPost={
+          timeline != null &&
+          personalTimelineService.hasPostPermission(user, timeline)
+            ? content => {
+                return personalTimelineService
+                  .createPost(username, {
+                    content: content
+                  })
+                  .then(newPost => {
+                    const newPosts = posts!.slice();
+                    newPosts.push({
+                      ...newPost,
+                      deletable: true
+                    });
+                    setPosts(newPosts);
+                  });
+              }
+            : undefined
+        }
+        onManage={
+          timeline != null &&
+          personalTimelineService.hasManagePermission(user, timeline)
+            ? (item: PersonalTimelineManageItem) => {
+                setDialog(item);
+              }
+            : undefined
+        }
         onMember={() => {
           setDialog('member');
         }}
       />
       {dialogElement}
-      {snackBar && (
-        <Snackbar
-          open
-          autoHideDuration={3000}
-          onClose={() => {
-            setSnackBar(null);
-          }}
-          message={snackBar}
-          action={
-            <Button
-              onClick={() => {
-                setSnackBar(null);
-              }}
-              color="secondary"
-            >
-              ok!
-            </Button> // TODO! Translation
-          }
-        />
-      )}
     </>
   );
 };

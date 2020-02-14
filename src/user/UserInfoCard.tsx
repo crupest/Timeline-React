@@ -1,115 +1,88 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import clsx from 'clsx';
+
+import { PersonalTimelineInfo } from '../data/timeline';
 import {
   Card,
-  Typography,
-  IconButton,
-  Icon,
-  Theme,
-  makeStyles
-} from '@material-ui/core';
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+  Col,
+  Row
+} from 'reactstrap';
 
-import TimelineVisibilityIcon from '../timeline/TimelineVisibilityIcon';
-import { PersonalTimelineInfo } from '../data/timeline';
+import { PersonalTimelineManageItem } from './EditItem';
 
 export interface UserInfoCardProps {
   timeline: PersonalTimelineInfo;
-  manageable: boolean;
-  onManage: () => void;
+  onManage?: (item: PersonalTimelineManageItem) => void;
   onMember: () => void;
   className?: string;
   avatarKey?: string | number;
   onHeight?: (height: number) => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  avatar: {
-    height: 80
-  },
-  root: {
-    display: 'flex'
-  },
-  body: {
-    padding: theme.spacing(1),
-    flexGrow: 1
-  },
-  nickname: {
-    display: 'inline-block'
-  },
-  username: {
-    display: 'inline-block',
-    padding: `0 ${theme.spacing(1)}px`
-  },
-  visibilityIcon: {
-    verticalAlign: 'text-top'
-  },
-  memberButton: {
-    alignSelf: 'flex-start',
-    color: 'skyblue'
-  },
-  editButton: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0
-  }
-}));
-
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
-  const classes = useStyles();
-  const cardRef = useRef<HTMLElement>();
-
-  useEffect(() => {
-    if (props.onHeight && cardRef.current) {
-      props.onHeight(cardRef.current.clientHeight);
+  React.useEffect(() => {
+    if (props.onHeight) {
+      props.onHeight(document.getElementById('user-info-card')!.clientHeight);
     }
   });
 
+  const [manageDropdownOpen, setManageDropdownOpen] = React.useState<boolean>(
+    false
+  );
+  const toggleManageDropdown = (): void =>
+    setManageDropdownOpen(!manageDropdownOpen);
+
   return (
     <Card
-      ref={cardRef}
-      classes={{
-        root: clsx(classes.root, props.className)
-      }}
+      id="user-info-card"
+      className={clsx('container-fluid round', props.className)}
     >
-      <img
-        key={props.avatarKey}
-        className={classes.avatar}
-        src={props.timeline.owner._links.avatar}
-      />
-      <div className={classes.body}>
-        <Typography variant="h6" className={classes.nickname}>
-          {props.timeline.owner.nickname}
-        </Typography>
-        <Typography
-          variant="caption"
-          color="textSecondary"
-          className={classes.username}
-        >
-          @{props.timeline.owner.username}
-        </Typography>
-        <TimelineVisibilityIcon
-          className={classes.visibilityIcon}
-          visibility={props.timeline.visibility}
-        />
-        <Typography variant="body2">{props.timeline.description}</Typography>
-      </div>
-      <IconButton
-        classes={{ root: classes.memberButton }}
-        onClick={props.onMember}
-      >
-        <Icon>group</Icon>
-      </IconButton>
-      {props.manageable ? (
-        <IconButton
-          color="secondary"
-          classes={{ root: classes.editButton }}
-          onClick={props.onManage}
-        >
-          <Icon>edit</Icon>
-        </IconButton>
-      ) : (
-        undefined
-      )}
+      <Row>
+        <Col className="col-auto">
+          <img
+            key={props.avatarKey}
+            src={props.timeline.owner._links.avatar}
+            className="avatar large rounded"
+          />
+        </Col>
+        <Col>
+          <p>
+            {props.timeline.owner.nickname}
+            <small className="ml-3 text-secondary">
+              @{props.timeline.owner.username}
+            </small>
+          </p>
+          <p>{props.timeline.description}</p>
+        </Col>
+      </Row>
+      <Row className="justify-content-end">
+        {props.onManage != null ? (
+          <Dropdown isOpen={manageDropdownOpen} toggle={toggleManageDropdown}>
+            <DropdownToggle color="primary">Manage</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => props.onManage!('nickname')}>
+                Nickname
+              </DropdownItem>
+              <DropdownItem onClick={() => props.onManage!('avatar')}>
+                Avatar
+              </DropdownItem>
+              <DropdownItem onClick={() => props.onManage!('property')}>
+                Timeline Properties
+              </DropdownItem>
+              <DropdownItem onClick={props.onMember}>
+                Timeline Members
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        ) : (
+          <Button>Members</Button>
+        )}
+      </Row>
     </Card>
   );
 };

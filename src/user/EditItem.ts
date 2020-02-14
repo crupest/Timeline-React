@@ -1,3 +1,7 @@
-export const kEditItems = ['nickname', 'avatar', 'timelineproperty'] as const;
+export const kPersonalTimelineManageItems = [
+  'nickname',
+  'avatar',
+  'property'
+] as const;
 
-export type EditItem = typeof kEditItems[number];
+export type PersonalTimelineManageItem = typeof kPersonalTimelineManageItems[number];

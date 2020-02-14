@@ -1,13 +1,5 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
-import {
-  Theme,
-  CircularProgress,
-  Typography,
-  useTheme,
-  makeStyles
-} from '@material-ui/core';
 
 import { PersonalTimelineInfo } from '../data/timeline';
 
@@ -16,120 +8,86 @@ import Timeline, {
   TimelineDeleteCallback
 } from '../timeline/Timeline';
 import AppBar from '../common/AppBar';
-import UserInfoCard from './UserInfoCard';
+import UserInfoCard, { UserInfoCardProps } from './UserInfoCard';
 import TimelinePostEdit, {
   TimelinePostSendCallback
 } from '../timeline/TimelinePostEdit';
+import { Spinner, Container } from 'reactstrap';
 
 export interface UserPageProps {
   avatarKey?: string | number;
   timeline?: PersonalTimelineInfo;
   posts?: TimelinePostInfoEx[];
-  manageable: boolean;
-  postable: boolean;
-  onManage: () => void;
   onMember: () => void;
+  onManage?: UserInfoCardProps['onManage'];
+  onPost?: TimelinePostSendCallback;
   onDelete: TimelineDeleteCallback;
-  onPost: TimelinePostSendCallback;
   error?: string;
 }
 
-const appBarHeight = 56;
-const cardMarginRatio = 1;
-
-const useStyles = makeStyles((theme: Theme) => ({
-  fixHeight: {
-    flexGrow: 0,
-    flexShrink: 0
-  },
-  topSpace: {
-    height: appBarHeight + 'px'
-  },
-  userInfoCard: {
-    margin: theme.spacing(cardMarginRatio),
-    width: `calc(100% - ${theme.spacing(cardMarginRatio) * 2}px)`,
-    boxSizing: 'border-box',
-    position: 'fixed',
-    top: appBarHeight,
-    zIndex: 1000
-  },
-  timeline: {
-    flex: '1 1 auto'
-  }
-}));
-
 const UserPage: React.FC<UserPageProps> = props => {
-  const classes = useStyles();
-  const theme = useTheme();
   const { t } = useTranslation();
-  const cardSpaceRef = useRef<HTMLDivElement>(null);
-  const bottomSpaceRef = useRef<HTMLDivElement>(null);
 
   let body: React.ReactElement;
 
   if (props.error != null) {
-    body = <Typography color="error">{t(props.error)}</Typography>;
+    body = <p color="error">{t(props.error)}</p>;
   } else {
     if (props.timeline != null) {
       let timelineBody: React.ReactElement;
       if (props.posts != null) {
         timelineBody = (
           <Timeline
-            className={classes.timeline}
             avatarKey={props.avatarKey}
             posts={props.posts}
             onDelete={props.onDelete}
           />
         );
-        if (props.postable) {
+        if (props.onPost != null) {
           timelineBody = (
             <>
               {timelineBody}
-              <div ref={bottomSpaceRef} className={classes.fixHeight} />
+              <div id="page-bottom-space" className="flex-fix-length" />
               <TimelinePostEdit
                 onPost={props.onPost}
                 onHeightChange={height => {
-                  if (bottomSpaceRef.current) {
-                    bottomSpaceRef.current.style.height = height + 'px';
-                  }
+                  const element = document.getElementById('page-bottom-space')!;
+                  element.style.height = height + 'px';
                 }}
               />
             </>
           );
         }
       } else {
-        timelineBody = <CircularProgress />;
+        timelineBody = <Spinner />;
       }
       body = (
         <>
           <UserInfoCard
             avatarKey={props.avatarKey}
-            className={classes.userInfoCard}
             timeline={props.timeline}
-            manageable={props.manageable}
             onManage={props.onManage}
             onMember={props.onMember}
             onHeight={height => {
-              if (cardSpaceRef.current) {
-                cardSpaceRef.current.style.height =
-                  height + theme.spacing(cardMarginRatio) + 'px';
-              }
+              const element = document.getElementById('page-container')!;
+              element.style.marginTop = 56 + height + 'px';
             }}
+            className="fixed-top mt-appbar"
           />
-          <div ref={cardSpaceRef} className={classes.fixHeight} />
           {timelineBody}
         </>
       );
     } else {
-      body = <CircularProgress />;
+      body = <Spinner />;
     }
   }
 
   return (
     <>
       <AppBar />
-      <div className={clsx(classes.fixHeight, classes.topSpace)} />
-      {body}
+      <Container fluid id="page-container">
+        {body}
+      </Container>
     </>
   );
 };
