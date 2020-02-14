@@ -95,7 +95,9 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
             </DropdownMenu>
           </Dropdown>
         ) : (
-          <Button>Members</Button>
+          <Button color="primary" onClick={props.onMember}>
+            Members
+          </Button>
         )}
       </Row>
     </Card>

@@ -4,7 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { User } from '../data/user';
 
 import SearchInput from '../common/SearchInput';
-import { Container, ListGroup, ListGroupItem, Modal } from 'reactstrap';
+import {
+  Container,
+  ListGroup,
+  ListGroupItem,
+  Modal,
+  Row,
+  Col,
+  Button
+} from 'reactstrap';
 
 export interface TimelineMemberCallbacks {
   onCheckUser: (username: string) => Promise<User | null>;
@@ -34,30 +42,39 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
   const members = props.members;
 
   return (
-    <Container>
-      <ListGroup>
+    <Container className="px-4">
+      <ListGroup className="row my-3">
         {members.map((member, index) => (
-          <ListGroupItem key={member.username}>
-            <img src={member._links.avatar} />
-            <p>{member.nickname}</p>
-            <p>{'@' + member.username}</p>
-            {(() => {
-              if (index === 0) {
-                return null;
-              }
-              const onRemove = props.edit?.onRemoveUser;
-              if (onRemove == null) {
-                return null;
-              }
-              return (
-                <i
-                  className="fas fa-minus"
-                  onClick={() => {
-                    onRemove(member.username);
-                  }}
-                />
-              );
-            })()}
+          <ListGroupItem key={member.username} className="container">
+            <Row>
+              <Col className="col-auto">
+                <img src={member._links.avatar} className="avatar" />
+              </Col>
+              <Col>
+                <Row>{member.nickname}</Row>
+                <Row>{'@' + member.username}</Row>
+              </Col>
+              {(() => {
+                if (index === 0) {
+                  return null;
+                }
+                const onRemove = props.edit?.onRemoveUser;
+                if (onRemove == null) {
+                  return null;
+                }
+                return (
+                  <Button
+                    className="align-self-center"
+                    color="danger"
+                    onClick={() => {
+                      onRemove(member.username);
+                    }}
+                  >
+                    Remove
+                  </Button>
+                );
+              })()}
+            </Row>
           </ListGroupItem>
         ))}
       </ListGroup>
@@ -65,69 +82,76 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
         const edit = props.edit;
         if (edit != null) {
           return (
-            <>
-              <div>
-                <SearchInput
-                  value={userSearchText}
-                  onChange={v => {
-                    setUserSearchText(v);
-                  }}
-                  loading={userSearchState.type === 'loading'}
-                  onButtonClick={() => {
-                    setUserSearchState({ type: 'loading' });
-                    edit.onCheckUser(userSearchText).then(
-                      u => {
-                        if (u == null) {
-                          setUserSearchState({
-                            type: 'error',
-                            data: 'timeline.userNotExist'
-                          });
-                        } else {
-                          setUserSearchState({ type: 'user', data: u });
-                        }
-                      },
-                      e => {
+            <Row>
+              <SearchInput
+                value={userSearchText}
+                onChange={v => {
+                  setUserSearchText(v);
+                }}
+                loading={userSearchState.type === 'loading'}
+                onButtonClick={() => {
+                  setUserSearchState({ type: 'loading' });
+                  edit.onCheckUser(userSearchText).then(
+                    u => {
+                      if (u == null) {
                         setUserSearchState({
                           type: 'error',
-                          data: e.toString()
+                          data: 'timeline.userNotExist'
                         });
+                      } else {
+                        setUserSearchState({ type: 'user', data: u });
                       }
-                    );
-                  }}
-                />
-                {(() => {
-                  if (userSearchState.type === 'user') {
-                    const u = userSearchState.data;
-                    const addable =
-                      members.findIndex(m => m.username === u.username) === -1;
-                    return (
-                      <>
-                        {!addable ? (
-                          <p>{t('timeline.member.alreadyMember')}</p>
-                        ) : null}
-                        <Container>
-                          <img src={u._links.avatar} />
-                          <p>{u.nickname}</p>
-                          <p>{'@' + u.username}</p>
-                          <i
-                            disabled={!addable}
-                            onClick={() => {
-                              edit.onAddUser(u).then(_ => {
-                                setUserSearchText('');
-                                setUserSearchState({ type: 'init' });
-                              });
-                            }}
-                            color="primary"
-                          />
-                        </Container>
-                      </>
-                    );
-                  } else if (userSearchState.type === 'error') {
-                    return <p color="error">{t(userSearchState.data)}</p>;
-                  }
-                })()}
-              </div>
-            </>
+                    },
+                    e => {
+                      setUserSearchState({
+                        type: 'error',
+                        data: e.toString()
+                      });
+                    }
+                  );
+                }}
+              />
+              {(() => {
+                if (userSearchState.type === 'user') {
+                  const u = userSearchState.data;
+                  const addable =
+                    members.findIndex(m => m.username === u.username) === -1;
+                  return (
+                    <Container>
+                      {!addable ? (
+                        <p className="row">
+                          {t('timeline.member.alreadyMember')}
+                        </p>
+                      ) : null}
+                      <Row>
+                        <Col className="col-auto">
+                          <img src={u._links.avatar} className="avatar" />
+                        </Col>
+                        <Col>
+                          <Row>{u.nickname}</Row>
+                          <Row>{'@' + u.username}</Row>
+                        </Col>
+                        <Button
+                          color="primary"
+                          className="align-self-center"
+                          disabled={!addable}
+                          onClick={() => {
+                            edit.onAddUser(u).then(_ => {
+                              setUserSearchText('');
+                              setUserSearchState({ type: 'init' });
+                            });
+                          }}
+                        >
+                          Add
+                        </Button>
+                      </Row>
+                    </Container>
+                  );
+                } else if (userSearchState.type === 'error') {
+                  return <p color="error">{t(userSearchState.data)}</p>;
+                }
+              })()}
+            </Row>
           );
         } else {
           return null;
