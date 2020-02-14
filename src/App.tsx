@@ -1,17 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
-import { createMuiTheme } from '@material-ui/core';
-import { ThemeProvider, StylesProvider } from '@material-ui/styles';
-import { teal, orange } from '@material-ui/core/colors';
 
 import AppBar from './common/AppBar';
-import Login from './user/Login';
+import LoadingPage from './common/LoadingPage';
 import Home from './home/Home';
+import Login from './user/Login';
 import Settings from './settings/Settings';
+/*
 import User from './user/User';
 import TimelinePage from './timelinePage/TimelinePage';
-import LoadingPage from './common/LoadingPage';
+*/
 
 import { useUser } from './data/user';
 
@@ -25,23 +24,9 @@ const NoMatch: React.FC = () => {
   );
 };
 
-const theme = createMuiTheme({
-  palette: {
-    primary: teal,
-    secondary: orange
-  },
-  typography: {
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
-    button: {
-      textTransform: 'unset'
-    }
-  }
-});
-
-const LazyAdmin = React.lazy(() =>
-  import(/* webpackChunkName: "admin" */ './admin/Admin')
-);
+// const LazyAdmin = React.lazy(() =>
+//   import(/* webpackChunkName: "admin" */ './admin/Admin')
+// );
 
 const App: React.FC = _ => {
   const user = useUser();
@@ -50,6 +35,7 @@ const App: React.FC = _ => {
   if (user === undefined) {
     body = <LoadingPage />;
   } else {
+    /*
     body = (
       <React.Suspense fallback={<LoadingPage />}>
         <Switch>
@@ -79,15 +65,29 @@ const App: React.FC = _ => {
         </Switch>
       </React.Suspense>
     );
+    */
+
+    body = (
+      <React.Suspense fallback={<LoadingPage />}>
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route exact path="/login">
+            <Login />
+          </Route>
+          <Route exact path="/settings">
+            <Settings />
+          </Route>
+          <Route>
+            <NoMatch />
+          </Route>
+        </Switch>
+      </React.Suspense>
+    );
   }
 
-  return (
-    <StylesProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <Router>{body}</Router>
-      </ThemeProvider>
-    </StylesProvider>
-  );
+  return <Router>{body}</Router>;
 };
 
 export default hot(App);

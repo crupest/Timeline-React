@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
-import {
-  List,
-  ListItem,
-  ListItemIcon,
-  Icon,
-  ListItemText,
-  Select,
-  MenuItem,
-  ListSubheader
-} from '@material-ui/core';
+import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import axios, { AxiosError } from 'axios';
-import { useHistory } from 'react-router';
 
 import { apiBaseUrl } from '../config';
 
@@ -21,6 +11,7 @@ import AppBar from '../common/AppBar';
 import OperationDialog, {
   OperationInputErrorInfo
 } from '../common/OperationDialog';
+import { Container, Row, Col, Input } from 'reactstrap';
 
 interface ChangePasswordDialogProps {
   open: boolean;
@@ -69,9 +60,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
         {
           type: 'text',
           label: t('settings.dialogChangePassword.inputOldPassword'),
-          textFieldProps: {
-            type: 'password'
-          },
+          password: true,
           validator: v =>
             v === ''
               ? 'settings.dialogChangePassword.errorEmptyOldPassword'
@@ -80,9 +69,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
         {
           type: 'text',
           label: t('settings.dialogChangePassword.inputNewPassword'),
-          textFieldProps: {
-            type: 'password'
-          },
+          password: true,
           validator: (v, values) => {
             const error: OperationInputErrorInfo = {};
             error[1] =
@@ -102,9 +89,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
         {
           type: 'text',
           label: t('settings.dialogChangePassword.inputRetypeNewPassword'),
-          textFieldProps: {
-            type: 'password'
-          },
+          password: true,
           validator: (v, values) =>
             v !== values[1]
               ? 'settings.dialogChangePassword.errorRetypeNotMatch'
@@ -141,52 +126,46 @@ const Settings: React.FC = _ => {
   return (
     <>
       <AppBar />
-      <div style={{ height: 56 }} />
-      <List>
+      <Container fluid style={{ marginTop: '56px' }}>
         {user ? (
-          <>
-            <ListSubheader>{t('settings.subheaders.account')}</ListSubheader>
-            <ListItem
-              button
-              onClick={() => {
-                setDialog('changepassword');
+          <Row className="border-bottom p-3">
+            <Col className="col-12">
+              <h5
+                className="text-danger"
+                onClick={() => setDialog('changepassword')}
+              >
+                {t('settings.changePassword')}
+              </h5>
+            </Col>
+          </Row>
+        ) : null}
+        <Row className="align-items-center border-bottom p-3">
+          <Col className="col-10">
+            <h5>{t('settings.languagePrimary')}</h5>
+            <p>{t('settings.languageSecondary')}</p>
+          </Col>
+          <Col>
+            <Input
+              type="select"
+              value={language}
+              onChange={e => {
+                i18n.changeLanguage(e.target.value);
               }}
             >
-              <ListItemText
-                primary={t('settings.changePassword')}
-                primaryTypographyProps={{ color: 'error' }}
-              />
-            </ListItem>
-          </>
-        ) : null}
-        <ListSubheader>{t('settings.subheaders.customization')}</ListSubheader>
-        <ListItem>
-          <ListItemIcon>
-            <Icon>translate</Icon>
-          </ListItemIcon>
-          <ListItemText
-            primary={t('settings.languagePrimary')}
-            secondary={t('settings.languageSecondary')}
-          />
-          <Select
-            value={language}
-            onChange={e => {
-              i18n.changeLanguage(e.target.value as string);
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+            </Input>
+          </Col>
+        </Row>
+        {dialog === 'changepassword' ? (
+          <ChangePasswordDialog
+            open
+            close={() => {
+              setDialog(null);
             }}
-          >
-            <MenuItem value="zh">中文</MenuItem>
-            <MenuItem value="en">English</MenuItem>
-          </Select>
-        </ListItem>
-      </List>
-      {dialog === 'changepassword' ? (
-        <ChangePasswordDialog
-          open
-          close={() => {
-            setDialog(null);
-          }}
-        />
-      ) : null}
+          />
+        ) : null}
+      </Container>
     </>
   );
 };

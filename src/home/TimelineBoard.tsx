@@ -1,20 +1,11 @@
 import React from 'react';
-import clsx from 'clsx';
-import {
-  makeStyles,
-  Theme,
-  Card,
-  List,
-  ListItem,
-  CircularProgress,
-  CardHeader
-} from '@material-ui/core';
 
 import TimelineLogo from '../common/TimelineLogo';
 
 import { TimelineInfo } from '../data/timeline';
 import UserTimelineLogo from '../common/UserTimelineLogo';
 import { Link } from 'react-router-dom';
+import { Card, Spinner, ListGroup, ListGroupItem } from 'reactstrap';
 
 export interface TimelineBoardProps {
   title: string;
@@ -22,65 +13,31 @@ export interface TimelineBoardProps {
   className?: string;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  title: {
-    background: '#f3f3b7'
-  },
-  progressBox: {
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  timelineIcon: {
-    width: '24px',
-    height: '24px',
-    flexShrink: 0,
-    marginRight: `${theme.spacing(0.5)}px`,
-    color: '#464545'
-  },
-  link: {
-    color: '#1f82fe',
-    textDecoration: 'none'
-  }
-}));
-
 const TimelineBoard: React.FC<TimelineBoardProps> = props => {
-  const classes = useStyles();
-
   return (
-    <Card
-      classes={{
-        root: clsx(props.className, classes.root)
-      }}
-    >
-      <CardHeader title={props.title} className={classes.title} />
+    <Card className="bg-light p-3">
+      <h2>{props.title}</h2>
       {(() => {
         if (props.timelines == null) {
           return (
-            <div className={classes.progressBox}>
-              <CircularProgress />
+            <div className="d-flex justify-content-center align-items-center">
+              <Spinner />
             </div>
           );
         } else {
           return (
-            <List>
+            <ListGroup>
               {props.timelines.map(t => {
                 const isPersonal = t.name == null;
                 const name = isPersonal ? '@' + t.owner.username : t.name;
                 return (
-                  <ListItem key={name}>
+                  <ListGroupItem key={name}>
                     {isPersonal ? (
-                      <UserTimelineLogo className={classes.timelineIcon} />
+                      <UserTimelineLogo className="timeline-item-icon" />
                     ) : (
-                      <TimelineLogo className={classes.timelineIcon} />
+                      <TimelineLogo className="timeline-item-icon" />
                     )}
                     <Link
-                      className={classes.link}
                       to={
                         isPersonal
                           ? `/users/${t.owner.username}`
@@ -89,10 +46,10 @@ const TimelineBoard: React.FC<TimelineBoardProps> = props => {
                     >
                       {name}
                     </Link>
-                  </ListItem>
+                  </ListGroupItem>
                 );
               })}
-            </List>
+            </ListGroup>
           );
         }
       })()}

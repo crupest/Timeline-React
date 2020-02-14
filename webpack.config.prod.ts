@@ -5,7 +5,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 
-import { htmlCommonConfig } from './webpack.common';
+import { commonRules, htmlCommonConfig } from './webpack.common';
 
 const config: webpack.Configuration = {
   entry: ['./src/index.tsx'],
@@ -13,28 +13,11 @@ const config: webpack.Configuration = {
   devtool: 'source-map',
   module: {
     rules: [
+      ...commonRules,
       {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         loader: 'babel-loader'
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.(png|jpe?g|gif|svg)$/i,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 8192
-            }
-          },
-          {
-            loader: 'image-webpack-loader'
-          }
-        ]
       }
     ]
   },

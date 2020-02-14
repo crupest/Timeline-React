@@ -1,34 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
-import {
-  makeStyles,
-  Theme,
-  Paper,
-  IconButton,
-  Icon,
-  InputBase,
-  InputBaseProps,
-  CircularProgress
-} from '@material-ui/core';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  paper: {
-    padding: '2px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    boxSizing: 'border-box'
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    flexGrow: 1
-  },
-  rightArea: {
-    flex: '0 0 auto'
-  },
-  loading: {
-    padding: '9px'
-  }
-}));
+import { Spinner } from 'reactstrap';
 
 export interface SearchInputProps {
   value: string;
@@ -36,19 +7,12 @@ export interface SearchInputProps {
   onButtonClick: () => void;
   className?: string;
   loading?: boolean;
-  buttonIcon?: React.ReactElement;
-  inputProps?: Pick<
-    InputBaseProps,
-    Exclude<keyof InputBaseProps, 'value' | 'onChange'>
-  >;
 }
 
 const SearchInput: React.FC<SearchInputProps> = props => {
-  const classes = useStyles();
   return (
-    <Paper component="div" className={clsx(classes.paper, props.className)}>
-      <InputBase
-        className={classes.input}
+    <div>
+      <input
         value={props.value}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           props.onChange(event.currentTarget.value);
@@ -58,22 +22,13 @@ const SearchInput: React.FC<SearchInputProps> = props => {
             props.onButtonClick();
           }
         }}
-        {...props.inputProps}
       />
       {props.loading ? (
-        <CircularProgress
-          size={30}
-          className={clsx(classes.rightArea, classes.loading)}
-        />
+        <Spinner />
       ) : (
-        <IconButton
-          className={clsx(classes.rightArea)}
-          onClick={props.onButtonClick}
-        >
-          {props.buttonIcon ?? <Icon>search</Icon>}
-        </IconButton>
+        <i className="fas fa-search" onClick={props.onButtonClick} />
       )}
-    </Paper>
+    </div>
   );
 };
 

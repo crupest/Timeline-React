@@ -1,174 +1,61 @@
-import React, { Fragment, useState } from 'react';
-import {
-  Popover,
-  Typography,
-  Icon,
-  IconButton,
-  Button,
-  AppBar as MDAppBar,
-  makeStyles
-} from '@material-ui/core';
-import { History } from 'history';
+import React from 'react';
 import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Navbar, Button, Popover } from 'reactstrap';
 
 import { UserWithToken, userLogout, useUser } from '../data/user';
 
 import TimelineLogo from './TimelineLogo';
 
-const useActionIconStyles = makeStyles({
-  icon: {
-    color: 'white'
-  }
-});
-
-interface UserAreaProps {
-  user: UserWithToken | null;
+interface UserCardProps {
+  user: UserWithToken | null | undefined;
   login: () => void;
   logout: () => void;
 }
 
-const useUserAreaStyles = makeStyles({
-  popupContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '20px',
-    alignItems: 'center'
-  },
-  avatar: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
-    background: 'white'
-  }
-});
-
-const UserArea: React.FC<UserAreaProps> = props => {
-  const classes = useUserAreaStyles();
-  const iconClass = useActionIconStyles().icon;
+const UserCard: React.FC<UserCardProps> = props => {
   const { t } = useTranslation();
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-
-  function onIconClick(event: React.SyntheticEvent): void {
-    setAnchor(event.target as HTMLElement);
-  }
-
-  function closePopup(): void {
-    setAnchor(null);
-  }
 
   function onLogin(): void {
-    closePopup();
     props.login();
   }
 
   function onLogout(): void {
-    closePopup();
     props.logout();
   }
 
   const user = props.user;
-  let popupContent;
   if (user) {
     const avatarUrl = user._links.avatar;
-    popupContent = (
-      <Fragment>
-        <img className={classes.avatar} src={avatarUrl} />
-        <Typography variant="body1">
-          {t('user.welcome', { name: user.username })}
-        </Typography>
-        <Button onClick={onLogout}>
-          <Typography color="error" variant="button">
-            {t('user.logout')}
-          </Typography>
+    return (
+      <div className="p-3">
+        <img style={{ width: '100px' }} src={avatarUrl} />
+        <p>{t('user.welcome', { name: user.username })}</p>
+        <Button color="primary" onClick={onLogout}>
+          {t('user.logout')}
         </Button>
-      </Fragment>
+      </div>
     );
   } else {
-    popupContent = (
-      <Fragment>
-        <Typography variant="body1">{t('user.noLoginPrompt')}</Typography>
+    return (
+      <div className="p-3">
+        <h6>{t('user.noLoginPrompt')}</h6>
         <Button color="primary" onClick={onLogin}>
           {t('user.login')}
         </Button>
-      </Fragment>
+      </div>
     );
   }
-
-  return (
-    <Fragment>
-      <IconButton onClick={onIconClick}>
-        <Icon className={iconClass}>account_circle</Icon>
-      </IconButton>
-      <Popover
-        open={Boolean(anchor)}
-        anchorEl={anchor}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left'
-        }}
-        onClose={closePopup}
-        classes={{
-          paper: classes.popupContainer
-        }}
-      >
-        {popupContent}
-      </Popover>
-    </Fragment>
-  );
 };
 
-interface LinkButtonProps {
-  to: string;
-  history: History;
-  children?: React.ReactNode;
-}
-
-const useLinkButtonStyle = makeStyles({
-  root: {
-    margin: '0 10px'
-  },
-  label: {
-    color: 'white'
-  }
-});
-
-const LinkButton: React.FC<LinkButtonProps> = props => {
-  const classes = useLinkButtonStyle();
-  return (
-    <Button
-      onClick={() => {
-        props.history.push(props.to);
-      }}
-      classes={classes}
-    >
-      {props.children}
-    </Button>
-  );
-};
-
-interface AppBarProps {
-  actions?: React.ReactNode;
-  children?: React.ReactNode;
-}
-
-const useAppBarStyles = makeStyles({
-  body: {
-    display: 'flex',
-    height: '56px',
-    alignItems: 'center'
-  },
-  logo: {
-    height: '30px'
-  }
-});
-
-const AppBar: React.FC<AppBarProps> = props => {
+const AppBar: React.FC<{}> = _ => {
   const history = useHistory();
   const user = useUser();
-  const classes = useAppBarStyles();
-  const iconClass = useActionIconStyles().icon;
-  const { t } = useTranslation();
+
+  const [userCardOpen, setUserCardOpen] = React.useState<boolean>(false);
+
+  const toggleUserCard = (): void => setUserCardOpen(!userCardOpen);
 
   function login(): void {
     history.push('/login');
@@ -180,28 +67,33 @@ const AppBar: React.FC<AppBarProps> = props => {
   }
 
   return (
-    <MDAppBar>
-      <div className={classes.body}>
-        <LinkButton to="/" history={history}>
-          <TimelineLogo className={classes.logo} />
-          Timeline
-        </LinkButton>
-        {user && user.administrator && (
-          <LinkButton to="/admin" history={history}>
-            {t('admin.title')}
-          </LinkButton>
-        )}
-        <span className="fill-remaining-space"></span>
-        {props.actions}
-        <IconButton onClick={() => history.push('/settings')}>
-          <Icon className={iconClass}>settings</Icon>
-        </IconButton>
-        {user !== undefined && (
-          <UserArea user={user} login={login} logout={logout} />
-        )}
+    <Navbar dark className="position-fixed w-100 appbar">
+      <Link to="/" className="navbar-brand">
+        <TimelineLogo style={{ height: '1em' }} />
+        Timeline
+      </Link>
+      <div>
+        <i
+          className="fas fa-cog text-white mx-3"
+          onClick={() => {
+            history.push('/settings');
+          }}
+        />
+        <i
+          id="appbar-user-button"
+          className="fas fa-user text-white mx-3"
+          onClick={toggleUserCard}
+        />
+        <Popover
+          isOpen={userCardOpen}
+          toggle={toggleUserCard}
+          target="appbar-user-button"
+          placement="bottom"
+        >
+          <UserCard user={user} login={login} logout={logout} />
+        </Popover>
       </div>
-      {props.children}
-    </MDAppBar>
+    </Navbar>
   );
 };
 

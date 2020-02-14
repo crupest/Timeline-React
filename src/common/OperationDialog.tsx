@@ -1,47 +1,24 @@
-import React, { useState } from 'react';
-import clsx from 'clsx';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  CircularProgress,
-  makeStyles,
-  Typography,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  ListItemIcon
-} from '@material-ui/core';
+import React, { useState, InputHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TextFieldProps } from '@material-ui/core/TextField';
-
-const useProcessStyles = makeStyles({
-  processContent: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  processText: {
-    margin: '0 10px'
-  }
-});
+import {
+  Spinner,
+  Container,
+  ModalBody,
+  Label,
+  Input,
+  FormGroup,
+  FormFeedback,
+  ModalFooter,
+  Button,
+  Modal,
+  ModalHeader
+} from 'reactstrap';
 
 const DefaultProcessPrompt: React.FC = _ => {
-  const classes = useProcessStyles();
-  const { t } = useTranslation();
   return (
-    <div className={classes.processContent}>
-      <CircularProgress />
-      <span className={classes.processText}>
-        {t('operationDialog.processing')}
-      </span>
-    </div>
+    <Container className="justify-content-center align-items-center">
+      <Spinner />
+    </Container>
   );
 };
 
@@ -52,19 +29,13 @@ interface DefaultErrorPromptProps {
 const DefaultErrorPrompt: React.FC<DefaultErrorPromptProps> = props => {
   const { t } = useTranslation();
 
-  let result = (
-    <Typography color="error" variant="body1">
-      {t('operationDialog.error')}
-    </Typography>
-  );
+  let result = <p color="danger">{t('operationDialog.error')}</p>;
 
   if (props.error != null) {
     result = (
       <>
         {result}
-        <Typography color="error" variant="body1">
-          {props.error}
-        </Typography>
+        <p color="danger">{props.error}</p>
       </>
     );
   }
@@ -85,9 +56,13 @@ export type OperationInputValidator<TValue> = (
 
 export interface OperationTextInputInfo {
   type: 'text';
+  password?: boolean;
   label: string;
   initValue?: string;
-  textFieldProps?: TextFieldProps;
+  textFieldProps?: Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'type' | 'value' | 'onChange'
+  >;
   validator?: OperationInputValidator<string>;
 }
 
@@ -133,38 +108,9 @@ interface OperationDialogProps {
   failurePrompt?: (error: unknown) => React.ReactNode;
 }
 
-const useStyles = makeStyles(theme => ({
-  paper: {
-    minWidth: 220,
-    minHeight: 140,
-    [theme.breakpoints.up('md')]: {
-      minWidth: 300,
-      minHeight: 160
-    }
-  },
-  titleCreate: {
-    color: 'green'
-  },
-  titleDangerous: {
-    color: 'red'
-  },
-  content: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'start'
-  },
-  processText: {
-    margin: '0 10px'
-  },
-  inputText: {
-    margin: '10px 0'
-  }
-}));
-
 const OperationDialog: React.FC<OperationDialogProps> = props => {
   const inputScheme = props.inputScheme ?? [];
 
-  const classes = useStyles();
   const { t } = useTranslation();
 
   type Step = 'input' | 'process' | OperationResult;
@@ -208,7 +154,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
         ? props.inputPrompt()
         : props.inputPrompt;
     if (typeof inputPrompt === 'string') {
-      inputPrompt = <Typography variant="subtitle2">{inputPrompt}</Typography>;
+      inputPrompt = <h6>{inputPrompt}</h6>;
     }
 
     const updateValue = (
@@ -271,7 +217,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
 
     body = (
       <>
-        <DialogContent classes={{ root: classes.content }}>
+        <ModalBody>
           {inputPrompt}
           {inputScheme.map((item, index) => {
             const value = values[index];
@@ -280,68 +226,73 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
 
             if (item.type === 'text') {
               return (
-                <TextField
-                  key={index}
-                  classes={{ root: classes.inputText }}
-                  fullWidth
-                  label={t(item.label)}
-                  value={value}
-                  error={error != null}
-                  helperText={error}
-                  onChange={e => {
-                    const v = e.target.value;
-                    const newValues = updateValue(index, v);
-                    setInputError(
-                      calculateError(
-                        inputError,
-                        index,
-                        item.validator?.(v, newValues)
-                      )
-                    );
-                  }}
-                  {...item.textFieldProps}
-                />
+                <FormGroup key={index}>
+                  <Label>{t(item.label)}</Label>
+                  <Input
+                    type={item.password === true ? 'password' : 'text'}
+                    value={value as string}
+                    onChange={e => {
+                      const v = e.target.value;
+                      const newValues = updateValue(index, v);
+                      setInputError(
+                        calculateError(
+                          inputError,
+                          index,
+                          item.validator?.(v, newValues)
+                        )
+                      );
+                    }}
+                    invalid={error != null}
+                    {...item.textFieldProps}
+                  />
+                  {error != null && <FormFeedback>{error}</FormFeedback>}
+                </FormGroup>
               );
             } else if (item.type === 'bool') {
               return (
-                <FormControlLabel
-                  key={index}
-                  value={value}
-                  onChange={e => {
-                    updateValue(index, (e.target as HTMLInputElement).checked);
-                  }}
-                  control={<Checkbox />}
-                  label={t(item.label)}
-                />
+                <FormGroup key={index}>
+                  <Input
+                    type="checkbox"
+                    value={value as string}
+                    onChange={e => {
+                      updateValue(
+                        index,
+                        (e.target as HTMLInputElement).checked
+                      );
+                    }}
+                  />
+                  <Label>{t(item.label)}</Label>
+                </FormGroup>
               );
             } else if (item.type === 'select') {
               return (
-                <FormControl key={index}>
-                  <InputLabel>{t(item.label)}</InputLabel>
-                  <Select
-                    value={value}
+                <FormGroup key={index}>
+                  <Label>{t(item.label)}</Label>
+                  <Input
+                    type="select"
+                    value={value as string}
                     onChange={event => {
-                      updateValue(index, event.target.value as string);
+                      updateValue(index, event.target.value);
                     }}
                   >
                     {item.options.map((option, i) => {
                       return (
-                        <MenuItem value={option.value} key={i}>
-                          {option.icon && (
-                            <ListItemIcon>{option.icon}</ListItemIcon>
-                          )}
+                        <option value={option.value} key={i}>
+                          {option.icon}
                           {t(option.label)}
-                        </MenuItem>
+                        </option>
                       );
                     })}
-                  </Select>
-                </FormControl>
+                  </Input>
+                </FormGroup>
               );
             }
           })}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={props.close}>{t('operationDialog.cancel')}</Button>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={props.close}>
+            {t('operationDialog.cancel')}
+          </Button>
           <Button
             color="primary"
             disabled={testErrorInfo(inputError)}
@@ -353,14 +304,14 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
           >
             {t('operationDialog.confirm')}
           </Button>
-        </DialogActions>
+        </ModalFooter>
       </>
     );
   } else if (step === 'process') {
     body = (
-      <DialogContent classes={{ root: classes.content }}>
+      <ModalBody>
         {props.processPrompt?.() ?? <DefaultProcessPrompt />}
-      </DialogContent>
+      </ModalBody>
     );
   } else {
     let content: React.ReactNode;
@@ -369,7 +320,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
       content =
         props.successPrompt?.(result.data) ?? t('operationDialog.success');
       if (typeof content === 'string')
-        content = <Typography variant="body1">{content}</Typography>;
+        content = <p color="success">{content}</p>;
     } else {
       content = props.failurePrompt?.(result.data) ?? <DefaultErrorPrompt />;
       if (typeof content === 'string')
@@ -377,14 +328,12 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
     }
     body = (
       <>
-        <DialogContent classes={{ root: classes.content }}>
-          {content}
-        </DialogContent>
-        <DialogActions>
-          <Button color="secondary" onClick={props.close}>
+        <ModalBody>{content}</ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={props.close}>
             {t('operationDialog.ok')}
           </Button>
-        </DialogActions>
+        </ModalFooter>
       </>
     );
   }
@@ -392,25 +341,29 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   const title = typeof props.title === 'string' ? t(props.title) : props.title;
 
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.close}
-      disableBackdropClick={isProcessing}
-      disableEscapeKeyDown={isProcessing}
-      classes={{ paper: classes.paper }}
+    <Modal
+      isOpen={props.open}
+      toggle={() => {
+        if (isProcessing) {
+          console.log('Attempt to close modal when processing.');
+        } else {
+          props.close();
+        }
+      }}
     >
-      <DialogTitle
-        classes={{
-          root: clsx(
-            props.titleColor === 'create' && classes.titleCreate,
-            props.titleColor === 'dangerous' && classes.titleDangerous
-          )
-        }}
+      <ModalHeader
+        color={
+          props.titleColor === 'create'
+            ? 'success'
+            : props.titleColor === 'dangerous'
+            ? 'danger'
+            : props.titleColor
+        }
       >
         {title}
-      </DialogTitle>
+      </ModalHeader>
       {body}
-    </Dialog>
+    </Modal>
   );
 };
 

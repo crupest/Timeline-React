@@ -1,10 +1,49 @@
-import HtmlWebpackPlugin from "html-webpack-plugin";
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import autoprefixer from 'autoprefixer';
+
+export const commonRules: webpack.RuleSetRule[] = [
+  {
+    test: /\.css$/,
+    use: ['style-loader', 'css-loader']
+  },
+  {
+    test: /\.(scss)$/,
+    use: [
+      'style-loader',
+      'css-loader',
+      {
+        loader: 'postcss-loader',
+        options: {
+          plugins: function() {
+            return [autoprefixer];
+          }
+        }
+      },
+      'sass-loader'
+    ]
+  },
+  {
+    test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot)$/i,
+    use: [
+      {
+        loader: 'url-loader',
+        options: {
+          limit: 8192
+        }
+      },
+      {
+        loader: 'image-webpack-loader'
+      }
+    ]
+  }
+];
 
 export const htmlCommonConfig: HtmlWebpackPlugin.Options = {
   inject: false,
-  template: require("html-webpack-template"),
+  template: require('html-webpack-template'),
 
-  appMountId: "app",
+  appMountId: 'app',
   mobile: true,
 
   headHtmlSnippet: `
@@ -16,7 +55,5 @@ export const htmlCommonConfig: HtmlWebpackPlugin.Options = {
   <meta name="msapplication-TileColor" content="#2d89ef">
   <meta name="theme-color" content="#ffffff">
   `,
-
-  links: ["https://fonts.googleapis.com/icon?family=Material+Icons|Noto+Sans"],
-  title: "Timeline"
+  title: 'Timeline'
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { makeStyles, Theme, Icon } from '@material-ui/core';
 import { useHistory } from 'react-router';
+import { Row, Container } from 'reactstrap';
 import axios from 'axios';
 
 import AppBar from '../common/AppBar';
@@ -11,40 +11,7 @@ import { apiBaseUrl } from '../config';
 import { TimelineInfo } from '../data/timeline';
 import TimelineBoardAreaWithUser from './TimelineBoardAreaWithUser';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    marginTop: '56px',
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  searchBox: {
-    width: '100%',
-    padding: `${theme.spacing(1)}px`,
-    boxSizing: 'border-box',
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  search: {
-    width: '100%',
-    maxWidth: '500px'
-  },
-  boardBox: {
-    width: '100%',
-    minHeight: '300px',
-    padding: `${theme.spacing(1)}px`,
-    boxSizing: 'border-box',
-    display: 'flex',
-    [theme.breakpoints.up('sm')]: {
-      width: '50%'
-    }
-  },
-  board: {
-    width: '100%'
-  }
-}));
-
 const Home: React.FC = _ => {
-  const classes = useStyles();
   const history = useHistory();
 
   const user = useUser();
@@ -64,22 +31,16 @@ const Home: React.FC = _ => {
   return (
     <>
       <AppBar />
-      <div className={classes.container}>
-        <div className={classes.searchBox}>
+      <Container fluid style={{ marginTop: '56px' }}>
+        <Row className="justify-content-center">
           <SearchInput
-            className={classes.search}
             value={navText}
             onChange={v => {
               setNavText(v);
             }}
             onButtonClick={goto}
-            buttonIcon={<Icon>arrow_forward</Icon>}
-            inputProps={{
-              autoFocus: true,
-              placeholder: '@crupest'
-            }}
           />
-        </div>
+        </Row>
         {(() => {
           if (user == null) {
             return (
@@ -112,7 +73,7 @@ const Home: React.FC = _ => {
             );
           }
         })()}
-      </div>
+      </Container>
     </>
   );
 };

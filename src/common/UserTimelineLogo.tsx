@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { SVGAttributes } from 'react';
 
-export interface UserTimelineLogoProps {
+export interface UserTimelineLogoProps extends SVGAttributes<SVGElement> {
   color?: string;
-  className?: string;
 }
 
 const UserTimelineLogo: React.FC<UserTimelineLogoProps> = props => {
-  const color = props.color ?? 'currentcolor';
+  const { color, ...forwardProps } = props;
+  const coercedColor = color ?? 'currentcolor';
+
   return (
-    <svg className={props.className} viewBox="0 0 100 100">
-      <g fill="none" stroke={color} strokeWidth="12">
+    <svg viewBox="0 0 100 100" {...forwardProps}>
+      <g fill="none" stroke={coercedColor} strokeWidth="12">
         <line x1="50" x2="50" y1="0" y2="25" />
         <circle cx="50" cy="50" r="22" />
         <line x1="50" x2="50" y1="75" y2="100" />

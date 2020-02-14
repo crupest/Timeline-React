@@ -1,17 +1,18 @@
-import "regenerator-runtime";
-import "core-js/modules/es.promise";
-import "core-js/modules/es.array.iterator";
+import 'regenerator-runtime';
+import 'core-js/modules/es.promise';
+import 'core-js/modules/es.array.iterator';
 
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import "./i18n";
+import './index.scss';
 
-import App from "./App";
+import './i18n';
 
-import { checkUserLoginState } from "./data/user";
+import App from './App';
+
+import { checkUserLoginState } from './data/user';
 
 checkUserLoginState();
 
-ReactDOM.render(<App />, document.getElementById("app"));
+ReactDOM.render(<App />, document.getElementById('app'));

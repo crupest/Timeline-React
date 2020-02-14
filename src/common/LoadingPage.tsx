@@ -1,23 +1,10 @@
 import React from 'react';
-import { CircularProgress, makeStyles } from '@material-ui/core';
-
-const useStyles = makeStyles({
-  container: {
-    position: 'fixed',
-    display: 'flex',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
+import { Spinner } from 'reactstrap';
 
 const LoadingPage: React.FC = () => {
-  const classes = useStyles();
-
   return (
-    <div className={classes.container}>
-      <CircularProgress />
+    <div className="position-fixed w-100 h-100 d-flex justify-content-center align-items-center">
+      <Spinner style={{ height: '2.5rem', width: '2.5rem' }} color="primary" />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
-import { htmlCommonConfig } from './webpack.common';
+import { commonRules, htmlCommonConfig } from './webpack.common';
 
 const config: webpack.Configuration = {
   entry: ['react-hot-loader/patch', './src/index.tsx'],
@@ -11,6 +11,7 @@ const config: webpack.Configuration = {
   devtool: 'eval-source-map',
   module: {
     rules: [
+      ...commonRules,
       {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
@@ -18,24 +19,6 @@ const config: webpack.Configuration = {
         options: {
           plugins: ['react-hot-loader/babel']
         }
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.(png|jpe?g|gif|svg)$/i,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 8192
-            }
-          },
-          {
-            loader: 'image-webpack-loader'
-          }
-        ]
       }
     ]
   },
