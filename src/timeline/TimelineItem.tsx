@@ -20,7 +20,10 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
   const current = props.current === true;
 
   return (
-    <Row className={clsx('d-flex position-relative', current && 'current')}>
+    <Row
+      className={clsx('d-flex position-relative', current && 'current')}
+      onClick={props.onClick}
+    >
       <Col className="timeline-line-area">
         <div className="timeline-line start"></div>
         <div className="timeline-line-node"></div>
@@ -48,7 +51,10 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
         </Row>
       </Col>
       {props.showDeleteButton ? (
-        <i className="fas fa-trash" onClick={props.onDelete} />
+        <i
+          className="fas fa-trash text-danger position-absolute position-rb"
+          onClick={props.onDelete}
+        />
       ) : (
         false
       )}

@@ -58,12 +58,6 @@ const translation: TranslationResource = {
     badCredential: '用户名或密码错误。'
   },
   userPage: {
-    dialogEditSelect: {
-      title: '修改什么？',
-      avatar: '头像',
-      nickname: '昵称',
-      timelineproperty: '时间线属性'
-    },
     dialogChangeNickname: {
       title: '更改昵称',
       inputLabel: '新昵称'

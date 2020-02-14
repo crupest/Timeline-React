@@ -59,12 +59,6 @@ const translation: TranslationResource = {
     badCredential: 'Username or password is invalid.'
   },
   userPage: {
-    dialogEditSelect: {
-      title: 'Change what?',
-      avatar: 'Avatar',
-      nickname: 'Nickname',
-      timelineproperty: 'Timeline properties'
-    },
     dialogChangeNickname: {
       title: 'Change Nickname',
       inputLabel: 'New nickname'

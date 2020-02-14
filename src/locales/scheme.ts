@@ -1,5 +1,3 @@
-import { EditItem as UserPageEditSelectDialogItem } from '../user/EditItem';
-
 export default interface TranslationResource {
   welcome: string;
   home: {
@@ -56,9 +54,6 @@ export default interface TranslationResource {
     badCredential: string;
   };
   userPage: {
-    dialogEditSelect: {
-      title: string;
-    } & Record<UserPageEditSelectDialogItem, string>;
     dialogChangeNickname: {
       title: string;
       inputLabel: string;
