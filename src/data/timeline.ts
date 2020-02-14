@@ -7,6 +7,15 @@ export const kTimelineVisibilities = ['Public', 'Register', 'Private'] as const;
 
 export type TimelineVisibility = typeof kTimelineVisibilities[number];
 
+export const timelineVisibilityTooltipTranslationMap: Record<
+  TimelineVisibility,
+  string
+> = {
+  Public: 'timeline.visibilityTooltip.public',
+  Register: 'timeline.visibilityTooltip.register',
+  Private: 'timeline.visibilityTooltip.private'
+};
+
 export interface PersonalTimelineInfo {
   description: string;
   owner: User;

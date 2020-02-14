@@ -1,7 +1,10 @@
 import React from 'react';
 import clsx from 'clsx';
 
-import { PersonalTimelineInfo } from '../data/timeline';
+import {
+  PersonalTimelineInfo,
+  timelineVisibilityTooltipTranslationMap
+} from '../data/timeline';
 import {
   Card,
   Dropdown,
@@ -12,6 +15,7 @@ import {
   Col,
   Row
 } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 import { PersonalTimelineManageItem } from './EditItem';
 
@@ -25,6 +29,8 @@ export interface UserInfoCardProps {
 }
 
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
+  const { t } = useTranslation();
+
   React.useEffect(() => {
     if (props.onHeight) {
       props.onHeight(document.getElementById('user-info-card')!.clientHeight);
@@ -51,12 +57,21 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
           />
         </Col>
         <Col>
-          <p>
-            {props.timeline.owner.nickname}
-            <small className="ml-3 text-secondary">
-              @{props.timeline.owner.username}
+          <Row>
+            <p className="col-auto">
+              {props.timeline.owner.nickname}
+              <small className="ml-3 text-secondary">
+                @{props.timeline.owner.username}
+              </small>
+            </p>
+            <small className="col pt-sm-1">
+              {t(
+                timelineVisibilityTooltipTranslationMap[
+                  props.timeline.visibility
+                ]
+              )}
             </small>
-          </p>
+          </Row>
           <p>{props.timeline.description}</p>
         </Col>
       </Row>
