@@ -5,7 +5,7 @@ import TimelineLogo from '../common/TimelineLogo';
 import { TimelineInfo } from '../data/timeline';
 import UserTimelineLogo from '../common/UserTimelineLogo';
 import { Link } from 'react-router-dom';
-import { Card, Spinner, ListGroup, ListGroupItem } from 'reactstrap';
+import { Spinner, ListGroup, ListGroupItem } from 'reactstrap';
 
 export interface TimelineBoardProps {
   title: string;
@@ -15,8 +15,8 @@ export interface TimelineBoardProps {
 
 const TimelineBoard: React.FC<TimelineBoardProps> = props => {
   return (
-    <Card className="bg-light p-3">
-      <h2>{props.title}</h2>
+    <div className="">
+      <h3 className="text-center">{props.title}</h3>
       {(() => {
         if (props.timelines == null) {
           return (
@@ -31,7 +31,10 @@ const TimelineBoard: React.FC<TimelineBoardProps> = props => {
                 const isPersonal = t.name == null;
                 const name = isPersonal ? '@' + t.owner.username : t.name;
                 return (
-                  <ListGroupItem key={name}>
+                  <ListGroupItem
+                    key={name}
+                    className="d-flex align-items-center"
+                  >
                     {isPersonal ? (
                       <UserTimelineLogo className="timeline-item-icon" />
                     ) : (
@@ -53,7 +56,7 @@ const TimelineBoard: React.FC<TimelineBoardProps> = props => {
           );
         }
       })()}
-    </Card>
+    </div>
   );
 };
 

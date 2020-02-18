@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { Row, Container } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 import AppBar from '../common/AppBar';
@@ -13,6 +14,8 @@ import TimelineBoardAreaWithUser from './TimelineBoardAreaWithUser';
 
 const Home: React.FC = _ => {
   const history = useHistory();
+
+  const { t } = useTranslation();
 
   const user = useUser();
 
@@ -39,6 +42,8 @@ const Home: React.FC = _ => {
               setNavText(v);
             }}
             onButtonClick={goto}
+            buttonText={t('home.go')}
+            placeholder="@crupest"
           />
         </Row>
         {(() => {

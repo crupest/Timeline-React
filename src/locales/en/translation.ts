@@ -2,12 +2,14 @@ import TranslationResource from '../scheme';
 
 const translation: TranslationResource = {
   welcome: 'Welcome!',
+  search: 'Search',
   home: {
     /*
     guide:
       "<0>Input a username, and press enter, go to his timeline!</0><1>No idea? Just enter without input. Go to the website author's timeline!</1>",
     description: `<0>This is the first Web App created by me, <1>crupest</1>. This page is the front-end of it. You can find the source code on Github (<3>front-end</3>, <5>back-end</5>). Now it is under active development by me. You are welcomed to leave any thoughts on Github!</0>`
     */
+    go: 'Go!',
     allTimeline: 'All Timelines',
     joinTimeline: 'Joined Timelines',
     ownTimeline: 'Owned Timelines'

@@ -1,6 +1,8 @@
 export default interface TranslationResource {
   welcome: string;
+  search: string;
   home: {
+    go: string;
     allTimeline: string;
     joinTimeline: string;
     ownTimeline: string;

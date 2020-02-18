@@ -2,6 +2,7 @@ import TranslationResource from '../scheme';
 
 const translation: TranslationResource = {
   welcome: '欢迎！',
+  search: '搜索',
   home: {
     /*
     guide:
@@ -9,6 +10,7 @@ const translation: TranslationResource = {
     description:
       '<0>这是我，<1>crupest</1>，创建的第一个 Web App 。这个网站就是它的前端。你可以在 Github 上找到它的源代码（<3>前端</3>，<5>后端</5>）。现在我正在努力开发它，欢迎在 Github 上留下任何想法！</0>'
     */
+    go: '冲！',
     allTimeline: '所有的时间线',
     joinTimeline: '加入的时间线',
     ownTimeline: '拥有的时间线'

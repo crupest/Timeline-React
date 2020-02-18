@@ -1,5 +1,6 @@
 import React from 'react';
-import { Spinner } from 'reactstrap';
+import { Spinner, Form, Input } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 export interface SearchInputProps {
   value: string;
@@ -7,12 +8,17 @@ export interface SearchInputProps {
   onButtonClick: () => void;
   className?: string;
   loading?: boolean;
+  buttonText?: string;
+  placeholder?: string;
 }
 
 const SearchInput: React.FC<SearchInputProps> = props => {
+  const { t } = useTranslation();
+
   return (
-    <div>
-      <input
+    <Form inline className="my-2">
+      <Input
+        className="mr-sm-2"
         value={props.value}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           props.onChange(event.currentTarget.value);
@@ -22,13 +28,20 @@ const SearchInput: React.FC<SearchInputProps> = props => {
             props.onButtonClick();
           }
         }}
+        placeholder={props.placeholder}
       />
+      <div className="d-sm-none flex-grow-1 width-1px" />
       {props.loading ? (
         <Spinner />
       ) : (
-        <i className="fas fa-search" onClick={props.onButtonClick} />
+        <button
+          className="btn btn-outline-success mt-2 mt-sm-0"
+          onClick={props.onButtonClick}
+        >
+          {props.buttonText ?? t('search')}
+        </button>
       )}
-    </div>
+    </Form>
   );
 };
 
