@@ -22,7 +22,7 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
   });
 
   return (
-    <Container fluid id="timeline-post-edit-area" className="fixed-bottom">
+    <Container fluid id="timeline-post-edit-area" className="fixed-bottom bg-white">
       <Row>
         <textarea
           className="col"
