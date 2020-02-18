@@ -11,7 +11,6 @@ import {
   Nav,
   NavItem
 } from 'reactstrap';
-import { useMediaQuery } from 'react-responsive';
 
 import { UserWithToken, userLogout, useUser } from '../data/user';
 
