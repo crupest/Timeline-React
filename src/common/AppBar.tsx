@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Navbar, Button, Popover } from 'reactstrap';
 
@@ -67,11 +67,16 @@ const AppBar: React.FC<{}> = _ => {
   }
 
   return (
-    <Navbar dark className="fixed-top w-100 appbar">
-      <Link to="/" className="navbar-brand">
-        <TimelineLogo style={{ height: '1em' }} />
-        Timeline
-      </Link>
+    <Navbar dark className="fixed-top w-100 bg-primary">
+      <div className="d-flex align-items-center">
+        <Link to="/" className="navbar-brand d-flex align-items-center">
+          <TimelineLogo style={{ height: '1em' }} />
+          Timeline
+        </Link>
+        <NavLink className="nav-link text-white" activeClassName="active" to="/admin">
+          Administration
+        </NavLink>
+      </div>
       <div>
         <i
           className="fas fa-cog text-white mx-3"

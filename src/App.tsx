@@ -24,9 +24,9 @@ const NoMatch: React.FC = () => {
   );
 };
 
-// const LazyAdmin = React.lazy(() =>
-//   import(/* webpackChunkName: "admin" */ './admin/Admin')
-// );
+const LazyAdmin = React.lazy(() =>
+  import(/* webpackChunkName: "admin" */ './admin/Admin')
+);
 
 const App: React.FC = _ => {
   const user = useUser();
@@ -82,6 +82,11 @@ const App: React.FC = _ => {
           <Route path="/users/:username">
             <User />
           </Route>
+          {user && user.administrator && (
+            <Route path="/admin">
+              <LazyAdmin user={user} />
+            </Route>
+          )}
           <Route>
             <NoMatch />
           </Route>

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
-  CircularProgress,
-  Typography,
-  Card,
-  IconButton,
-  Icon,
-  Menu,
-  MenuItem,
-  Fab
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+  ListGroupItem,
+  Row,
+  Col,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Spinner,
+  Button
+} from 'reactstrap';
 import axios from 'axios';
 
 import OperationDialog from '../common/OperationDialog';
@@ -29,7 +29,10 @@ interface CreateUserInfo {
 }
 
 async function createUser(user: CreateUserInfo, token: string): Promise<User> {
-  const res = await axios.post<User>(`${apiBaseUrl}/userop/createuser?token=${token}`, user);
+  const res = await axios.post<User>(
+    `${apiBaseUrl}/userop/createuser?token=${token}`,
+    user
+  );
   return res.data;
 }
 
@@ -67,96 +70,73 @@ function changePermission(
   });
 }
 
-const useCardStyles = makeStyles({
-  card: {
-    margin: '10px',
-    padding: '10px',
-    display: 'flex'
-  },
-  cardContent: {
-    flexGrow: 1
-  },
-  cardActions: {}
-});
-
 const kChangeUsername = 'changeusername';
 const kChangePassword = 'changepassword';
 const kChangePermission = 'changepermission';
+const kDelete = 'delete';
 
 type TChangeUsername = typeof kChangeUsername;
 type TChangePassword = typeof kChangePassword;
 type TChangePermission = typeof kChangePermission;
+type TDelete = typeof kDelete;
 
-type ContextMenuItem = TChangeUsername | TChangePassword | TChangePermission;
+type ContextMenuItem =
+  | TChangeUsername
+  | TChangePassword
+  | TChangePermission
+  | TDelete;
 
 interface UserCardProps {
-  onDelete: () => void;
   onContextMenu: (item: ContextMenuItem) => void;
   user: User;
 }
 
-const UserCard: React.FC<UserCardProps> = props => {
-  const classes = useCardStyles();
-  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
-
-  const closeMenu = (): void => setMenuAnchor(null);
-
+const UserItem: React.FC<UserCardProps> = props => {
   const user = props.user;
 
+  const createClickCallback = (item: ContextMenuItem): (() => void) => {
+    return () => {
+      props.onContextMenu(item);
+    };
+  };
+
   return (
-    <Card key={user.username} classes={{ root: classes.card }}>
-      <div className={classes.cardContent}>
-        <Typography variant="body1">{user.username}</Typography>
-        <Typography
-          variant="caption"
-          color={user.administrator ? 'error' : 'textPrimary'}
-        >
-          {user.administrator ? 'administrator' : 'user'}
-        </Typography>
-      </div>
-      <div className={classes.cardActions}>
-        <IconButton onClick={props.onDelete}>
-          <Icon color="error">delete</Icon>
-        </IconButton>
-        <IconButton
-          onClick={event => {
-            setMenuAnchor(event.currentTarget);
-          }}
-        >
-          <Icon>more_vert</Icon>
-        </IconButton>
-        <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={() => setMenuAnchor(null)}
-        >
-          <MenuItem
-            onClick={() => {
-              closeMenu();
-              props.onContextMenu(kChangeUsername);
-            }}
+    <ListGroupItem className="container">
+      <Row className="align-items-center">
+        <Col>
+          <p className="mb-0 text-primary">{user.username}</p>
+          <small
+            className={user.administrator ? 'text-danger' : 'text-secondary'}
           >
-            Change username
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              closeMenu();
-              props.onContextMenu(kChangePassword);
-            }}
-          >
-            Change password
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              closeMenu();
-              props.onContextMenu(kChangePermission);
-            }}
-          >
-            Change permission
-          </MenuItem>
-        </Menu>
-      </div>
-    </Card>
+            {user.administrator ? 'administrator' : 'user'}
+          </small>
+        </Col>
+        <Col className="col-auto">
+          <UncontrolledDropdown>
+            <DropdownToggle color="warning" className="text-light" caret>
+              Manage
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={createClickCallback(kChangeUsername)}>
+                Change Username
+              </DropdownItem>
+              <DropdownItem onClick={createClickCallback(kChangePassword)}>
+                Change Password
+              </DropdownItem>
+              <DropdownItem onClick={createClickCallback(kChangePermission)}>
+                Change Permission
+              </DropdownItem>
+              <DropdownItem
+                className="text-danger"
+                onClick={createClickCallback(kDelete)}
+              >
+                Delete
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </Col>
+      </Row>
+    </ListGroupItem>
   );
 };
 
@@ -303,23 +283,6 @@ const UserChangePermissionDialog: React.FC<UserChangePermissionDialogProps> = pr
   );
 };
 
-const useStyles = makeStyles({
-  loadingArea: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexGrow: 1
-  },
-  progressBar: {
-    margin: '0 10px'
-  },
-  fab: {
-    position: 'fixed',
-    right: 26,
-    bottom: 26
-  }
-});
-
 interface UserAdminProps {
   user: UserWithToken;
 }
@@ -345,7 +308,6 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
         newPermission: boolean;
       };
 
-  const classes = useStyles();
   const [users, setUsers] = useState<User[] | null>(null);
   const [dialog, setDialog] = useState<DialogInfo>(null);
 
@@ -451,15 +413,9 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
   if (users) {
     const userComponents = users.map(user => {
       return (
-        <UserCard
+        <UserItem
           key={user.username}
           user={user}
-          onDelete={() =>
-            setDialog({
-              type: 'delete',
-              username: user.username
-            })
-          }
           onContextMenu={item => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const dialogInfo: any = {
@@ -476,31 +432,24 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
     });
 
     return (
-      <div>
-        {userComponents}
-        <Fab
-          color="primary"
-          classes={{
-            root: classes.fab
-          }}
+      <>
+        <Button
+          color="success"
           onClick={() =>
             setDialog({
               type: 'create'
             })
           }
+          className="align-self-end"
         >
-          <Icon>add</Icon>
-        </Fab>
+          Create User
+        </Button>
+        {userComponents}
         {dialogNode}
-      </div>
+      </>
     );
   } else {
-    return (
-      <div className={classes.loadingArea}>
-        <CircularProgress className={classes.progressBar} />
-        <Typography variant="body1">Loading user list...</Typography>
-      </div>
-    );
+    return <Spinner />;
   }
 };
 

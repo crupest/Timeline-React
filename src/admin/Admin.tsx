@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Tabs, Tab } from '@material-ui/core';
+import { Nav, NavItem, NavLink } from 'reactstrap';
 import {
   Redirect,
   Route,
@@ -7,6 +7,7 @@ import {
   useRouteMatch,
   useHistory
 } from 'react-router';
+import classnames from 'classnames';
 
 import AppBar from '../common/AppBar';
 import UserAdmin from './UserAdmin';
@@ -20,9 +21,12 @@ interface AdminProps {
 const Admin: React.FC<AdminProps> = props => {
   const match = useRouteMatch();
   const history = useHistory();
+  type TabNames = 'users' | 'more';
 
-  function onTabChange(_: React.ChangeEvent<{}>, newValue: string): void {
-    history.push(`${match.url}/${newValue}`);
+  const tabName = history.location.pathname.replace(match.path + '/', '');
+
+  function toggle(newTab: TabNames): void {
+    history.push(`${match.url}/${newTab}`);
   }
 
   const createRoute = (
@@ -31,13 +35,30 @@ const Admin: React.FC<AdminProps> = props => {
   ): React.ReactNode => {
     return (
       <Route path={`${match.path}/${name}`}>
-        <AppBar>
-          <Tabs value={name} onChange={onTabChange}>
-            <Tab label="Users" value="users" />
-            <Tab label="More" value="more" />
-          </Tabs>
-        </AppBar>
-        <div style={{ height: 104 }} />
+        <AppBar />
+        <div style={{ height: 56 }} className="flex-fix-length" />
+        <Nav tabs>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: tabName === 'users' })}
+              onClick={() => {
+                toggle('users');
+              }}
+            >
+              Users
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: tabName === 'more' })}
+              onClick={() => {
+                toggle('more');
+              }}
+            >
+              More
+            </NavLink>
+          </NavItem>
+        </Nav>
         {body}
       </Route>
     );
