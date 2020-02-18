@@ -142,9 +142,6 @@ const User: React.FC = _ => {
         open
         close={closeDialogHandler}
         process={file => {
-          return new Promise(resolve => {
-            setTimeout(resolve, 3000);
-          });
           return changeAvatar(user!.token, username, file, file.type).then(
             _ => {
               setAvatarKey(avatarKey + 1);

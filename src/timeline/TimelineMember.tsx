@@ -43,7 +43,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
 
   return (
     <Container className="px-4">
-      <ListGroup className="row my-3">
+      <ListGroup className="my-3">
         {members.map((member, index) => (
           <ListGroupItem key={member.username} className="container">
             <Row>
@@ -82,7 +82,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
         const edit = props.edit;
         if (edit != null) {
           return (
-            <Row>
+            <>
               <SearchInput
                 value={userSearchText}
                 onChange={v => {
@@ -90,6 +90,14 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                 }}
                 loading={userSearchState.type === 'loading'}
                 onButtonClick={() => {
+                  if (userSearchText === '') {
+                    setUserSearchState({
+                      type: 'error',
+                      data: 'login.emptyUsername'
+                    });
+                    return;
+                  }
+
                   setUserSearchState({ type: 'loading' });
                   edit.onCheckUser(userSearchText).then(
                     u => {
@@ -117,41 +125,43 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                   const addable =
                     members.findIndex(m => m.username === u.username) === -1;
                   return (
-                    <Container>
+                    <>
                       {!addable ? (
-                        <p className="row">
-                          {t('timeline.member.alreadyMember')}
-                        </p>
+                        <p>{t('timeline.member.alreadyMember')}</p>
                       ) : null}
-                      <Row>
-                        <Col className="col-auto">
-                          <img src={u._links.avatar} className="avatar" />
-                        </Col>
-                        <Col>
-                          <Row>{u.nickname}</Row>
-                          <Row>{'@' + u.username}</Row>
-                        </Col>
-                        <Button
-                          color="primary"
-                          className="align-self-center"
-                          disabled={!addable}
-                          onClick={() => {
-                            edit.onAddUser(u).then(_ => {
-                              setUserSearchText('');
-                              setUserSearchState({ type: 'init' });
-                            });
-                          }}
-                        >
-                          Add
-                        </Button>
-                      </Row>
-                    </Container>
+                      <Container className="mb-3">
+                        <Row>
+                          <Col className="col-auto">
+                            <img src={u._links.avatar} className="avatar" />
+                          </Col>
+                          <Col>
+                            <Row>{u.nickname}</Row>
+                            <Row>{'@' + u.username}</Row>
+                          </Col>
+                          <Button
+                            color="primary"
+                            className="align-self-center"
+                            disabled={!addable}
+                            onClick={() => {
+                              edit.onAddUser(u).then(_ => {
+                                setUserSearchText('');
+                                setUserSearchState({ type: 'init' });
+                              });
+                            }}
+                          >
+                            Add
+                          </Button>
+                        </Row>
+                      </Container>
+                    </>
                   );
                 } else if (userSearchState.type === 'error') {
-                  return <p color="error">{t(userSearchState.data)}</p>;
+                  return (
+                    <p className="text-danger">{t(userSearchState.data)}</p>
+                  );
                 }
               })()}
-            </Row>
+            </>
           );
         } else {
           return null;

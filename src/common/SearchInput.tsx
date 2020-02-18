@@ -16,7 +16,7 @@ const SearchInput: React.FC<SearchInputProps> = props => {
   const { t } = useTranslation();
 
   return (
-    <Form inline className="my-2">
+    <div className="form-inline my-2">
       <Input
         className="mr-sm-2"
         value={props.value}
@@ -41,7 +41,7 @@ const SearchInput: React.FC<SearchInputProps> = props => {
           {props.buttonText ?? t('search')}
         </button>
       )}
-    </Form>
+    </div>
   );
 };
 
