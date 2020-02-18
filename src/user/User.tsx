@@ -12,11 +12,12 @@ import { changeNickname, changeAvatar } from './http';
 
 import { PersonalTimelineManageItem } from './EditItem';
 
-import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 import UserPage from './UserPage';
 import ChangeNicknameDialog from './ChangeNicknameDialog';
-import { TimelineMemberDialog } from '../timeline/TimelineMember';
+import ChangeAvatarDialog from './ChangeAvatarDialog';
 import { TimelinePostInfoEx } from '../timeline/Timeline';
+import { TimelineMemberDialog } from '../timeline/TimelineMember';
+import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDialog';
 
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
@@ -136,11 +137,14 @@ const User: React.FC = _ => {
       />
     );
   } else if (dialog === 'avatar') {
-    /*dialogElement = (
+    dialogElement = (
       <ChangeAvatarDialog
         open
         close={closeDialogHandler}
         process={file => {
+          return new Promise(resolve => {
+            setTimeout(resolve, 3000);
+          });
           return changeAvatar(user!.token, username, file, file.type).then(
             _ => {
               setAvatarKey(avatarKey + 1);
@@ -148,7 +152,7 @@ const User: React.FC = _ => {
           );
         }}
       />
-    );*/
+    );
   } else if (dialog === 'member') {
     dialogElement = (
       <TimelineMemberDialog
