@@ -5,6 +5,7 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 
 @import './home/home.scss';
 @import './timeline/timeline.scss';
+@import './user/user-page.scss';
 
 body {
   margin: 0;
@@ -27,6 +28,10 @@ body {
 .position-rb {
   right: 0;
   bottom: 0;
+}
+
+.app-bar {
+  z-index: 1035;
 }
 
 .avatar {

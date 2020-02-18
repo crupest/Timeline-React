@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spinner } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
 import { PersonalTimelineInfo } from '../data/timeline';
@@ -12,7 +13,6 @@ import UserInfoCard, { UserInfoCardProps } from './UserInfoCard';
 import TimelinePostEdit, {
   TimelinePostSendCallback
 } from '../timeline/TimelinePostEdit';
-import { Spinner, Container, Row } from 'reactstrap';
 
 export interface UserPageProps {
   avatarKey?: string | number;

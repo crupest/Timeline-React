@@ -81,7 +81,7 @@ const AppBar: React.FC<{}> = _ => {
   const isAdministrator = user && user.administrator;
 
   return (
-    <Navbar dark className="fixed-top w-100 bg-primary" expand="md">
+    <Navbar dark className="fixed-top w-100 bg-primary app-bar" expand="md">
       <Link to="/" className="navbar-brand d-flex align-items-center">
         <TimelineLogo style={{ height: '1em' }} />
         Timeline
