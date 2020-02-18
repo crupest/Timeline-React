@@ -82,7 +82,9 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
                   isOpen={manageDropdownOpen}
                   toggle={toggleManageDropdown}
                 >
-                  <DropdownToggle color="primary">Manage</DropdownToggle>
+                  <DropdownToggle outline color="primary">
+                    Manage
+                  </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem onClick={() => props.onManage!('nickname')}>
                       {t('userPage.manageItem.nickname')}
@@ -99,7 +101,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
                   </DropdownMenu>
                 </Dropdown>
               ) : (
-                <Button color="primary" onClick={props.onMember}>
+                <Button color="primary" outline onClick={props.onMember}>
                   Members
                 </Button>
               )}

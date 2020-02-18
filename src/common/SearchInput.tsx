@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner, Form, Input } from 'reactstrap';
+import { Spinner, Input, Button } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
 export interface SearchInputProps {
@@ -34,12 +34,14 @@ const SearchInput: React.FC<SearchInputProps> = props => {
       {props.loading ? (
         <Spinner />
       ) : (
-        <button
-          className="btn btn-outline-success mt-2 mt-sm-0"
+        <Button
+          outline
+          color="success"
+          className=" mt-2 mt-sm-0"
           onClick={props.onButtonClick}
         >
           {props.buttonText ?? t('search')}
-        </button>
+        </Button>
       )}
     </div>
   );
