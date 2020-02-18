@@ -1,8 +1,17 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useHistory, matchPath } from 'react-router';
 import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Navbar, Button, Popover } from 'reactstrap';
+import {
+  Navbar,
+  Button,
+  Popover,
+  NavbarToggler,
+  Collapse,
+  Nav,
+  NavItem
+} from 'reactstrap';
+import { useMediaQuery } from 'react-responsive';
 
 import { UserWithToken, userLogout, useUser } from '../data/user';
 
@@ -57,6 +66,10 @@ const AppBar: React.FC<{}> = _ => {
 
   const toggleUserCard = (): void => setUserCardOpen(!userCardOpen);
 
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  const toggleMenu = (): void => setIsMenuOpen(!isMenuOpen);
+
   function login(): void {
     history.push('/login');
   }
@@ -66,38 +79,54 @@ const AppBar: React.FC<{}> = _ => {
     history.push('/');
   }
 
+  const isAdministrator = user && user.administrator;
+
   return (
-    <Navbar dark className="fixed-top w-100 bg-primary">
-      <div className="d-flex align-items-center">
-        <Link to="/" className="navbar-brand d-flex align-items-center">
-          <TimelineLogo style={{ height: '1em' }} />
-          Timeline
-        </Link>
-        <NavLink className="nav-link text-white" activeClassName="active" to="/admin">
-          Administration
-        </NavLink>
-      </div>
-      <div>
-        <i
-          className="fas fa-cog text-white mx-3"
-          onClick={() => {
-            history.push('/settings');
-          }}
-        />
-        <i
-          id="appbar-user-button"
-          className="fas fa-user text-white mx-3"
-          onClick={toggleUserCard}
-        />
-        <Popover
-          isOpen={userCardOpen}
-          toggle={toggleUserCard}
-          target="appbar-user-button"
-          placement="bottom"
-        >
-          <UserCard user={user} login={login} logout={logout} />
-        </Popover>
-      </div>
+    <Navbar dark className="fixed-top w-100 bg-primary" expand="md">
+      <Link to="/" className="navbar-brand d-flex align-items-center">
+        <TimelineLogo style={{ height: '1em' }} />
+        Timeline
+      </Link>
+
+      <NavbarToggler onClick={toggleMenu} />
+      <Collapse isOpen={isMenuOpen} navbar>
+        <Nav className="mr-auto" navbar>
+          {isAdministrator && (
+            <NavItem
+              className={
+                matchPath(history.location.pathname, '/admin')
+                  ? 'active'
+                  : undefined
+              }
+            >
+              <NavLink className="nav-link" to="/admin">
+                Administration
+              </NavLink>
+            </NavItem>
+          )}
+        </Nav>
+        <div className="text-right">
+          <i
+            className="fas fa-cog text-white mx-3"
+            onClick={() => {
+              history.push('/settings');
+            }}
+          />
+          <i
+            id="appbar-user-button"
+            className="fas fa-user text-white mx-3"
+            onClick={toggleUserCard}
+          />
+        </div>
+      </Collapse>
+      <Popover
+        isOpen={userCardOpen}
+        toggle={toggleUserCard}
+        target="appbar-user-button"
+        placement="bottom"
+      >
+        <UserCard user={user} login={login} logout={logout} />
+      </Popover>
     </Navbar>
   );
 };
