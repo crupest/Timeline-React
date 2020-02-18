@@ -74,6 +74,12 @@ const translation: TranslationResource = {
         errorNotSquare: '图片不是正方形。'
       },
       upload: '上传'
+    },
+    manageItem: {
+      nickname: '昵称',
+      avatar: '头像',
+      timelineProperty: '时间线属性',
+      timelineMember: '时间线成员'
     }
   },
   settings: {

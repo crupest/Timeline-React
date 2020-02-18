@@ -56,14 +56,14 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
             className="avatar large rounded"
           />
         </Col>
-        <Col>
+        <Col class="col d-flex flex-column">
           <Row>
-            <p className="col-auto">
+            <div className="col-auto">
               {props.timeline.owner.nickname}
               <small className="ml-3 text-secondary">
                 @{props.timeline.owner.username}
               </small>
-            </p>
+            </div>
             <small className="col pt-sm-1">
               {t(
                 timelineVisibilityTooltipTranslationMap[
@@ -72,33 +72,40 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
               )}
             </small>
           </Row>
-          <p>{props.timeline.description}</p>
+          <Row>
+            <Col>{props.timeline.description}</Col>
+          </Row>
+          <Row className="justify-content-end">
+            <Col className="col-auto">
+              {props.onManage != null ? (
+                <Dropdown
+                  isOpen={manageDropdownOpen}
+                  toggle={toggleManageDropdown}
+                >
+                  <DropdownToggle color="primary">Manage</DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem onClick={() => props.onManage!('nickname')}>
+                      {t('userPage.manageItem.nickname')}
+                    </DropdownItem>
+                    <DropdownItem onClick={() => props.onManage!('avatar')}>
+                      {t('userPage.manageItem.avatar')}
+                    </DropdownItem>
+                    <DropdownItem onClick={() => props.onManage!('property')}>
+                      {t('userPage.manageItem.timelineProperty')}
+                    </DropdownItem>
+                    <DropdownItem onClick={props.onMember}>
+                      {t('userPage.manageItem.timelineMember')}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              ) : (
+                <Button color="primary" onClick={props.onMember}>
+                  Members
+                </Button>
+              )}
+            </Col>
+          </Row>
         </Col>
-      </Row>
-      <Row className="justify-content-end">
-        {props.onManage != null ? (
-          <Dropdown isOpen={manageDropdownOpen} toggle={toggleManageDropdown}>
-            <DropdownToggle color="primary">Manage</DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={() => props.onManage!('nickname')}>
-                Nickname
-              </DropdownItem>
-              <DropdownItem onClick={() => props.onManage!('avatar')}>
-                Avatar
-              </DropdownItem>
-              <DropdownItem onClick={() => props.onManage!('property')}>
-                Timeline Properties
-              </DropdownItem>
-              <DropdownItem onClick={props.onMember}>
-                Timeline Members
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        ) : (
-          <Button color="primary" onClick={props.onMember}>
-            Members
-          </Button>
-        )}
       </Row>
     </Card>
   );

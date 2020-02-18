@@ -75,6 +75,12 @@ const translation: TranslationResource = {
         errorNotSquare: 'The image is not a square.'
       },
       upload: 'upload'
+    },
+    manageItem: {
+      nickname: 'Nickname',
+      avatar: 'Avatar',
+      timelineProperty: 'Timeline Property',
+      timelineMember: 'Timeline Member'
     }
   },
   settings: {

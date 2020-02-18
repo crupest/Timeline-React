@@ -70,6 +70,12 @@ export default interface TranslationResource {
       };
       upload: string;
     };
+    manageItem: {
+      nickname: string;
+      avatar: string;
+      timelineProperty: string;
+      timelineMember: string;
+    };
   };
   settings: {
     subheaders: {
