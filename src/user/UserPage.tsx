@@ -12,7 +12,7 @@ import UserInfoCard, { UserInfoCardProps } from './UserInfoCard';
 import TimelinePostEdit, {
   TimelinePostSendCallback
 } from '../timeline/TimelinePostEdit';
-import { Spinner, Container } from 'reactstrap';
+import { Spinner, Container, Row } from 'reactstrap';
 
 export interface UserPageProps {
   avatarKey?: string | number;
@@ -85,9 +85,9 @@ const UserPage: React.FC<UserPageProps> = props => {
   return (
     <>
       <AppBar />
-      <Container fluid id="page-container">
+      <div id="page-container" className="pr-2">
         {body}
-      </Container>
+      </div>
     </>
   );
 };

@@ -37,18 +37,14 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
           </span>
           <span className="ml-3">{props.post.author.nickname}</span>
         </Row>
-        <Row>
-          <Col sm="auto">
-            <img
-              key={props.avatarKey}
-              src={props.post.author._links.avatar}
-              className="avatar rounded"
-            />
-          </Col>
-          <Col>
-            <p className="timeline-content">{props.post.content}</p>
-          </Col>
-        </Row>
+        <p className="row d-block timeline-content">
+          <img
+            key={props.avatarKey}
+            src={props.post.author._links.avatar}
+            className="avatar rounded float-right float-sm-left mx-2"
+          />
+          {props.post.content}
+        </p>
       </Col>
       {props.showDeleteButton ? (
         <i
