@@ -121,6 +121,7 @@ const AppBar: React.FC<{}> = _ => {
       <Popover
         isOpen={userCardOpen}
         toggle={toggleUserCard}
+        trigger="legacy"
         target="appbar-user-button"
         placement="bottom"
       >
