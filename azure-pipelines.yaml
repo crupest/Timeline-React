@@ -1,50 +1,47 @@
 trigger:
-- master
-
+  - master
+  
 stages:
-- stage: build
-  displayName: Routine Build
+  - stage: build
+    displayName: Routine Build
 
-  jobs:
-  - job: build
-    displayName: Build
-    pool:
-      vmImage: 'ubuntu-18.04'
+    jobs:
+      - job: build
+        displayName: Build
+        pool:
+          vmImage: 'ubuntu-18.04'
 
-    steps:
-    - script: yarn
-      displayName: Restore Packages
+        steps:
+        - script: yarn
+          displayName: Restore Packages
 
-    - script: yarn build
-      displayName: Webpack Build
+        - script: yarn build
+          displayName: Webpack Build
 
-    - publish: dist
-      artifact: timeline
+        - publish: dist
+          artifact: timeline
 
-- stage: deploy
-  displayName: Deploy
-  dependsOn: build
-  condition: eq(variables['Build.SourceBranchName'], 'master')
-
-  jobs:
-  - job: deploy
+  - stage: deploy
     displayName: Deploy
-    pool:
-      vmImage: 'ubuntu-18.04'
-    variables:
-    - group: sshkey
-    
-    steps:
-    - download: current
-      artifact: timeline
+    dependsOn: build
+    condition: eq(variables['Build.SourceBranchName'], 'master')
 
-    - task: InstallSSHKey@0
-      inputs:
-        knownHostsEntry: $(knownHostsEntry)
-        sshPublicKey: $(sshPublicKey)
-        sshKeySecureFile: c4553c6f-a7f5-4778-b07c-763e71dd867a
+    jobs:
+    - deployment: deploy
+      displayName: Deploy to Server
+      environment: 
+        name: timeline-server
+        resourceType: VirtualMachine
+        tags: linux
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: current
+              artifact: timeline
 
-    - script: |
-        ssh timeline@crupest.xyz 'rm -rf /var/www/timeline/*'
-        scp -r $PIPELINE_WORKSPACE/timeline/* timeline@crupest.xyz:/var/www/timeline/
-      displayName: Copy Files
+            - script: |
+                rm -rf /var/www/timeline/*
+                cp -r $PIPELINE_WORKSPACE/timeline/. /var/www/timeline/
+              displayName: 'Copy Files'
+              failOnStderr: true
