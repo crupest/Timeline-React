@@ -30,9 +30,9 @@ const User: React.FC = _ => {
   const [timeline, setTimeline] = useState<PersonalTimelineInfo | undefined>(
     undefined
   );
-  const [posts, setPosts] = useState<TimelinePostInfoEx[] | undefined>(
-    undefined
-  );
+  const [posts, setPosts] = useState<
+    TimelinePostInfoEx[] | 'forbid' | undefined
+  >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const [avatarKey, setAvatarKey] = useState<number>(0);
 
@@ -41,10 +41,10 @@ const User: React.FC = _ => {
     personalTimelineService.fetch(username).then(
       ti => {
         if (subscribe) {
+          setTimeline(ti);
           if (!personalTimelineService.hasReadPermission(user, ti)) {
-            setError('timeline.messageCantSee');
+            setPosts('forbid');
           } else {
-            setTimeline(ti);
             personalTimelineService.fetchPosts(username).then(
               data => {
                 if (subscribe) {
@@ -215,7 +215,7 @@ const User: React.FC = _ => {
         onDelete={(index, id) => {
           personalTimelineService.deletePost(username, id).then(
             _ => {
-              const newPosts = posts!.slice();
+              const newPosts = (posts as TimelinePostInfoEx[]).slice();
               newPosts.splice(index, 1);
               setPosts(newPosts);
             },
@@ -233,7 +233,7 @@ const User: React.FC = _ => {
                     content: content
                   })
                   .then(newPost => {
-                    const newPosts = posts!.slice();
+                    const newPosts = (posts as TimelinePostInfoEx[]).slice();
                     newPosts.push({
                       ...newPost,
                       deletable: true

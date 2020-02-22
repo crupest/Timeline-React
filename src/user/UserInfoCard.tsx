@@ -1,10 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-
-import {
-  PersonalTimelineInfo,
-  timelineVisibilityTooltipTranslationMap
-} from '../data/timeline';
 import {
   Card,
   Dropdown,
@@ -16,6 +11,12 @@ import {
   Row
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
+import { fromEvent } from 'rxjs';
+
+import {
+  PersonalTimelineInfo,
+  timelineVisibilityTooltipTranslationMap
+} from '../data/timeline';
 
 import { PersonalTimelineManageItem } from './EditItem';
 
@@ -31,10 +32,15 @@ export interface UserInfoCardProps {
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const { t } = useTranslation();
 
-  React.useEffect(() => {
+  const notifyHeight = (): void => {
     if (props.onHeight) {
       props.onHeight(document.getElementById('user-info-card')!.clientHeight);
     }
+  };
+
+  React.useEffect(() => {
+    const subscription = fromEvent(window, 'resize').subscribe(notifyHeight);
+    return () => subscription.unsubscribe();
   });
 
   const [manageDropdownOpen, setManageDropdownOpen] = React.useState<boolean>(
@@ -53,6 +59,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
           <img
             key={props.avatarKey}
             src={props.timeline.owner._links.avatar}
+            onLoad={notifyHeight}
             className="avatar large rounded"
           />
         </Col>
