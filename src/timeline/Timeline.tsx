@@ -27,32 +27,34 @@ const Timeline: React.FC<TimelineProps> = props => {
   const posts = props.posts;
 
   return (
-    <Container fluid className={clsx('d-flex', 'flex-column', props.className)}>
-      {(() => {
-        const length = posts.length;
-        return posts.map((post, i) => {
-          return (
-            <TimelineItem
-              post={post}
-              avatarKey={props.avatarKey}
-              key={post.id}
-              current={length - 1 === i}
-              showDeleteButton={indexShowDeleteButton === i}
-              onClick={() => {
-                if (indexShowDeleteButton !== i && post.deletable) {
-                  setIndexShowDeleteButton(i);
-                } else {
-                  setIndexShowDeleteButton(-1);
-                }
-              }}
-              onDelete={() => {
-                props.onDelete(i, post.id);
-              }}
-            />
-          );
-        });
-      })()}
-    </Container>
+    <div className={clsx('pr-2', props.className)}>
+      <Container fluid className="d-flex flex-column">
+        {(() => {
+          const length = posts.length;
+          return posts.map((post, i) => {
+            return (
+              <TimelineItem
+                post={post}
+                avatarKey={props.avatarKey}
+                key={post.id}
+                current={length - 1 === i}
+                showDeleteButton={indexShowDeleteButton === i}
+                onClick={() => {
+                  if (indexShowDeleteButton !== i && post.deletable) {
+                    setIndexShowDeleteButton(i);
+                  } else {
+                    setIndexShowDeleteButton(-1);
+                  }
+                }}
+                onDelete={() => {
+                  props.onDelete(i, post.id);
+                }}
+              />
+            );
+          });
+        })()}
+      </Container>
+    </div>
   );
 };
 

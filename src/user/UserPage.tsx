@@ -46,7 +46,6 @@ const UserPage: React.FC<UserPageProps> = props => {
               avatarKey={props.avatarKey}
               posts={props.posts}
               onDelete={props.onDelete}
-              className="mr-2"
             />
           );
           if (props.onPost != null) {
