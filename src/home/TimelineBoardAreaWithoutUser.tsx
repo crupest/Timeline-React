@@ -1,10 +1,10 @@
 import React from 'react';
+import { Container } from 'reactstrap';
 import { from } from 'rxjs';
 import { useTranslation } from 'react-i18next';
 
 import TimelineBoard from './TimelineBoard';
 import { TimelineInfo } from '../data/timeline';
-import { Row, Col, Container } from 'reactstrap';
 
 interface TimelineBoardAreaWithoutUserProps {
   fetch: () => Promise<TimelineInfo[]>;

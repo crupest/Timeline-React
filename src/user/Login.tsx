@@ -32,7 +32,7 @@ const Login: React.FC = _ => {
     if (user != null) {
       setTimeout(() => history.push('/'), 3000);
     }
-  }, [user]);
+  }, []);
 
   if (user != null) {
     return (

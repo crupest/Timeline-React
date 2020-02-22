@@ -52,7 +52,7 @@ const Home: React.FC = _ => {
               <TimelineBoardAreaWithoutUser
                 fetch={() =>
                   axios
-                    .get<TimelineInfo[]>(`${apiBaseUrl}/timelines`)
+                    .get<TimelineInfo[]>(`${apiBaseUrl}/timelines?visibility=public`)
                     .then(res => res.data)
                 }
               />
