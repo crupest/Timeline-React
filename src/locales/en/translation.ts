@@ -58,7 +58,8 @@ const translation: TranslationResource = {
   login: {
     emptyUsername: "Username can't be empty.",
     emptyPassword: "Password can't be empty.",
-    badCredential: 'Username or password is invalid.'
+    badCredential: 'Username or password is invalid.',
+    alreadyLogin: 'Already login! Redirect to home page in 3s!'
   },
   userPage: {
     dialogChangeNickname: {

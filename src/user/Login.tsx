@@ -1,10 +1,10 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 import AppBar from '../common/AppBar';
 
-import { userLogin } from '../data/user';
+import { userLogin, useUser } from '../data/user';
 import {
   Label,
   FormGroup,
@@ -25,6 +25,23 @@ const Login: React.FC = _ => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [process, setProcess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const user = useUser();
+
+  useEffect(() => {
+    if (user != null) {
+      setTimeout(() => history.push('/'), 3000);
+    }
+  }, [user]);
+
+  if (user != null) {
+    return (
+      <>
+        <AppBar />
+        <p className="mt-appbar">{t('login.alreadyLogin')}</p>
+      </>
+    );
+  }
 
   function onSubmit(event: React.SyntheticEvent): void {
     if (username === '' || password === '') {
@@ -59,8 +76,7 @@ const Login: React.FC = _ => {
   return (
     <Fragment>
       <AppBar />
-      <div style={{ height: 56 }}></div>
-      <div className="container">
+      <div className="container mt-appbar">
         <h1>{t('welcome')}</h1>
         <Form>
           <FormGroup>

@@ -54,6 +54,7 @@ export default interface TranslationResource {
     emptyUsername: string;
     emptyPassword: string;
     badCredential: string;
+    alreadyLogin: string;
   };
   userPage: {
     dialogChangeNickname: {

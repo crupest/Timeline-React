@@ -57,7 +57,8 @@ const translation: TranslationResource = {
   login: {
     emptyUsername: '用户名不能为空。',
     emptyPassword: '密码不能为空。',
-    badCredential: '用户名或密码错误。'
+    badCredential: '用户名或密码错误。',
+    alreadyLogin: '已经登陆，三秒后导航到首页！'
   },
   userPage: {
     dialogChangeNickname: {
