@@ -9,17 +9,21 @@ import Timeline, {
 import AppBar from '../common/AppBar';
 import TimelinePostEdit, { TimelinePostSendCallback } from './TimelinePostEdit';
 
+export interface TimelineCardComponentProps<TTimeline, TManageItems> {
+  timeline: TTimeline;
+  onManage?: (item: TManageItems | 'property') => void;
+  onMember: () => void;
+  className?: string;
+  onHeight?: (height: number) => void;
+}
+
 export interface TimelinePageUIProps<TTimeline, TManageItems> {
   avatarKey?: string | number;
   timeline?: TTimeline;
   posts?: TimelinePostInfoEx[] | 'forbid';
-  CardComponent: React.ComponentType<{
-    timeline: TTimeline;
-    onManage?: (item: TManageItems | 'property') => void;
-    onMember: () => void;
-    className?: string;
-    onHeight?: (height: number) => void;
-  }>;
+  CardComponent: React.ComponentType<
+    TimelineCardComponentProps<TTimeline, TManageItems>
+  >;
   onMember: () => void;
   onManage?: (item: TManageItems | 'property') => void;
   onPost?: TimelinePostSendCallback;

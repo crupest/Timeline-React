@@ -9,13 +9,14 @@ import UserPage from './UserPage';
 import ChangeNicknameDialog from './ChangeNicknameDialog';
 import ChangeAvatarDialog from './ChangeAvatarDialog';
 import TimelinePageTemplate from '../timeline/TimelinePageTemplate';
+import { PersonalTimelineManageItem } from './UserInfoCard';
 
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
 
   const user = useUser();
 
-  const [dialog, setDialog] = useState<null | 'avatar' | 'nickname'>(null);
+  const [dialog, setDialog] = useState<null | PersonalTimelineManageItem>(null);
   const [key, setKey] = useState<number>(0);
 
   let dialogElement: React.ReactElement | undefined;
@@ -58,7 +59,7 @@ const User: React.FC = _ => {
       key={key}
       name={username}
       UiComponent={UserPage}
-      onManage={(item: 'avatar' | 'nickname') => {
+      onManage={(item: PersonalTimelineManageItem) => {
         setDialog(item);
       }}
       service={personalTimelineService}

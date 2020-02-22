@@ -14,22 +14,14 @@ import {
   PersonalTimelineInfo,
   timelineVisibilityTooltipTranslationMap
 } from '../data/timeline';
+import { TimelineCardComponentProps } from '../timeline/TimelinePageUI';
 
-export const kPersonalTimelineManageItems = [
-  'nickname',
-  'avatar',
-  'property'
-] as const;
+export type PersonalTimelineManageItem = 'avatar' | 'nickname';
 
-export type PersonalTimelineManageItem = typeof kPersonalTimelineManageItems[number];
-
-export interface UserInfoCardProps {
-  timeline: PersonalTimelineInfo;
-  onManage?: (item: PersonalTimelineManageItem) => void;
-  onMember: () => void;
-  className?: string;
-  onHeight?: (height: number) => void;
-}
+export type UserInfoCardProps = TimelineCardComponentProps<
+  PersonalTimelineInfo,
+  PersonalTimelineManageItem
+>;
 
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const { t } = useTranslation();
