@@ -10,6 +10,15 @@ export default interface TranslationResource {
     guide: string;
     description: string;
     */
+    createButton: string;
+    createDialog: {
+      title: string;
+      name: string;
+      nameFormat: string;
+      badFormat: string;
+      noEmpty: string;
+      tooLong: string;
+    };
   };
   operationDialog: {
     confirm: string;

@@ -48,7 +48,7 @@ const Home: React.FC = _ => {
                     outline
                     onClick={() => setDialog('create')}
                   >
-                    Create Timeline
+                    {t('home.createButton')}
                   </Button>
                 </Row>
                 {dialog === 'create' && (

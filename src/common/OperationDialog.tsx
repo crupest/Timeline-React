@@ -11,7 +11,8 @@ import {
   ModalFooter,
   Button,
   Modal,
-  ModalHeader
+  ModalHeader,
+  FormText
 } from 'reactstrap';
 
 const DefaultProcessPrompt: React.FC = _ => {
@@ -29,13 +30,13 @@ interface DefaultErrorPromptProps {
 const DefaultErrorPrompt: React.FC<DefaultErrorPromptProps> = props => {
   const { t } = useTranslation();
 
-  let result = <p color="danger">{t('operationDialog.error')}</p>;
+  let result = <p className="text-danger">{t('operationDialog.error')}</p>;
 
   if (props.error != null) {
     result = (
       <>
         {result}
-        <p color="danger">{props.error}</p>
+        <p className="text-danger">{props.error}</p>
       </>
     );
   }
@@ -63,6 +64,7 @@ export interface OperationTextInputInfo {
     React.InputHTMLAttributes<HTMLInputElement>,
     'type' | 'value' | 'onChange'
   >;
+  helperText?: string;
   validator?: OperationInputValidator<string>;
 }
 
@@ -261,6 +263,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                     {...item.textFieldProps}
                   />
                   {error != null && <FormFeedback>{error}</FormFeedback>}
+                  {item.helperText && <FormText>{item.helperText}</FormText>}
                 </FormGroup>
               );
             } else if (item.type === 'bool') {
@@ -335,7 +338,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
       content =
         props.successPrompt?.(result.data) ?? t('operationDialog.success');
       if (typeof content === 'string')
-        content = <p color="success">{content}</p>;
+        content = <p className="text-success">{content}</p>;
     } else {
       content = props.failurePrompt?.(result.data) ?? <DefaultErrorPrompt />;
       if (typeof content === 'string')
@@ -358,12 +361,15 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   return (
     <Modal isOpen={props.open} toggle={close}>
       <ModalHeader
-        color={
-          props.titleColor === 'create'
-            ? 'success'
-            : props.titleColor === 'dangerous'
-            ? 'danger'
-            : props.titleColor
+        className={
+          props.titleColor != null
+            ? 'text-' +
+              (props.titleColor === 'create'
+                ? 'success'
+                : props.titleColor === 'dangerous'
+                ? 'danger'
+                : props.titleColor)
+            : undefined
         }
       >
         {title}

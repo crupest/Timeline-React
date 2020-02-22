@@ -13,7 +13,17 @@ const translation: TranslationResource = {
     go: '冲！',
     allTimeline: '所有的时间线',
     joinTimeline: '加入的时间线',
-    ownTimeline: '拥有的时间线'
+    ownTimeline: '拥有的时间线',
+    createButton: '创建时间线',
+    createDialog: {
+      title: '创建时间线！',
+      name: '名字',
+      nameFormat:
+        '名字只能由字母、数字、下划线（_）和连字符（-）构成，且长度不能超过26.',
+      badFormat: '格式错误',
+      noEmpty: '不能为空',
+      tooLong: '太长了'
+    }
   },
   operationDialog: {
     confirm: '确定',
