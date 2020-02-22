@@ -1,14 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
 import {
-  Card,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Button,
-  Col,
-  Row
+  Button
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 import { fromEvent } from 'rxjs';
@@ -50,73 +47,54 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
     setManageDropdownOpen(!manageDropdownOpen);
 
   return (
-    <Card
+    <div
       id="user-info-card"
-      className={clsx('container-fluid round', props.className)}
+      className={clsx('rounded border', props.className)}
     >
-      <Row>
-        <Col className="col-auto">
-          <img
-            key={props.avatarKey}
-            src={props.timeline.owner._links.avatar}
-            onLoad={notifyHeight}
-            className="avatar large rounded"
-          />
-        </Col>
-        <Col class="col d-flex flex-column">
-          <Row>
-            <div className="col-auto">
-              {props.timeline.owner.nickname}
-              <small className="ml-3 text-secondary">
-                @{props.timeline.owner.username}
-              </small>
-            </div>
-            <small className="col pt-sm-1">
-              {t(
-                timelineVisibilityTooltipTranslationMap[
-                  props.timeline.visibility
-                ]
-              )}
-            </small>
-          </Row>
-          <Row>
-            <Col>{props.timeline.description}</Col>
-          </Row>
-          <Row className="justify-content-end">
-            <Col className="col-auto">
-              {props.onManage != null ? (
-                <Dropdown
-                  isOpen={manageDropdownOpen}
-                  toggle={toggleManageDropdown}
-                >
-                  <DropdownToggle outline color="primary">
-                    {t('timeline.manage')}
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem onClick={() => props.onManage!('nickname')}>
-                      {t('userPage.manageItem.nickname')}
-                    </DropdownItem>
-                    <DropdownItem onClick={() => props.onManage!('avatar')}>
-                      {t('userPage.manageItem.avatar')}
-                    </DropdownItem>
-                    <DropdownItem onClick={() => props.onManage!('property')}>
-                      {t('userPage.manageItem.timelineProperty')}
-                    </DropdownItem>
-                    <DropdownItem onClick={props.onMember}>
-                      {t('userPage.manageItem.timelineMember')}
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              ) : (
-                <Button color="primary" outline onClick={props.onMember}>
-                  {t('timeline.memberButton')}
-                </Button>
-              )}
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </Card>
+      <img
+        key={props.avatarKey}
+        src={props.timeline.owner._links.avatar}
+        onLoad={notifyHeight}
+        className="avatar large rounded float-left"
+      />
+      <div>
+        {props.timeline.owner.nickname}
+        <small className="ml-3 text-secondary">
+          @{props.timeline.owner.username}
+        </small>
+      </div>
+      <p className="mb-0">{props.timeline.description}</p>
+      <small className="mt-1 d-block">
+        {t(timelineVisibilityTooltipTranslationMap[props.timeline.visibility])}
+      </small>
+      <div className="text-right">
+        {props.onManage != null ? (
+          <Dropdown isOpen={manageDropdownOpen} toggle={toggleManageDropdown}>
+            <DropdownToggle outline color="primary">
+              {t('timeline.manage')}
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => props.onManage!('nickname')}>
+                {t('userPage.manageItem.nickname')}
+              </DropdownItem>
+              <DropdownItem onClick={() => props.onManage!('avatar')}>
+                {t('userPage.manageItem.avatar')}
+              </DropdownItem>
+              <DropdownItem onClick={() => props.onManage!('property')}>
+                {t('userPage.manageItem.timelineProperty')}
+              </DropdownItem>
+              <DropdownItem onClick={props.onMember}>
+                {t('userPage.manageItem.timelineMember')}
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        ) : (
+          <Button color="primary" outline onClick={props.onMember}>
+            {t('timeline.memberButton')}
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };
 
