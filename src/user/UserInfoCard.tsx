@@ -90,7 +90,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
                   toggle={toggleManageDropdown}
                 >
                   <DropdownToggle outline color="primary">
-                    Manage
+                    {t('timeline.manage')}
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem onClick={() => props.onManage!('nickname')}>
@@ -109,7 +109,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
                 </Dropdown>
               ) : (
                 <Button color="primary" outline onClick={props.onMember}>
-                  Members
+                  {t('timeline.memberButton')}
                 </Button>
               )}
             </Col>

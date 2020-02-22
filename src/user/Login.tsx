@@ -116,7 +116,7 @@ const Login: React.FC = _ => {
             <Input
               id="remember-me"
               type="checkbox"
-              value={rememberMe as any}
+              value={(rememberMe as unknown) as string}
               onChange={e => {
                 const v = (e.target as HTMLInputElement).checked;
                 setRememberMe(v);
