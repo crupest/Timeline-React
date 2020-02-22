@@ -1,12 +1,20 @@
 import React from 'react';
 
-import TimelinePage, { TimelinePageProps } from '../timeline/TimelinePage';
+import { ExcludeKey } from '../type-utilities';
+import { PersonalTimelineInfo } from '../data/timeline';
+
+import TimelinePageUI, {
+  TimelinePageUIProps
+} from '../timeline/TimelinePageUI';
 import UserInfoCard, { PersonalTimelineManageItem } from './UserInfoCard';
 
-export type UserPageProps = TimelinePageProps<PersonalTimelineManageItem>;
+export type UserPageProps = ExcludeKey<
+  TimelinePageUIProps<PersonalTimelineInfo, PersonalTimelineManageItem>,
+  'CardComponent'
+>;
 
 const UserPage: React.FC<UserPageProps> = props => {
-  return <TimelinePage {...props} CardComponent={UserInfoCard} />;
+  return <TimelinePageUI {...props} CardComponent={UserInfoCard} />;
 };
 
 export default UserPage;

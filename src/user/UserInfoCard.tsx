@@ -28,7 +28,6 @@ export interface UserInfoCardProps {
   onManage?: (item: PersonalTimelineManageItem) => void;
   onMember: () => void;
   className?: string;
-  avatarKey?: string | number;
   onHeight?: (height: number) => void;
 }
 
@@ -58,7 +57,6 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
       className={clsx('rounded border bg-light', props.className)}
     >
       <img
-        key={props.avatarKey}
         src={props.timeline.owner._links.avatar}
         onLoad={notifyHeight}
         className="avatar large rounded-circle float-left"

@@ -60,6 +60,12 @@ export interface CreatePostRequest {
   time?: Date;
 }
 
+// TODO: Remove in the future
+export interface TimelineChangePropertyRequest {
+  visibility?: TimelineVisibility;
+  description?: string;
+}
+
 export interface PersonalTimelineChangePropertyRequest {
   visibility?: TimelineVisibility;
   description?: string;

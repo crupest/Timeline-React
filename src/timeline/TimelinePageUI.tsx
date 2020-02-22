@@ -2,8 +2,6 @@ import React from 'react';
 import { Spinner } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
-import { TimelineInfo } from '../data/timeline';
-
 import Timeline, {
   TimelinePostInfoEx,
   TimelineDeleteCallback
@@ -11,27 +9,26 @@ import Timeline, {
 import AppBar from '../common/AppBar';
 import TimelinePostEdit, { TimelinePostSendCallback } from './TimelinePostEdit';
 
-export interface TimelinePageProps<TEditItems> {
+export interface TimelinePageUIProps<TTimeline, TManageItems> {
   avatarKey?: string | number;
-  timeline?: TimelineInfo;
+  timeline?: TTimeline;
   posts?: TimelinePostInfoEx[] | 'forbid';
   CardComponent: React.ComponentType<{
-    timeline: TimelineInfo;
-    onManage?: (item: TEditItems) => void;
+    timeline: TTimeline;
+    onManage?: (item: TManageItems | 'property') => void;
     onMember: () => void;
     className?: string;
-    avatarKey?: string | number;
     onHeight?: (height: number) => void;
   }>;
   onMember: () => void;
-  onManage?: (item: TEditItems) => void;
+  onManage?: (item: TManageItems | 'property') => void;
   onPost?: TimelinePostSendCallback;
   onDelete: TimelineDeleteCallback;
   error?: string;
 }
 
-function TimelinePage<TEditItems>(
-  props: TimelinePageProps<TEditItems>
+export default function TimelinePageUI<TTimeline, TEditItems>(
+  props: TimelinePageUIProps<TTimeline, TEditItems>
 ): React.ReactElement | null {
   const { t } = useTranslation();
 
@@ -49,11 +46,7 @@ function TimelinePage<TEditItems>(
           );
         } else {
           timelineBody = (
-            <Timeline
-              avatarKey={props.avatarKey}
-              posts={props.posts}
-              onDelete={props.onDelete}
-            />
+            <Timeline posts={props.posts} onDelete={props.onDelete} />
           );
           if (props.onPost != null) {
             timelineBody = (
@@ -81,7 +74,6 @@ function TimelinePage<TEditItems>(
       body = (
         <>
           <CardComponent
-            avatarKey={props.avatarKey}
             timeline={props.timeline}
             onManage={props.onManage}
             onMember={props.onMember}
@@ -108,5 +100,3 @@ function TimelinePage<TEditItems>(
     </>
   );
 }
-
-export default TimelinePage;

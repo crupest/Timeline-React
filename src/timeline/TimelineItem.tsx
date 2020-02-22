@@ -7,7 +7,6 @@ import { Row, Col } from 'reactstrap';
 
 export interface TimelineItemProps {
   post: TimelinePostInfo;
-  avatarKey?: string | number;
   showDeleteButton?: boolean;
   current?: boolean;
   onClick?: () => void;
@@ -39,7 +38,6 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
         </Row>
         <p className="row d-block timeline-content">
           <img
-            key={props.avatarKey}
             src={props.post.author._links.avatar}
             className="avatar rounded float-right float-sm-left mx-2"
           />

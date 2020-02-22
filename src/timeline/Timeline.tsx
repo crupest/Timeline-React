@@ -14,7 +14,6 @@ export type TimelineDeleteCallback = (index: number, id: number) => void;
 
 export interface TimelineProps {
   className?: string;
-  avatarKey?: number | string;
   posts: TimelinePostInfoEx[];
   onDelete: TimelineDeleteCallback;
 }
@@ -35,7 +34,6 @@ const Timeline: React.FC<TimelineProps> = props => {
             return (
               <TimelineItem
                 post={post}
-                avatarKey={props.avatarKey}
                 key={post.id}
                 current={length - 1 === i}
                 showDeleteButton={indexShowDeleteButton === i}
