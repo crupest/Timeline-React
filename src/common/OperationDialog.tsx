@@ -99,13 +99,14 @@ interface OperationDialogProps {
   open: boolean;
   close: () => void;
   title: React.ReactNode;
-  titleColor?: 'default' | 'dangerous' | 'create';
+  titleColor?: 'default' | 'dangerous' | 'create' | string;
   onProcess: (inputs: (string | boolean)[]) => Promise<unknown>;
   inputScheme?: OperationInputInfo[];
   inputPrompt?: string | (() => React.ReactNode);
   processPrompt?: () => React.ReactNode;
   successPrompt?: (data: unknown) => React.ReactNode;
   failurePrompt?: (error: unknown) => React.ReactNode;
+  onSuccessAndClose?: () => void;
 }
 
 const OperationDialog: React.FC<OperationDialogProps> = props => {
@@ -127,7 +128,21 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
     })
   );
   const [inputError, setInputError] = useState<OperationInputErrorInfo>({});
-  const isProcessing = step === 'process';
+
+  const close = (): void => {
+    if (step !== 'process') {
+      props.close();
+      if (
+        typeof step === 'object' &&
+        step.type === 'success' &&
+        props.onSuccessAndClose
+      ) {
+        props.onSuccessAndClose();
+      }
+    } else {
+      console.log('Attempt to close modal when processing.');
+    }
+  };
 
   const onConfirm = (): void => {
     setStep('process');
@@ -290,7 +305,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
           })}
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={props.close}>
+          <Button color="secondary" onClick={close}>
             {t('operationDialog.cancel')}
           </Button>
           <Button
@@ -330,7 +345,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
       <>
         <ModalBody>{content}</ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={props.close}>
+          <Button color="primary" onClick={close}>
             {t('operationDialog.ok')}
           </Button>
         </ModalFooter>
@@ -341,16 +356,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
   const title = typeof props.title === 'string' ? t(props.title) : props.title;
 
   return (
-    <Modal
-      isOpen={props.open}
-      toggle={() => {
-        if (isProcessing) {
-          console.log('Attempt to close modal when processing.');
-        } else {
-          props.close();
-        }
-      }}
-    >
+    <Modal isOpen={props.open} toggle={close}>
       <ModalHeader
         color={
           props.titleColor === 'create'

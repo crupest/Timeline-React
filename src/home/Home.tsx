@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import { Row, Container } from 'reactstrap';
+import { Row, Container, Button } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
@@ -11,6 +11,7 @@ import TimelineBoardAreaWithoutUser from './TimelineBoardAreaWithoutUser';
 import { apiBaseUrl } from '../config';
 import { TimelineInfo } from '../data/timeline';
 import TimelineBoardAreaWithUser from './TimelineBoardAreaWithUser';
+import TimelineCreateDialog from './TimelineCreateDialog';
 
 const Home: React.FC = _ => {
   const history = useHistory();
@@ -20,6 +21,8 @@ const Home: React.FC = _ => {
   const user = useUser();
 
   const [navText, setNavText] = useState<string>('');
+
+  const [dialog, setDialog] = React.useState<'create' | null>(null);
 
   const goto = (): void => {
     if (navText === '') {
@@ -35,6 +38,26 @@ const Home: React.FC = _ => {
     <>
       <AppBar />
       <Container fluid style={{ marginTop: '56px' }}>
+        {(() => {
+          if (user != null) {
+            return (
+              <>
+                <Row className="my-2 px-3 justify-content-end">
+                  <Button
+                    color="success"
+                    outline
+                    onClick={() => setDialog('create')}
+                  >
+                    Create Timeline
+                  </Button>
+                </Row>
+                {dialog === 'create' && (
+                  <TimelineCreateDialog open close={() => setDialog(null)} />
+                )}
+              </>
+            );
+          }
+        })()}
         <Row className="justify-content-center">
           <SearchInput
             value={navText}
@@ -52,7 +75,9 @@ const Home: React.FC = _ => {
               <TimelineBoardAreaWithoutUser
                 fetch={() =>
                   axios
-                    .get<TimelineInfo[]>(`${apiBaseUrl}/timelines?visibility=public`)
+                    .get<TimelineInfo[]>(
+                      `${apiBaseUrl}/timelines?visibility=public`
+                    )
                     .then(res => res.data)
                 }
               />

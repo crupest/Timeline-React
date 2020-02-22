@@ -36,7 +36,7 @@ const SearchInput: React.FC<SearchInputProps> = props => {
       ) : (
         <Button
           outline
-          color="success"
+          color="primary"
           className=" mt-2 mt-sm-0"
           onClick={props.onButtonClick}
         >
