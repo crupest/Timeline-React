@@ -31,19 +31,22 @@ const UserPage: React.FC<UserPageProps> = props => {
   let body: React.ReactElement;
 
   if (props.error != null) {
-    body = <p color="error">{t(props.error)}</p>;
+    body = <p className="text-danger">{t(props.error)}</p>;
   } else {
     if (props.timeline != null) {
       let timelineBody: React.ReactElement;
       if (props.posts != null) {
         if (props.posts === 'forbid') {
-          timelineBody = <p className="text-danger">{t('timeline.messageCantSee')}</p>;
+          timelineBody = (
+            <p className="text-danger">{t('timeline.messageCantSee')}</p>
+          );
         } else {
           timelineBody = (
             <Timeline
               avatarKey={props.avatarKey}
               posts={props.posts}
               onDelete={props.onDelete}
+              className="mr-2"
             />
           );
           if (props.onPost != null) {
@@ -76,7 +79,7 @@ const UserPage: React.FC<UserPageProps> = props => {
             onMember={props.onMember}
             onHeight={height => {
               const element = document.getElementById('page-container')!;
-              element.style.marginTop = 56 + height + 'px';
+              element.style.marginTop = 56 + 1 + height + 'px';
             }}
             className="fixed-top mt-appbar"
           />
@@ -91,7 +94,7 @@ const UserPage: React.FC<UserPageProps> = props => {
   return (
     <>
       <AppBar />
-      <div id="page-container" className="pr-2">
+      <div id="page-container" className="mt-appbar">
         {body}
       </div>
     </>

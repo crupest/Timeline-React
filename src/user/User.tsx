@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { AxiosError } from 'axios';
 
 import { useUser, fetchUser } from '../data/user';
@@ -21,6 +22,8 @@ import TimelinePropertyChangeDialog from '../timeline/TimelinePropertyChangeDial
 
 const User: React.FC = _ => {
   const { username } = useParams<{ username: string }>();
+
+  const { t } = useTranslation();
 
   const user = useUser();
 
@@ -75,7 +78,7 @@ const User: React.FC = _ => {
             extractStatusCode(error) === 404 ||
             extractErrorCode(error) === 11020101
           ) {
-            setError('User does not exist.');
+            setError(t('timeline.userNotExist'));
           } else {
             setError(error.toString());
           }
