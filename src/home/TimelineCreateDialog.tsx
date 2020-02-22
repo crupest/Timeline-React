@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 import axios from 'axios';
 
 import { apiBaseUrl } from '../config';
+import { useUser } from '../data/user';
 
 import OperationDialog from '../common/OperationDialog';
 
@@ -13,6 +14,7 @@ interface TimelineCreateDialogProps {
 
 const TimelineCreateDialog: React.FC<TimelineCreateDialogProps> = props => {
   const history = useHistory();
+  const user = useUser()!;
 
   let nameSaved: string;
 
@@ -30,7 +32,7 @@ const TimelineCreateDialog: React.FC<TimelineCreateDialogProps> = props => {
       ]}
       onProcess={([name]) => {
         nameSaved = name as string;
-        return axios.post(`${apiBaseUrl}/timelines`, {
+        return axios.post(`${apiBaseUrl}/timelines?token=${user.token}`, {
           name
         });
       }}
