@@ -60,45 +60,16 @@ export interface CreatePostRequest {
   time?: Date;
 }
 
-export interface TimelineChangePropertyRequest {
+export interface PersonalTimelineChangePropertyRequest {
   visibility?: TimelineVisibility;
   description?: string;
 }
 
-interface TimelineServiceTemplate<
-  TTimeline,
-  TChangePropertyRequest,
-  TPost = TimelinePostInfo
-> {
-  changeProperty(
-    name: string,
-    request: TChangePropertyRequest
-  ): Promise<TTimeline>;
-  fetch(name: string): Promise<TTimeline>;
-  fetchPosts(name: string): Promise<TPost[]>;
-  createPost(name: string, post: CreatePostRequest): Promise<TPost>;
-  deletePost(name: string, id: number): Promise<void>;
-  addMember(name: string, username: string): Promise<void>;
-  removeMember(name: string, username: string): Promise<void>;
-
-  isMemberOf(username: string, timeline: TTimeline): boolean;
-  hasReadPermission(
-    user: UserAuthInfo | null | undefined,
-    timeline: TTimeline
-  ): boolean;
-  hasPostPermission(
-    user: UserAuthInfo | null | undefined,
-    timeline: TTimeline
-  ): boolean;
-  hasManagePermission(
-    user: UserAuthInfo | null | undefined,
-    timeline: TTimeline
-  ): boolean;
-  hasModifyPostPermission(
-    user: UserAuthInfo | null | undefined,
-    timeline: TTimeline,
-    post: TPost
-  ): boolean;
+export interface OrdinaryTimelineChangePropertyRequest {
+  // not supported by server now
+  // name?: string;
+  visibility?: TimelineVisibility;
+  description?: string;
 }
 
 interface RawTimelinePostInfo {
@@ -122,12 +93,12 @@ function processRawTimelinePostInfo(
   };
 }
 
-export class PersonalTimelineService
-  implements
-    TimelineServiceTemplate<
-      PersonalTimelineInfo,
-      TimelineChangePropertyRequest
-    > {
+type TimelineUrlResolver = (name: string) => string;
+
+export class TimelineServiceTemplate<
+  TTimeline extends TimelineInfo,
+  TChangePropertyRequest
+> {
   private checkUser(): UserWithToken {
     const user = getCurrentUser();
     if (user == null) {
@@ -136,23 +107,22 @@ export class PersonalTimelineService
     return user;
   }
 
+  constructor(private urlResolver: TimelineUrlResolver) {}
+
   changeProperty(
     name: string,
-    req: TimelineChangePropertyRequest
-  ): Promise<PersonalTimelineInfo> {
+    req: TChangePropertyRequest
+  ): Promise<TTimeline> {
     const user = this.checkUser();
 
     return axios
-      .patch<PersonalTimelineInfo>(
-        `${apiBaseUrl}/users/${name}/timeline?token=${user.token}`,
-        req
-      )
+      .patch<TTimeline>(`${this.urlResolver(name)}?token=${user.token}`, req)
       .then(res => res.data);
   }
 
-  fetch(name: string): Promise<PersonalTimelineInfo> {
+  fetch(name: string): Promise<TTimeline> {
     return axios
-      .get<PersonalTimelineInfo>(`${apiBaseUrl}/users/${name}/timeline`)
+      .get<TTimeline>(`${this.urlResolver(name)}`)
       .then(res => res.data);
   }
 
@@ -161,8 +131,8 @@ export class PersonalTimelineService
     return axios
       .get<RawTimelinePostInfo[]>(
         token == null
-          ? `${apiBaseUrl}/users/${name}/timeline/posts`
-          : `${apiBaseUrl}/users/${name}/timeline/posts?token=${token}`
+          ? `${this.urlResolver(name)}/posts`
+          : `${this.urlResolver(name)}/posts?token=${token}`
       )
       .then(res => res.data.map(p => processRawTimelinePostInfo(p)));
   }
@@ -179,7 +149,7 @@ export class PersonalTimelineService
     }
     return axios
       .post<RawTimelinePostInfo>(
-        `${apiBaseUrl}/users/${name}/timeline/posts?token=${user.token}`,
+        `${this.urlResolver(name)}/posts?token=${user.token}`,
         rawReq
       )
       .then(res => processRawTimelinePostInfo(res.data));
@@ -189,7 +159,7 @@ export class PersonalTimelineService
     const user = this.checkUser();
 
     return axios.delete(
-      `${apiBaseUrl}/users/${name}/timeline/posts/${id}?token=${user.token}`
+      `${this.urlResolver(name)}/posts/${id}?token=${user.token}`
     );
   }
 
@@ -197,7 +167,7 @@ export class PersonalTimelineService
     const user = this.checkUser();
 
     return axios.put(
-      `${apiBaseUrl}/users/${name}/timeline/members/${username}?token=${user.token}`
+      `${this.urlResolver(name)}/members/${username}?token=${user.token}`
     );
   }
 
@@ -205,17 +175,17 @@ export class PersonalTimelineService
     const user = this.checkUser();
 
     return axios.delete(
-      `${apiBaseUrl}/users/${name}/timeline/members/${username}?token=${user.token}`
+      `${this.urlResolver(name)}/members/${username}?token=${user.token}`
     );
   }
 
-  isMemberOf(username: string, timeline: PersonalTimelineInfo): boolean {
+  isMemberOf(username: string, timeline: TTimeline): boolean {
     return timeline.members.findIndex(m => m.username == username) >= 0;
   }
 
   hasReadPermission(
     user: UserAuthInfo | null | undefined,
-    timeline: PersonalTimelineInfo
+    timeline: TTimeline
   ): boolean {
     if (user != null && user.administrator) return true;
 
@@ -234,7 +204,7 @@ export class PersonalTimelineService
 
   hasPostPermission(
     user: UserAuthInfo | null | undefined,
-    timeline: PersonalTimelineInfo
+    timeline: TTimeline
   ): boolean {
     if (user != null && user.administrator) return true;
 
@@ -247,7 +217,7 @@ export class PersonalTimelineService
 
   hasManagePermission(
     user: UserAuthInfo | null | undefined,
-    timeline: PersonalTimelineInfo
+    timeline: TTimeline
   ): boolean {
     if (user != null && user.administrator) return true;
 
@@ -256,7 +226,7 @@ export class PersonalTimelineService
 
   hasModifyPostPermission(
     user: UserAuthInfo | null | undefined,
-    timeline: PersonalTimelineInfo,
+    timeline: TTimeline,
     post: TimelinePostInfo
   ): boolean {
     if (user != null && user.administrator) return true;
@@ -269,4 +239,22 @@ export class PersonalTimelineService
   }
 }
 
-export const personalTimelineService = new PersonalTimelineService();
+export type PersonalTimelineService = TimelineServiceTemplate<
+  PersonalTimelineInfo,
+  PersonalTimelineChangePropertyRequest
+>;
+
+export const personalTimelineService: PersonalTimelineService = new TimelineServiceTemplate<
+  PersonalTimelineInfo,
+  PersonalTimelineChangePropertyRequest
+>(name => `${apiBaseUrl}/users/${name}/timeline`);
+
+export type OrdinaryTimelineService = TimelineServiceTemplate<
+  OrdinaryTimelineInfo,
+  OrdinaryTimelineChangePropertyRequest
+>;
+
+export const ordinaryTimelineService: OrdinaryTimelineService = new TimelineServiceTemplate<
+  OrdinaryTimelineInfo,
+  OrdinaryTimelineChangePropertyRequest
+>(name => `${apiBaseUrl}/timelines/${name}`);

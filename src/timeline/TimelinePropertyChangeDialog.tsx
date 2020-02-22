@@ -3,7 +3,7 @@ import React from 'react';
 import {
   TimelineVisibility,
   kTimelineVisibilities,
-  TimelineChangePropertyRequest
+  PersonalTimelineChangePropertyRequest
 } from '../data/timeline';
 
 import OperationDialog, {
@@ -19,7 +19,7 @@ export interface TimelinePropertyChangeDialogProps {
   open: boolean;
   close: () => void;
   oldInfo: TimelinePropertyInfo;
-  onProcess: (request: TimelineChangePropertyRequest) => Promise<void>;
+  onProcess: (request: PersonalTimelineChangePropertyRequest) => Promise<void>;
 }
 
 const labelMap: { [key in TimelineVisibility]: string } = {
@@ -54,7 +54,7 @@ const TimelinePropertyChangeDialog: React.FC<TimelinePropertyChangeDialogProps> 
       open={props.open}
       close={props.close}
       onProcess={([newVisibility, newDescription]) => {
-        const req: TimelineChangePropertyRequest = {};
+        const req: PersonalTimelineChangePropertyRequest = {};
         if (newVisibility !== props.oldInfo.visibility) {
           req.visibility = newVisibility as TimelineVisibility;
         }

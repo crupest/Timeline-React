@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
+import { Container } from 'reactstrap';
 
 import { TimelinePostInfo } from '../data/timeline';
 
 import TimelineItem from './TimelineItem';
-import { Container } from 'reactstrap';
 
 export interface TimelinePostInfoEx extends TimelinePostInfo {
   deletable: boolean;
