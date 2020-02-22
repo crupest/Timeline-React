@@ -15,7 +15,13 @@ import {
   timelineVisibilityTooltipTranslationMap
 } from '../data/timeline';
 
-import { PersonalTimelineManageItem } from './EditItem';
+export const kPersonalTimelineManageItems = [
+  'nickname',
+  'avatar',
+  'property'
+] as const;
+
+export type PersonalTimelineManageItem = typeof kPersonalTimelineManageItems[number];
 
 export interface UserInfoCardProps {
   timeline: PersonalTimelineInfo;
