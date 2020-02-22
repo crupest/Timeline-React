@@ -250,7 +250,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
               );
             } else if (item.type === 'bool') {
               return (
-                <FormGroup key={index}>
+                <FormGroup check key={index}>
                   <Input
                     type="checkbox"
                     value={value as string}
@@ -261,7 +261,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                       );
                     }}
                   />
-                  <Label>{t(item.label)}</Label>
+                  <Label check>{t(item.label)}</Label>
                 </FormGroup>
               );
             } else if (item.type === 'select') {
