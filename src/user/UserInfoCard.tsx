@@ -49,13 +49,13 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   return (
     <div
       id="user-info-card"
-      className={clsx('rounded border', props.className)}
+      className={clsx('rounded border bg-light', props.className)}
     >
       <img
         key={props.avatarKey}
         src={props.timeline.owner._links.avatar}
         onLoad={notifyHeight}
-        className="avatar large rounded float-left"
+        className="avatar large rounded-circle float-left"
       />
       <div>
         {props.timeline.owner.nickname}
