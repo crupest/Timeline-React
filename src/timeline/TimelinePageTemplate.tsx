@@ -14,7 +14,7 @@ import {
 import { TimelinePostInfoEx } from './Timeline';
 import { TimelineMemberDialog } from './TimelineMember';
 import TimelinePropertyChangeDialog from './TimelinePropertyChangeDialog';
-import { TimelinePageUIProps } from './TimelinePageUI';
+import { TimelinePageTemplateUIProps } from './TimelinePageTemplateUI';
 
 export interface TimelinePageTemplateProps<
   TManageItem,
@@ -24,7 +24,7 @@ export interface TimelinePageTemplateProps<
   onManage: (item: TManageItem) => void;
   service: TimelineServiceTemplate<TTimeline, TimelineChangePropertyRequest>;
   UiComponent: React.ComponentType<
-    ExcludeKey<TimelinePageUIProps<TTimeline, TManageItem>, 'CardComponent'>
+    ExcludeKey<TimelinePageTemplateUIProps<TTimeline, TManageItem>, 'CardComponent'>
   >;
   dialog?: React.ReactElement;
 }
@@ -38,7 +38,7 @@ export default function TimelinePageTemplate<
   const { t } = useTranslation();
 
   const { name } = props;
-  
+
   const user = useUser();
 
   const [dialog, setDialog] = useState<null | 'property' | 'member'>(null);

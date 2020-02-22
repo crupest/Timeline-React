@@ -11,24 +11,25 @@ import { useTranslation } from 'react-i18next';
 import { fromEvent } from 'rxjs';
 
 import {
-  PersonalTimelineInfo,
-  timelineVisibilityTooltipTranslationMap
+  timelineVisibilityTooltipTranslationMap,
+  OrdinaryTimelineInfo
 } from '../data/timeline';
-import { TimelineCardComponentProps } from '../timeline/TimelinePageTemplateUI';
+import { TimelineCardComponentProps } from './TimelinePageTemplateUI';
 
 export type PersonalTimelineManageItem = 'avatar' | 'nickname';
 
-export type UserInfoCardProps = TimelineCardComponentProps<
-  PersonalTimelineInfo,
-  PersonalTimelineManageItem
+export type TimelineInfoCardProps = TimelineCardComponentProps<
+  OrdinaryTimelineInfo,
+  unknown
 >;
 
-const UserInfoCard: React.FC<UserInfoCardProps> = props => {
+const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
   const { t } = useTranslation();
 
+  const containerId = 'timeline-info-card';
   const notifyHeight = (): void => {
     if (props.onHeight) {
-      props.onHeight(document.getElementById('user-info-card')!.clientHeight);
+      props.onHeight(document.getElementById(containerId)!.clientHeight);
     }
   };
 
@@ -45,15 +46,16 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
 
   return (
     <div
-      id="user-info-card"
+      id={containerId}
       className={clsx('rounded border bg-light', props.className)}
     >
-      <img
-        src={props.timeline.owner._links.avatar}
-        onLoad={notifyHeight}
-        className="avatar large rounded-circle float-left"
-      />
-      <div>
+      <h3 className="text-primary mx-3 my-2 d-inline-block align-middle">{props.timeline.name}</h3>
+      <div className="d-inline-block align-middle">
+        <img
+          src={props.timeline.owner._links.avatar}
+          onLoad={notifyHeight}
+          className="avatar small rounded-circle"
+        />
         {props.timeline.owner.nickname}
         <small className="ml-3 text-secondary">
           @{props.timeline.owner.username}
@@ -70,12 +72,6 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
               {t('timeline.manage')}
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={() => props.onManage!('nickname')}>
-                {t('userPage.manageItem.nickname')}
-              </DropdownItem>
-              <DropdownItem onClick={() => props.onManage!('avatar')}>
-                {t('userPage.manageItem.avatar')}
-              </DropdownItem>
               <DropdownItem onClick={() => props.onManage!('property')}>
                 {t('userPage.manageItem.timelineProperty')}
               </DropdownItem>
@@ -94,4 +90,4 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   );
 };
 
-export default UserInfoCard;
+export default TimelineInfoCard;

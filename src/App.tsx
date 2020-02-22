@@ -8,9 +8,7 @@ import Home from './home/Home';
 import Login from './user/Login';
 import Settings from './settings/Settings';
 import User from './user/User';
-/*
-import TimelinePage from './timelinePage/TimelinePage';
-*/
+import TimelinePage from './timeline/TimelinePage';
 
 import { useUser } from './data/user';
 
@@ -35,7 +33,6 @@ const App: React.FC = _ => {
   if (user === undefined) {
     body = <LoadingPage />;
   } else {
-    /*
     body = (
       <React.Suspense fallback={<LoadingPage />}>
         <Switch>
@@ -50,34 +47,6 @@ const App: React.FC = _ => {
           </Route>
           <Route path="/timelines/:name">
             <TimelinePage />
-          </Route>
-          <Route path="/users/:username">
-            <User />
-          </Route>
-          {user && user.administrator && (
-            <Route path="/admin">
-              <LazyAdmin user={user} />
-            </Route>
-          )}
-          <Route>
-            <NoMatch />
-          </Route>
-        </Switch>
-      </React.Suspense>
-    );
-    */
-
-    body = (
-      <React.Suspense fallback={<LoadingPage />}>
-        <Switch>
-          <Route exact path="/">
-            <Home />
-          </Route>
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/settings">
-            <Settings />
           </Route>
           <Route path="/users/:username">
             <User />
