@@ -52,7 +52,9 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
               </Col>
               <Col>
                 <Row>{member.nickname}</Row>
-                <Row>{'@' + member.username}</Row>
+                <Row>
+                  <small>{'@' + member.username}</small>
+                </Row>
               </Col>
               {(() => {
                 if (index === 0) {
@@ -70,7 +72,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                       onRemove(member.username);
                     }}
                   >
-                    Remove
+                    {t('timeline.member.remove')}
                   </Button>
                 );
               })()}
@@ -149,7 +151,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                               });
                             }}
                           >
-                            Add
+                            {t('timeline.member.add')}
                           </Button>
                         </Row>
                       </Container>

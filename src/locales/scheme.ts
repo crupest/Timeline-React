@@ -50,6 +50,8 @@ export default interface TranslationResource {
     };
     member: {
       alreadyMember: string;
+      add: string;
+      remove: string;
     };
     manageItem: {
       nickname: string;

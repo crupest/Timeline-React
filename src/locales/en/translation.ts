@@ -55,7 +55,9 @@ const translation: TranslationResource = {
       description: 'Description'
     },
     member: {
-      alreadyMember: 'The user is already a member.'
+      alreadyMember: 'The user is already a member.',
+      add: 'Add',
+      remove: 'Remove'
     },
     manageItem: {
       nickname: 'Nickname',

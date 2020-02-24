@@ -54,7 +54,9 @@ const translation: TranslationResource = {
       description: '描述'
     },
     member: {
-      alreadyMember: '该用户已经是一个成员。'
+      alreadyMember: '该用户已经是一个成员。',
+      add: '添加',
+      remove: '移除'
     },
     manageItem: {
       nickname: '昵称',
