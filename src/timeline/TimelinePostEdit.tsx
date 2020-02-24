@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Button, Spinner, Row, Col } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 export type TimelinePostSendCallback = (content: string) => Promise<void>;
 
@@ -10,6 +11,8 @@ export interface TimelinePostEditProps {
 }
 
 const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
+  const { t } = useTranslation();
+
   const [state, setState] = useState<'input' | 'process'>('input');
   const [text, setText] = useState<string>('');
 
@@ -22,7 +25,11 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
   });
 
   return (
-    <Container fluid id="timeline-post-edit-area" className="fixed-bottom bg-white">
+    <Container
+      fluid
+      id="timeline-post-edit-area"
+      className="fixed-bottom bg-light"
+    >
       <Row>
         <textarea
           className="col"
@@ -52,7 +59,7 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
                     );
                   }}
                 >
-                  Send
+                  {t('timeline.send')}
                 </Button>
               );
             } else {

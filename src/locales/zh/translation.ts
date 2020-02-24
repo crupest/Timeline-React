@@ -38,6 +38,7 @@ const translation: TranslationResource = {
     userNotExist: '该用户不存在！',
     manage: '管理',
     memberButton: '成员',
+    send: '发送',
     visibility: {
       public: '对所有人公开',
       register: '仅注册可见',

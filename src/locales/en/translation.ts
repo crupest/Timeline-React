@@ -37,6 +37,7 @@ const translation: TranslationResource = {
     userNotExist: 'The user does not exist!',
     manage: 'Manage',
     memberButton: 'Member',
+    send: 'Send',
     visibility: {
       public: 'public to everyone',
       register: 'only registed people can see',

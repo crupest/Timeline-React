@@ -33,6 +33,7 @@ export default interface TranslationResource {
     userNotExist: string;
     manage: string;
     memberButton: string;
+    send: string;
     visibility: {
       public: string;
       register: string;
