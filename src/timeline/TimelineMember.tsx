@@ -48,7 +48,7 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
           <ListGroupItem key={member.username} className="container">
             <Row>
               <Col className="col-auto">
-                <img src={member._links.avatar} className="avatar" />
+                <img src={member._links.avatar} className="avatar small" />
               </Col>
               <Col>
                 <Row>{member.nickname}</Row>
@@ -134,11 +134,16 @@ const TimelineMember: React.FC<TimelineMemberProps> = props => {
                       <Container className="mb-3">
                         <Row>
                           <Col className="col-auto">
-                            <img src={u._links.avatar} className="avatar" />
+                            <img
+                              src={u._links.avatar}
+                              className="avatar small"
+                            />
                           </Col>
                           <Col>
                             <Row>{u.nickname}</Row>
-                            <Row>{'@' + u.username}</Row>
+                            <Row>
+                              <small>{'@' + u.username}</small>
+                            </Row>
                           </Col>
                           <Button
                             color="primary"
