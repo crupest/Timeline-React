@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { apiBaseUrl } from '../config';
+import { pushAlert } from '../common/alert-service';
 
 export interface UserAuthInfo {
   username: string;
@@ -81,11 +82,16 @@ export function checkUserLoginState(): Promise<UserWithToken | null> {
             ...u,
             token: savedToken
           };
+          pushAlert({
+            type: 'success',
+            message: 'Welcome back!!!' // TODO: Translation
+          });
           return user;
         },
         e => {
           console.error(e);
           window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+          // TODO: Alert!
           return null;
         }
       )
