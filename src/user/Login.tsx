@@ -76,7 +76,7 @@ const Login: React.FC = _ => {
   return (
     <Fragment>
       <AppBar />
-      <div className="container mt-appbar">
+      <div className="container login-container mt-appbar">
         <h1>{t('welcome')}</h1>
         <Form>
           <FormGroup>
