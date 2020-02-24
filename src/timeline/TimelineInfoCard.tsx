@@ -16,11 +16,11 @@ import {
 } from '../data/timeline';
 import { TimelineCardComponentProps } from './TimelinePageTemplateUI';
 
-export type PersonalTimelineManageItem = 'avatar' | 'nickname';
+export type OrdinaryTimelineManageItem = 'delete';
 
 export type TimelineInfoCardProps = TimelineCardComponentProps<
   OrdinaryTimelineInfo,
-  unknown
+  OrdinaryTimelineManageItem
 >;
 
 const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
@@ -49,7 +49,9 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
       id={containerId}
       className={clsx('rounded border bg-light', props.className)}
     >
-      <h3 className="text-primary mx-3 my-2 d-inline-block align-middle">{props.timeline.name}</h3>
+      <h3 className="text-primary mx-3 my-2 d-inline-block align-middle">
+        {props.timeline.name}
+      </h3>
       <div className="d-inline-block align-middle">
         <img
           src={props.timeline.owner._links.avatar}
@@ -73,10 +75,14 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={() => props.onManage!('property')}>
-                {t('userPage.manageItem.timelineProperty')}
+                {t('timeline.manageItem.property')}
               </DropdownItem>
               <DropdownItem onClick={props.onMember}>
-                {t('userPage.manageItem.timelineMember')}
+                {t('timeline.manageItem.member')}
+              </DropdownItem>
+              <DropdownItem divider />
+              <DropdownItem className="text-danger" onClick={() => props.onManage!('delete')}>
+                {t('timeline.manageItem.delete')}
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>

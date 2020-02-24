@@ -56,6 +56,19 @@ const translation: TranslationResource = {
     },
     member: {
       alreadyMember: 'The user is already a member.'
+    },
+    manageItem: {
+      nickname: 'Nickname',
+      avatar: 'Avatar',
+      property: 'Timeline Property',
+      member: 'Timeline Member',
+      delete: 'Delete Timeline'
+    },
+    deleteDialog: {
+      title: 'Delete Timeline',
+      inputPrompt:
+        'This is a dangerous action. If you are sure to delete timeline<1>{{name}}</1>, please input its name below and click confirm button.',
+      notMatch: 'Name does not match.'
     }
   },
   user: {
@@ -90,12 +103,6 @@ const translation: TranslationResource = {
         errorNotSquare: 'The image is not a square.'
       },
       upload: 'upload'
-    },
-    manageItem: {
-      nickname: 'Nickname',
-      avatar: 'Avatar',
-      timelineProperty: 'Timeline Property',
-      timelineMember: 'Timeline Member'
     }
   },
   settings: {

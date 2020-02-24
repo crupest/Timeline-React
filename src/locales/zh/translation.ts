@@ -55,6 +55,19 @@ const translation: TranslationResource = {
     },
     member: {
       alreadyMember: '该用户已经是一个成员。'
+    },
+    manageItem: {
+      nickname: '昵称',
+      avatar: '头像',
+      property: '时间线属性',
+      member: '时间线成员',
+      delete: '删除时间线'
+    },
+    deleteDialog: {
+      title: '删除时间线',
+      inputPrompt:
+        '这是一个危险的操作。如果您确认要删除时间线<1>{{name}}</1>，请在下面输入它的名字并点击确认。',
+      notMatch: '名字不匹配'
     }
   },
   user: {
@@ -89,12 +102,6 @@ const translation: TranslationResource = {
         errorNotSquare: '图片不是正方形。'
       },
       upload: '上传'
-    },
-    manageItem: {
-      nickname: '昵称',
-      avatar: '头像',
-      timelineProperty: '时间线属性',
-      timelineMember: '时间线成员'
     }
   },
   settings: {

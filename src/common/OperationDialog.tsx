@@ -58,7 +58,7 @@ export type OperationInputValidator<TValue> = (
 export interface OperationTextInputInfo {
   type: 'text';
   password?: boolean;
-  label: string;
+  label?: string;
   initValue?: string;
   textFieldProps?: Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
@@ -170,9 +170,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
       typeof props.inputPrompt === 'function'
         ? props.inputPrompt()
         : props.inputPrompt;
-    if (typeof inputPrompt === 'string') {
-      inputPrompt = <h6>{inputPrompt}</h6>;
-    }
+    inputPrompt = <h6>{inputPrompt}</h6>;
 
     const updateValue = (
       index: number,
@@ -244,7 +242,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
             if (item.type === 'text') {
               return (
                 <FormGroup key={index}>
-                  <Label>{t(item.label)}</Label>
+                  {item.label && <Label>{t(item.label)}</Label>}
                   <Input
                     type={item.password === true ? 'password' : 'text'}
                     value={value as string}
@@ -263,7 +261,7 @@ const OperationDialog: React.FC<OperationDialogProps> = props => {
                     {...item.textFieldProps}
                   />
                   {error != null && <FormFeedback>{error}</FormFeedback>}
-                  {item.helperText && <FormText>{item.helperText}</FormText>}
+                  {item.helperText && <FormText>{t(item.helperText)}</FormText>}
                 </FormGroup>
               );
             } else if (item.type === 'bool') {

@@ -71,16 +71,16 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={() => props.onManage!('nickname')}>
-                {t('userPage.manageItem.nickname')}
+                {t('timeline.manageItem.nickname')}
               </DropdownItem>
               <DropdownItem onClick={() => props.onManage!('avatar')}>
-                {t('userPage.manageItem.avatar')}
+                {t('timeline.manageItem.avatar')}
               </DropdownItem>
               <DropdownItem onClick={() => props.onManage!('property')}>
-                {t('userPage.manageItem.timelineProperty')}
+                {t('timeline.manageItem.property')}
               </DropdownItem>
               <DropdownItem onClick={props.onMember}>
-                {t('userPage.manageItem.timelineMember')}
+                {t('timeline.manageItem.member')}
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>

@@ -51,6 +51,18 @@ export default interface TranslationResource {
     member: {
       alreadyMember: string;
     };
+    manageItem: {
+      nickname: string;
+      avatar: string;
+      property: string;
+      member: string;
+      delete: string;
+    };
+    deleteDialog: {
+      title: string;
+      inputPrompt: string;
+      notMatch: string;
+    };
   };
   user: {
     username: string;
@@ -83,12 +95,6 @@ export default interface TranslationResource {
         errorNotSquare: string;
       };
       upload: string;
-    };
-    manageItem: {
-      nickname: string;
-      avatar: string;
-      timelineProperty: string;
-      timelineMember: string;
     };
   };
   settings: {

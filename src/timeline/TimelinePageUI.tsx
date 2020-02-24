@@ -6,10 +6,12 @@ import { OrdinaryTimelineInfo } from '../data/timeline';
 import TimelinePageTemplateUI, {
   TimelinePageTemplateUIProps
 } from './TimelinePageTemplateUI';
-import TimelineInfoCard from './TimelineInfoCard';
+import TimelineInfoCard, {
+  OrdinaryTimelineManageItem
+} from './TimelineInfoCard';
 
 export type TimelinePageUIProps = ExcludeKey<
-  TimelinePageTemplateUIProps<OrdinaryTimelineInfo, unknown>,
+  TimelinePageTemplateUIProps<OrdinaryTimelineInfo, OrdinaryTimelineManageItem>,
   'CardComponent'
 >;
 
