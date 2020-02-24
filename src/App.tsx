@@ -9,6 +9,7 @@ import Login from './user/Login';
 import Settings from './settings/Settings';
 import User from './user/User';
 import TimelinePage from './timeline/TimelinePage';
+import AlertHost from './common/AlertHost';
 
 import { useUser } from './data/user';
 
@@ -64,7 +65,12 @@ const App: React.FC = _ => {
     );
   }
 
-  return <Router>{body}</Router>;
+  return (
+    <>
+      <Router>{body}</Router>
+      <AlertHost />
+    </>
+  );
 };
 
 export default hot(App);

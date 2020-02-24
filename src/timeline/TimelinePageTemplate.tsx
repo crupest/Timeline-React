@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AxiosError } from 'axios';
 import concat from 'lodash/concat';
-
-import { withoutIf, withoutAt } from '../utility';
+import without from 'lodash/without';
 
 import { ExcludeKey } from '../type-utilities';
 import { useUser, fetchUser } from '../data/user';
+import { pushAlert } from '../common/alert-service';
 import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
   TimelineServiceTemplate,
@@ -169,9 +169,9 @@ export default function TimelinePageTemplate<
                   service.removeMember(name, u).then(_ => {
                     setTimeline({
                       ...timeline!,
-                      members: withoutIf(
+                      members: without(
                         timeline!.members,
-                        m => m.username === u
+                        timeline!.members.find(m => m.username === u)
                       )
                     });
                   });
@@ -193,10 +193,18 @@ export default function TimelinePageTemplate<
         onDelete={(index, id) => {
           service.deletePost(name, id).then(
             _ => {
-              setPosts(withoutAt(posts as TimelinePostInfoEx[], index));
+              setPosts(
+                without(
+                  posts as TimelinePostInfoEx[],
+                  (posts as TimelinePostInfoEx[])[index]
+                )
+              );
             },
             () => {
-              // TODO: Do something.
+              pushAlert({
+                type: 'danger',
+                message: 'Failed to delete post.'
+              });
             }
           );
         }}

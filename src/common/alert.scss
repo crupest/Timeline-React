@@ -1,0 +1,20 @@
+.alert-container {
+  position: fixed;
+  z-index: $zindex-popover;
+}
+
+@include media-breakpoint-up(sm) {
+  .alert-container {
+    bottom: 0;
+    right: 0;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .alert-container {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    text-align: center;
+  }
+}

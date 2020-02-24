@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Container, Button, Spinner, Row, Col } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
+import { pushAlert } from '../common/alert-service';
+
 export type TimelinePostSendCallback = (content: string) => Promise<void>;
 
 export interface TimelinePostEditProps {
   className?: string;
   onPost: TimelinePostSendCallback;
   onHeightChange?: (height: number) => void;
+  onUnload?: () => void;
 }
 
 const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
@@ -22,6 +25,9 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
         document.getElementById('timeline-post-edit-area')!.clientHeight
       );
     }
+    return () => {
+      props.onUnload?.();
+    };
   });
 
   return (
@@ -53,7 +59,10 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
                         setState('input');
                       },
                       e => {
-                        // TODO: Do something
+                        pushAlert({
+                          type: 'danger',
+                          message: 'Failed to post.'
+                        });
                         setState('input');
                       }
                     );
