@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AxiosError } from 'axios';
+import concat from 'lodash/concat';
+
+import { withoutIf, withoutAt } from '../utility';
 
 import { ExcludeKey } from '../type-utilities';
 import { useUser, fetchUser } from '../data/user';
@@ -24,7 +27,10 @@ export interface TimelinePageTemplateProps<
   onManage: (item: TManageItem) => void;
   service: TimelineServiceTemplate<TTimeline, TimelineChangePropertyRequest>;
   UiComponent: React.ComponentType<
-    ExcludeKey<TimelinePageTemplateUIProps<TTimeline, TManageItem>, 'CardComponent'>
+    ExcludeKey<
+      TimelinePageTemplateUIProps<TTimeline, TManageItem>,
+      'CardComponent'
+    >
   >;
   dialog?: React.ReactElement;
 }
@@ -153,26 +159,20 @@ export default function TimelinePageTemplate<
                 },
                 onAddUser: u => {
                   return service.addMember(name, u.username).then(_ => {
-                    const oldMembers = timeline!.members;
-                    const newMembers = oldMembers.slice();
-                    newMembers.push(u);
                     setTimeline({
                       ...timeline!,
-                      members: newMembers
+                      members: concat(timeline!.members, u)
                     });
                   });
                 },
                 onRemoveUser: u => {
                   service.removeMember(name, u).then(_ => {
-                    const oldMembers = timeline!.members;
-                    const newMembers = oldMembers.slice();
-                    newMembers.splice(
-                      newMembers.findIndex(m => m.username === u),
-                      1
-                    );
                     setTimeline({
                       ...timeline!,
-                      members: newMembers
+                      members: withoutIf(
+                        timeline!.members,
+                        m => m.username === u
+                      )
                     });
                   });
                 }
@@ -193,9 +193,7 @@ export default function TimelinePageTemplate<
         onDelete={(index, id) => {
           service.deletePost(name, id).then(
             _ => {
-              const newPosts = (posts as TimelinePostInfoEx[]).slice();
-              newPosts.splice(index, 1);
-              setPosts(newPosts);
+              setPosts(withoutAt(posts as TimelinePostInfoEx[], index));
             },
             () => {
               // TODO: Do something.
@@ -210,12 +208,12 @@ export default function TimelinePageTemplate<
                     content: content
                   })
                   .then(newPost => {
-                    const newPosts = (posts as TimelinePostInfoEx[]).slice();
-                    newPosts.push({
-                      ...newPost,
-                      deletable: true
-                    });
-                    setPosts(newPosts);
+                    setPosts(
+                      concat(posts as TimelinePostInfoEx[], {
+                        ...newPost,
+                        deletable: true
+                      })
+                    );
                   });
               }
             : undefined
