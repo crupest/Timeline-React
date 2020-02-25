@@ -29,7 +29,12 @@ const AppBar: React.FC<{}> = _ => {
   const rightArea = (
     <div className="ml-auto mr-2">
       {user != null ? (
-        <img className="avatar small rounded-circle" src={user._links.avatar} />
+        <NavLink to={`/users/${user.username}`}>
+          <img
+            className="avatar small rounded-circle"
+            src={user._links.avatar}
+          />
+        </NavLink>
       ) : (
         <NavLink className="text-light" to="/login">
           {t('nav.login')}
