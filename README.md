@@ -1,6 +1,7 @@
 # Welcome to Timeline!
 
 [![Build Status](https://dev.azure.com/crupest-web/Timeline/_apis/build/status/crupest.Timeline-React?branchName=master)](https://dev.azure.com/crupest-web/Timeline/_build/latest?definitionId=8&branchName=master)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=crupest/Timeline-React)](https://dependabot.com)
 
 This is the first web app front-end of [me](https://github.com/crupest).
 
