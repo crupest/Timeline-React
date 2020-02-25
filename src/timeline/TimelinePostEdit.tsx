@@ -58,10 +58,10 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
                         setText('');
                         setState('input');
                       },
-                      e => {
+                      _ => {
                         pushAlert({
                           type: 'danger',
-                          message: 'Failed to post.' // TODO: Translation
+                          message: t('timeline.sendPostFailed')
                         });
                         setState('input');
                       }

@@ -38,6 +38,8 @@ export default interface TranslationResource {
     manage: string;
     memberButton: string;
     send: string;
+    deletePostFailed: string;
+    sendPostFailed: string;
     visibility: {
       public: string;
       register: string;

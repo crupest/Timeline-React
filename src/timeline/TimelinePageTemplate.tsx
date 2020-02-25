@@ -203,7 +203,7 @@ export default function TimelinePageTemplate<
             () => {
               pushAlert({
                 type: 'danger',
-                message: 'Failed to delete post.' // TODO: Translation
+                message: t('timeline.deletePostFailed')
               });
             }
           );

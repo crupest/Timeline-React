@@ -42,6 +42,8 @@ const translation: TranslationResource = {
     manage: 'Manage',
     memberButton: 'Member',
     send: 'Send',
+    deletePostFailed: 'Failed to delete post.',
+    sendPostFailed: 'Failed to send post.',
     visibility: {
       public: 'public to everyone',
       register: 'only registed people can see',

@@ -43,6 +43,8 @@ const translation: TranslationResource = {
     manage: '管理',
     memberButton: '成员',
     send: '发送',
+    deletePostFailed: '删除消息失败。',
+    sendPostFailed: '发送消息失败。',
     visibility: {
       public: '对所有人公开',
       register: '仅注册可见',
