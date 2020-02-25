@@ -2,6 +2,8 @@ import React from 'react';
 import { Spinner } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
+import { getAlertHost } from '../common/alert-service';
+
 import Timeline, {
   TimelinePostInfoEx,
   TimelineDeleteCallback
@@ -64,6 +66,16 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
                       'page-bottom-space'
                     )!;
                     element.style.height = height + 'px';
+                    const alertHost = getAlertHost();
+                    if (alertHost != null) {
+                      alertHost.style.marginBottom = height + 'px';
+                    }
+                  }}
+                  onUnload={() => {
+                    const alertHost = getAlertHost();
+                    if (alertHost != null) {
+                      alertHost.style.removeProperty('margin-bottom');
+                    }
                   }}
                 />
               </>

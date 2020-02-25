@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { apiBaseUrl } from '../config';
+import { pushAlert } from '../common/alert-service';
+import { i18nPromise } from '../i18n';
 
 export interface UserAuthInfo {
   username: string;
@@ -81,11 +83,32 @@ export function checkUserLoginState(): Promise<UserWithToken | null> {
             ...u,
             token: savedToken
           };
+          i18nPromise.then(t => {
+            pushAlert({
+              type: 'success',
+              message: t('user.welcomeBack')
+            });
+          });
           return user;
         },
-        e => {
-          console.error(e);
-          window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+        (e: AxiosError) => {
+          if (e.response != null) {
+            window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+            i18nPromise.then(t => {
+              pushAlert({
+                type: 'danger',
+                message: t('user.verifyTokenFailed')
+              });
+            });
+          } else {
+            i18nPromise.then(t => {
+              pushAlert({
+                type: 'danger',
+                message: t('user.verifyTokenFailedNetwork')
+              });
+            });
+          }
+
           return null;
         }
       )
@@ -108,14 +131,11 @@ export function userLogin(
   credentials: LoginCredentials,
   rememberMe: boolean
 ): Promise<UserWithToken> {
-  if (getCurrentUser() === undefined) {
-    throw new Error('Please check user first.');
-  }
   if (getCurrentUser()) {
     throw new Error('Already login.');
   }
   return axios
-    .post<CreateTokenResponse>(createTokenUrl, credentials)
+    .post<CreateTokenResponse>(createTokenUrl, { ...credentials, expire: 30 })
     .catch(e => {
       const error = e as AxiosError;
       if (error.response?.data?.code === 11010101) {

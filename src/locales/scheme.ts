@@ -1,6 +1,10 @@
 export default interface TranslationResource {
   welcome: string;
   search: string;
+  nav: {
+    settings: string;
+    login: string;
+  };
   home: {
     go: string;
     allTimeline: string;
@@ -33,6 +37,9 @@ export default interface TranslationResource {
     userNotExist: string;
     manage: string;
     memberButton: string;
+    send: string;
+    deletePostFailed: string;
+    sendPostFailed: string;
     visibility: {
       public: string;
       register: string;
@@ -50,6 +57,8 @@ export default interface TranslationResource {
     };
     member: {
       alreadyMember: string;
+      add: string;
+      remove: string;
     };
     manageItem: {
       nickname: string;
@@ -68,10 +77,10 @@ export default interface TranslationResource {
     username: string;
     password: string;
     login: string;
-    noLoginPrompt: string;
-    welcome: string;
-    logout: string;
     rememberMe: string;
+    welcomeBack: string;
+    verifyTokenFailed: string;
+    verifyTokenFailedNetwork: string;
   };
   login: {
     emptyUsername: string;
@@ -105,6 +114,7 @@ export default interface TranslationResource {
     languagePrimary: string;
     languageSecondary: string;
     changePassword: string;
+    logout: string;
     dialogChangePassword: {
       title: string;
       prompt: string;

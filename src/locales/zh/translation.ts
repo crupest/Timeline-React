@@ -3,6 +3,10 @@ import TranslationResource from '../scheme';
 const translation: TranslationResource = {
   welcome: '欢迎！',
   search: '搜索',
+  nav: {
+    settings: '设置',
+    login: '登陆'
+  },
   home: {
     /*
     guide:
@@ -38,6 +42,9 @@ const translation: TranslationResource = {
     userNotExist: '该用户不存在！',
     manage: '管理',
     memberButton: '成员',
+    send: '发送',
+    deletePostFailed: '删除消息失败。',
+    sendPostFailed: '发送消息失败。',
     visibility: {
       public: '对所有人公开',
       register: '仅注册可见',
@@ -54,7 +61,9 @@ const translation: TranslationResource = {
       description: '描述'
     },
     member: {
-      alreadyMember: '该用户已经是一个成员。'
+      alreadyMember: '该用户已经是一个成员。',
+      add: '添加',
+      remove: '移除'
     },
     manageItem: {
       nickname: '昵称',
@@ -74,10 +83,10 @@ const translation: TranslationResource = {
     username: '用户名',
     password: '密码',
     login: '登录',
-    noLoginPrompt: '你还没有登录!',
-    welcome: '欢迎，{{name}} ！',
-    logout: '注销',
-    rememberMe: '记住我'
+    rememberMe: '记住我',
+    welcomeBack: '欢迎回来！',
+    verifyTokenFailed: '用户登录信息已过期，请重新登陆！',
+    verifyTokenFailedNetwork: '验证用户登录信息失败，请检查网络连接并刷新页面！'
   },
   login: {
     emptyUsername: '用户名不能为空。',
@@ -113,6 +122,7 @@ const translation: TranslationResource = {
     languageSecondary:
       '您的语言偏好将会存储在本地，下次浏览时将自动使用上次保存的语言选项。',
     changePassword: '更改账号的密码。',
+    logout: '注销此账号。',
     dialogChangePassword: {
       title: '修改密码',
       prompt:

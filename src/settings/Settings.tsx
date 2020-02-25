@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import axios, { AxiosError } from 'axios';
+import { Container, Row, Col, Input } from 'reactstrap';
 
 import { apiBaseUrl } from '../config';
 
@@ -11,7 +12,6 @@ import AppBar from '../common/AppBar';
 import OperationDialog, {
   OperationInputErrorInfo
 } from '../common/OperationDialog';
-import { Container, Row, Col, Input } from 'reactstrap';
 
 interface ChangePasswordDialogProps {
   open: boolean;
@@ -118,6 +118,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
 const Settings: React.FC = _ => {
   const { i18n, t } = useTranslation();
   const user = useUser();
+  const history = useHistory();
 
   const [dialog, setDialog] = useState<null | 'changepassword'>(null);
 
@@ -128,16 +129,31 @@ const Settings: React.FC = _ => {
       <AppBar />
       <Container fluid style={{ marginTop: '56px' }}>
         {user ? (
-          <Row className="border-bottom p-3">
-            <Col className="col-12">
-              <h5
-                className="text-danger"
-                onClick={() => setDialog('changepassword')}
-              >
-                {t('settings.changePassword')}
-              </h5>
-            </Col>
-          </Row>
+          <>
+            <Row className="border-bottom p-3">
+              <Col className="col-12">
+                <h5
+                  className="text-danger"
+                  onClick={() => setDialog('changepassword')}
+                >
+                  {t('settings.changePassword')}
+                </h5>
+              </Col>
+            </Row>
+            <Row className="border-bottom p-3">
+              <Col className="col-12">
+                <h5
+                  className="text-danger"
+                  onClick={() => {
+                    userLogout();
+                    history.push('/');
+                  }}
+                >
+                  {t('settings.logout')}
+                </h5>
+              </Col>
+            </Row>
+          </>
         ) : null}
         <Row className="align-items-center border-bottom p-3">
           <Col className="col-10">

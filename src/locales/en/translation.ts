@@ -3,6 +3,10 @@ import TranslationResource from '../scheme';
 const translation: TranslationResource = {
   welcome: 'Welcome!',
   search: 'Search',
+  nav: {
+    settings: 'Settings',
+    login: 'Login'
+  },
   home: {
     /*
     guide:
@@ -37,6 +41,9 @@ const translation: TranslationResource = {
     userNotExist: 'The user does not exist!',
     manage: 'Manage',
     memberButton: 'Member',
+    send: 'Send',
+    deletePostFailed: 'Failed to delete post.',
+    sendPostFailed: 'Failed to send post.',
     visibility: {
       public: 'public to everyone',
       register: 'only registed people can see',
@@ -55,7 +62,9 @@ const translation: TranslationResource = {
       description: 'Description'
     },
     member: {
-      alreadyMember: 'The user is already a member.'
+      alreadyMember: 'The user is already a member.',
+      add: 'Add',
+      remove: 'Remove'
     },
     manageItem: {
       nickname: 'Nickname',
@@ -75,10 +84,11 @@ const translation: TranslationResource = {
     username: 'username',
     password: 'password',
     login: 'login',
-    noLoginPrompt: "You haven't login.",
-    welcome: 'Welcome, {{name}} !',
-    logout: 'logout',
-    rememberMe: 'Remember Me'
+    rememberMe: 'Remember Me',
+    welcomeBack: 'Welcome back!',
+    verifyTokenFailed: 'User login info is expired. Please login again!',
+    verifyTokenFailedNetwork:
+      'Verifying user login info failed. Please check your network and refresh page!'
   },
   login: {
     emptyUsername: "Username can't be empty.",
@@ -114,6 +124,7 @@ const translation: TranslationResource = {
     languageSecondary:
       'You language preference will be saved locally. Next time you visit this page, last language option will be used.',
     changePassword: "Change account's password.",
+    logout: 'Log out this account.',
     dialogChangePassword: {
       title: 'Change Password',
       prompt:
