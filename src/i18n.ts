@@ -1,8 +1,8 @@
-import i18n from 'i18next';
+import i18n, { BackendModule, ResourceKey } from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 
-const backend: i18n.BackendModule = {
+const backend: BackendModule = {
   type: 'backend',
   async read(language, namespace, callback) {
     function error(message: string): void {
@@ -10,7 +10,7 @@ const backend: i18n.BackendModule = {
       callback(new Error(message), false as any);
     }
 
-    function success(result: i18n.ResourceKey): void {
+    function success(result: ResourceKey): void {
       callback(null, result);
     }
 
