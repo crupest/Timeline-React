@@ -156,11 +156,11 @@ const Settings: React.FC = _ => {
           </>
         ) : null}
         <Row className="align-items-center border-bottom p-3">
-          <Col className="col-10">
+          <Col className="col-12 col-sm">
             <h5>{t('settings.languagePrimary')}</h5>
             <p>{t('settings.languageSecondary')}</p>
           </Col>
-          <Col>
+          <Col className="col-auto ml-auto">
             <Input
               type="select"
               value={language}
