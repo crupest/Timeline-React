@@ -1,26 +1,17 @@
 import React from 'react';
 import { Alert } from 'reactstrap';
 
-import {
-  alertService,
-  AlertConsumer,
-  AlertInfoEx,
-  kAlertHostId
-} from './alert-service';
+import { alertService, AlertInfoEx, kAlertHostId } from './alert-service';
 
 export const AlertHost: React.FC = () => {
   const [alerts, setAlerts] = React.useState<AlertInfoEx[]>([]);
 
-  const consumer: AlertConsumer = (alerts): void => {
-    setAlerts(alerts);
-  };
-
   React.useEffect(() => {
-    alertService.registerConsumer(consumer);
+    alertService.registerConsumer(setAlerts);
     return () => {
-      alertService.unregisterConsumer(consumer);
+      alertService.unregisterConsumer(setAlerts);
     };
-  });
+  }, []); // react guarantee that state setters are stable, so we don't need to add it to dependency list
 
   return (
     <div id={kAlertHostId} className="alert-container">
