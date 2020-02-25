@@ -82,7 +82,11 @@ const translation: TranslationResource = {
     username: 'username',
     password: 'password',
     login: 'login',
-    rememberMe: 'Remember Me'
+    rememberMe: 'Remember Me',
+    welcomeBack: 'Welcome back!',
+    verifyTokenFailed: 'User login info is expired. Please login again!',
+    verifyTokenFailedNetwork:
+      'Verifying user login info failed. Please check your network and refresh page!'
   },
   login: {
     emptyUsername: "Username can't be empty.",

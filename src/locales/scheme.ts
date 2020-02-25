@@ -76,6 +76,9 @@ export default interface TranslationResource {
     password: string;
     login: string;
     rememberMe: string;
+    welcomeBack: string;
+    verifyTokenFailed: string;
+    verifyTokenFailedNetwork: string;
   };
   login: {
     emptyUsername: string;

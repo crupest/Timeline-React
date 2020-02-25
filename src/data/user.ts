@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { apiBaseUrl } from '../config';
 import { pushAlert } from '../common/alert-service';
+import { i18nPromise } from '../i18n';
 
 export interface UserAuthInfo {
   username: string;
@@ -82,16 +83,32 @@ export function checkUserLoginState(): Promise<UserWithToken | null> {
             ...u,
             token: savedToken
           };
-          pushAlert({
-            type: 'success',
-            message: 'Welcome back!!!' // TODO: Translation
+          i18nPromise.then(t => {
+            pushAlert({
+              type: 'success',
+              message: t('user.welcomeBack')
+            });
           });
           return user;
         },
-        e => {
-          console.error(e);
-          window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-          // TODO: Alert!
+        (e: AxiosError) => {
+          if (e.response != null) {
+            window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+            i18nPromise.then(t => {
+              pushAlert({
+                type: 'danger',
+                message: t('user.verifyTokenFailed')
+              });
+            });
+          } else {
+            i18nPromise.then(t => {
+              pushAlert({
+                type: 'danger',
+                message: t('user.verifyTokenFailedNetwork')
+              });
+            });
+          }
+
           return null;
         }
       )
@@ -114,9 +131,6 @@ export function userLogin(
   credentials: LoginCredentials,
   rememberMe: boolean
 ): Promise<UserWithToken> {
-  if (getCurrentUser() === undefined) {
-    throw new Error('Please check user first.');
-  }
   if (getCurrentUser()) {
     throw new Error('Already login.');
   }

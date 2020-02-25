@@ -81,7 +81,10 @@ const translation: TranslationResource = {
     username: '用户名',
     password: '密码',
     login: '登录',
-    rememberMe: '记住我'
+    rememberMe: '记住我',
+    welcomeBack: '欢迎回来！',
+    verifyTokenFailed: '用户登录信息已过期，请重新登陆！',
+    verifyTokenFailedNetwork: '验证用户登录信息失败，请检查网络连接并刷新页面！'
   },
   login: {
     emptyUsername: '用户名不能为空。',
