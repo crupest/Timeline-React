@@ -1,6 +1,10 @@
 export default interface TranslationResource {
   welcome: string;
   search: string;
+  nav: {
+    settings: string;
+    login: string;
+  };
   home: {
     go: string;
     allTimeline: string;
@@ -71,9 +75,6 @@ export default interface TranslationResource {
     username: string;
     password: string;
     login: string;
-    noLoginPrompt: string;
-    welcome: string;
-    logout: string;
     rememberMe: string;
   };
   login: {
@@ -108,6 +109,7 @@ export default interface TranslationResource {
     languagePrimary: string;
     languageSecondary: string;
     changePassword: string;
+    logout: string;
     dialogChangePassword: {
       title: string;
       prompt: string;

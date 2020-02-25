@@ -3,6 +3,10 @@ import TranslationResource from '../scheme';
 const translation: TranslationResource = {
   welcome: '欢迎！',
   search: '搜索',
+  nav: {
+    settings: '设置',
+    login: '登陆'
+  },
   home: {
     /*
     guide:
@@ -77,9 +81,6 @@ const translation: TranslationResource = {
     username: '用户名',
     password: '密码',
     login: '登录',
-    noLoginPrompt: '你还没有登录!',
-    welcome: '欢迎，{{name}} ！',
-    logout: '注销',
     rememberMe: '记住我'
   },
   login: {
@@ -116,6 +117,7 @@ const translation: TranslationResource = {
     languageSecondary:
       '您的语言偏好将会存储在本地，下次浏览时将自动使用上次保存的语言选项。',
     changePassword: '更改账号的密码。',
+    logout: '注销此账号。',
     dialogChangePassword: {
       title: '修改密码',
       prompt:

@@ -121,7 +121,7 @@ export function userLogin(
     throw new Error('Already login.');
   }
   return axios
-    .post<CreateTokenResponse>(createTokenUrl, credentials)
+    .post<CreateTokenResponse>(createTokenUrl, { ...credentials, expire: 30 })
     .catch(e => {
       const error = e as AxiosError;
       if (error.response?.data?.code === 11010101) {

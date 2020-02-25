@@ -22,7 +22,7 @@ const Login: React.FC = _ => {
   const [usernameDirty, setUsernameDirty] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
   const [passwordDirty, setPasswordDirty] = useState<boolean>(false);
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(true);
   const [process, setProcess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -116,7 +116,7 @@ const Login: React.FC = _ => {
             <Input
               id="remember-me"
               type="checkbox"
-              value={(rememberMe as unknown) as string}
+              checked={rememberMe}
               onChange={e => {
                 const v = (e.target as HTMLInputElement).checked;
                 setRememberMe(v);

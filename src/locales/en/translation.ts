@@ -3,6 +3,10 @@ import TranslationResource from '../scheme';
 const translation: TranslationResource = {
   welcome: 'Welcome!',
   search: 'Search',
+  nav: {
+    settings: 'Settings',
+    login: 'Login'
+  },
   home: {
     /*
     guide:
@@ -78,9 +82,6 @@ const translation: TranslationResource = {
     username: 'username',
     password: 'password',
     login: 'login',
-    noLoginPrompt: "You haven't login.",
-    welcome: 'Welcome, {{name}} !',
-    logout: 'logout',
     rememberMe: 'Remember Me'
   },
   login: {
@@ -117,6 +118,7 @@ const translation: TranslationResource = {
     languageSecondary:
       'You language preference will be saved locally. Next time you visit this page, last language option will be used.',
     changePassword: "Change account's password.",
+    logout: 'Log out this account.',
     dialogChangePassword: {
       title: 'Change Password',
       prompt:
