@@ -1,6 +1,4 @@
-import without from 'lodash/without';
 import pull from 'lodash/pull';
-import concat from 'lodash/concat';
 
 export interface AlertInfo {
   type?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
@@ -9,28 +7,29 @@ export interface AlertInfo {
 
 export interface AlertInfoEx extends AlertInfo {
   id: number;
-  timeoutTag?: number;
-  close(): void;
 }
 
-export type AlertConsumer = (alerts: AlertInfoEx[]) => void;
+export type AlertConsumer = (alerts: AlertInfoEx) => void;
 
 export class AlertService {
-  readonly alertTimeout = 5000;
   private consumers: AlertConsumer[] = [];
-  private alerts: ReadonlyArray<AlertInfoEx> = [];
+  private savedAlerts: AlertInfoEx[] = [];
   private currentId = 1;
 
-  private produce(alerts: AlertInfoEx[]): void {
-    this.alerts = alerts;
+  private produce(alert: AlertInfoEx): void {
     for (const consumer of this.consumers) {
-      consumer(alerts);
+      consumer(alert);
     }
   }
 
   registerConsumer(consumer: AlertConsumer): void {
     this.consumers.push(consumer);
-    consumer(this.alerts as AlertInfoEx[]);
+    if (this.savedAlerts.length !== 0) {
+      for (const alert of this.savedAlerts) {
+        this.produce(alert);
+      }
+      this.savedAlerts = [];
+    }
   }
 
   unregisterConsumer(consumer: AlertConsumer): void {
@@ -38,18 +37,12 @@ export class AlertService {
   }
 
   push(alert: AlertInfo): void {
-    const newAlert = {
-      ...alert,
-      id: this.currentId++,
-      timeoutTag: window.setTimeout(() => {
-        newAlert.close();
-      }, this.alertTimeout),
-      close: (() => {
-        clearTimeout(newAlert.timeoutTag);
-        this.produce(without(this.alerts, newAlert));
-      }).bind(this)
-    };
-    this.produce(concat(this.alerts, newAlert));
+    const newAlert: AlertInfoEx = { ...alert, id: this.currentId++ };
+    if (this.consumers.length === 0) {
+      this.savedAlerts.push(newAlert);
+    } else {
+      this.produce(newAlert);
+    }
   }
 }
 
