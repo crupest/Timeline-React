@@ -46,7 +46,7 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
         setState('input');
       }
     );
-  }, [props.onPost]);
+  }, [text, props.onPost]);
 
   return (
     <Container
