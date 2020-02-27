@@ -42,7 +42,7 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
     false
   );
   const toggleManageDropdown = React.useCallback(
-    (): void => setManageDropdownOpen(false),
+    (): void => setManageDropdownOpen(old => !old),
     []
   );
   const onManageProperty = React.useCallback(

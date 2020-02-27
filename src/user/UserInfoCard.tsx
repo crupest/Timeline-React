@@ -41,7 +41,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
     false
   );
   const toggleManageDropdown = React.useCallback(
-    (): void => setManageDropdownOpen(false),
+    (): void => setManageDropdownOpen(old => !old),
     []
   );
   const onManageProperty = React.useCallback(
