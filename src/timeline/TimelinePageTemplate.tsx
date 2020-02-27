@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AxiosError } from 'axios';
 import concat from 'lodash/concat';
@@ -14,10 +14,11 @@ import {
   TimelineChangePropertyRequest
 } from '../data/timeline';
 
-import { TimelinePostInfoEx } from './Timeline';
+import { TimelinePostInfoEx, TimelineDeleteCallback } from './Timeline';
 import { TimelineMemberDialog } from './TimelineMember';
 import TimelinePropertyChangeDialog from './TimelinePropertyChangeDialog';
 import { TimelinePageTemplateUIProps } from './TimelinePageTemplateUI';
+import { TimelinePostSendCallback } from './TimelinePostEdit';
 
 export interface TimelinePageTemplateProps<
   TManageItem,
@@ -46,16 +47,20 @@ export default function TimelinePageTemplate<
 
   const user = useUser();
 
-  const [dialog, setDialog] = useState<null | 'property' | 'member'>(null);
-  const [timeline, setTimeline] = useState<TTimeline | undefined>(undefined);
-  const [posts, setPosts] = useState<
+  const [dialog, setDialog] = React.useState<null | 'property' | 'member'>(
+    null
+  );
+  const [timeline, setTimeline] = React.useState<TTimeline | undefined>(
+    undefined
+  );
+  const [posts, setPosts] = React.useState<
     TimelinePostInfoEx[] | 'forbid' | undefined
   >(undefined);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = React.useState<string | undefined>(undefined);
 
   const service = props.service;
 
-  useEffect(() => {
+  React.useEffect(() => {
     let subscribe = true;
     service.fetch(name).then(
       ti => {
@@ -102,7 +107,7 @@ export default function TimelinePageTemplate<
     };
   }, [name]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (posts != null) {
       window.scrollTo(
         0,
@@ -111,17 +116,17 @@ export default function TimelinePageTemplate<
     }
   }, [posts]);
 
-  let dialogElement: React.ReactElement | undefined;
-
-  const closeDialogHandler = (): void => {
+  const closeDialog = React.useCallback((): void => {
     setDialog(null);
-  };
+  }, []);
+
+  let dialogElement: React.ReactElement | undefined;
 
   if (dialog === 'property') {
     dialogElement = (
       <TimelinePropertyChangeDialog
         open
-        close={closeDialogHandler}
+        close={closeDialog}
         oldInfo={{
           visibility: timeline!.visibility,
           description: timeline!.description
@@ -137,7 +142,7 @@ export default function TimelinePageTemplate<
     dialogElement = (
       <TimelineMemberDialog
         open
-        onClose={closeDialogHandler}
+        onClose={closeDialog}
         members={[timeline!.owner, ...timeline!.members]}
         edit={
           service.hasManagePermission(user, timeline!)
@@ -179,7 +184,63 @@ export default function TimelinePageTemplate<
       />
     );
   }
+
   const { UiComponent } = props;
+
+  const onDelete: TimelineDeleteCallback = React.useCallback(
+    (index, id) => {
+      service.deletePost(name, id).then(
+        _ => {
+          setPosts(oldPosts =>
+            without(
+              oldPosts as TimelinePostInfoEx[],
+              (oldPosts as TimelinePostInfoEx[])[index]
+            )
+          );
+        },
+        () => {
+          pushAlert({
+            type: 'danger',
+            message: t('timeline.deletePostFailed')
+          });
+        }
+      );
+    },
+    [service]
+  );
+
+  const onPost: TimelinePostSendCallback = React.useCallback(
+    content => {
+      return service
+        .createPost(name, {
+          content: content
+        })
+        .then(newPost => {
+          setPosts(oldPosts =>
+            concat(oldPosts as TimelinePostInfoEx[], {
+              ...newPost,
+              deletable: true
+            })
+          );
+        });
+    },
+    [service]
+  );
+
+  const onManage = React.useCallback(
+    (item: 'property' | TManageItem) => {
+      if (item === 'property') {
+        setDialog(item);
+      } else {
+        props.onManage(item);
+      }
+    },
+    [props.onManage]
+  );
+
+  const onMember = React.useCallback(() => {
+    setDialog('member');
+  }, []);
 
   return (
     <>
@@ -187,56 +248,18 @@ export default function TimelinePageTemplate<
         error={error}
         timeline={timeline}
         posts={posts}
-        onDelete={(index, id) => {
-          service.deletePost(name, id).then(
-            _ => {
-              setPosts(
-                without(
-                  posts as TimelinePostInfoEx[],
-                  (posts as TimelinePostInfoEx[])[index]
-                )
-              );
-            },
-            () => {
-              pushAlert({
-                type: 'danger',
-                message: t('timeline.deletePostFailed')
-              });
-            }
-          );
-        }}
+        onDelete={onDelete}
         onPost={
           timeline != null && service.hasPostPermission(user, timeline)
-            ? content => {
-                return service
-                  .createPost(name, {
-                    content: content
-                  })
-                  .then(newPost => {
-                    setPosts(
-                      concat(posts as TimelinePostInfoEx[], {
-                        ...newPost,
-                        deletable: true
-                      })
-                    );
-                  });
-              }
+            ? onPost
             : undefined
         }
         onManage={
           timeline != null && service.hasManagePermission(user, timeline)
-            ? (item: 'property' | TManageItem) => {
-                if (item === 'property') {
-                  setDialog(item);
-                } else {
-                  props.onManage(item);
-                }
-              }
+            ? onManage
             : undefined
         }
-        onMember={() => {
-          setDialog('member');
-        }}
+        onMember={onMember}
       />
       {dialogElement}
     </>

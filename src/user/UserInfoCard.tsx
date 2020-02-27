@@ -26,11 +26,11 @@ export type UserInfoCardProps = TimelineCardComponentProps<
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const { t } = useTranslation();
 
-  const notifyHeight = (): void => {
+  const notifyHeight = React.useCallback((): void => {
     if (props.onHeight) {
       props.onHeight(document.getElementById('user-info-card')!.clientHeight);
     }
-  };
+  }, [props.onHeight]);
 
   React.useEffect(() => {
     const subscription = fromEvent(window, 'resize').subscribe(notifyHeight);
@@ -40,8 +40,22 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const [manageDropdownOpen, setManageDropdownOpen] = React.useState<boolean>(
     false
   );
-  const toggleManageDropdown = (): void =>
-    setManageDropdownOpen(!manageDropdownOpen);
+  const toggleManageDropdown = React.useCallback(
+    (): void => setManageDropdownOpen(false),
+    []
+  );
+  const onManageProperty = React.useCallback(
+    (): void => props.onManage!('property'),
+    []
+  );
+  const onManageAvatar = React.useCallback(
+    (): void => props.onManage!('avatar'),
+    []
+  );
+  const onManageNickname = React.useCallback(
+    (): void => props.onManage!('nickname'),
+    []
+  );
 
   return (
     <div
@@ -70,13 +84,13 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
               {t('timeline.manage')}
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={() => props.onManage!('nickname')}>
+              <DropdownItem onClick={onManageNickname}>
                 {t('timeline.manageItem.nickname')}
               </DropdownItem>
-              <DropdownItem onClick={() => props.onManage!('avatar')}>
+              <DropdownItem onClick={onManageAvatar}>
                 {t('timeline.manageItem.avatar')}
               </DropdownItem>
-              <DropdownItem onClick={() => props.onManage!('property')}>
+              <DropdownItem onClick={onManageProperty}>
                 {t('timeline.manageItem.property')}
               </DropdownItem>
               <DropdownItem onClick={props.onMember}>

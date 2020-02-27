@@ -38,6 +38,27 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
 ): React.ReactElement | null {
   const { t } = useTranslation();
 
+  const onPostEditHeightChange = React.useCallback((height: number): void => {
+    const element = document.getElementById('page-bottom-space')!;
+    element.style.height = height + 'px';
+    if (height === 0) {
+      const alertHost = getAlertHost();
+      if (alertHost != null) {
+        alertHost.style.removeProperty('margin-bottom');
+      }
+    } else {
+      const alertHost = getAlertHost();
+      if (alertHost != null) {
+        alertHost.style.marginBottom = height + 'px';
+      }
+    }
+  }, []);
+
+  const onCardHeightChange = React.useCallback((height: number) => {
+    const element = document.getElementById('page-container')!;
+    element.style.marginTop = 56 + 1 + height + 'px';
+  }, []);
+
   let body: React.ReactElement;
 
   if (props.error != null) {
@@ -61,22 +82,7 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
                 <div id="page-bottom-space" className="flex-fix-length" />
                 <TimelinePostEdit
                   onPost={props.onPost}
-                  onHeightChange={height => {
-                    const element = document.getElementById(
-                      'page-bottom-space'
-                    )!;
-                    element.style.height = height + 'px';
-                    const alertHost = getAlertHost();
-                    if (alertHost != null) {
-                      alertHost.style.marginBottom = height + 'px';
-                    }
-                  }}
-                  onUnload={() => {
-                    const alertHost = getAlertHost();
-                    if (alertHost != null) {
-                      alertHost.style.removeProperty('margin-bottom');
-                    }
-                  }}
+                  onHeightChange={onPostEditHeightChange}
                 />
               </>
             );
@@ -93,10 +99,7 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
             timeline={props.timeline}
             onManage={props.onManage}
             onMember={props.onMember}
-            onHeight={(height: number) => {
-              const element = document.getElementById('page-container')!;
-              element.style.marginTop = 56 + 1 + height + 'px';
-            }}
+            onHeight={onCardHeightChange}
             className="fixed-top mt-appbar"
           />
           {timelineBody}

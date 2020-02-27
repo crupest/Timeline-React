@@ -50,7 +50,7 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
           onClick={props.onDelete}
         />
       ) : (
-        false
+        undefined
       )}
     </Row>
   );

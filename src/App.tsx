@@ -27,7 +27,7 @@ const LazyAdmin = React.lazy(() =>
   import(/* webpackChunkName: "admin" */ './admin/Admin')
 );
 
-const App: React.FC = _ => {
+const App: React.FC = () => {
   const user = useOptionalUser();
 
   React.useEffect(() => {

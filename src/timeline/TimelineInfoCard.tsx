@@ -27,11 +27,11 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
   const { t } = useTranslation();
 
   const containerId = 'timeline-info-card';
-  const notifyHeight = (): void => {
+  const notifyHeight = React.useCallback((): void => {
     if (props.onHeight) {
       props.onHeight(document.getElementById(containerId)!.clientHeight);
     }
-  };
+  }, [props.onHeight]);
 
   React.useEffect(() => {
     const subscription = fromEvent(window, 'resize').subscribe(notifyHeight);
@@ -41,8 +41,18 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
   const [manageDropdownOpen, setManageDropdownOpen] = React.useState<boolean>(
     false
   );
-  const toggleManageDropdown = (): void =>
-    setManageDropdownOpen(!manageDropdownOpen);
+  const toggleManageDropdown = React.useCallback(
+    (): void => setManageDropdownOpen(false),
+    []
+  );
+  const onManageProperty = React.useCallback(
+    (): void => props.onManage!('property'),
+    []
+  );
+  const onManageDelete = React.useCallback(
+    (): void => props.onManage!('delete'),
+    []
+  );
 
   return (
     <div
@@ -74,14 +84,14 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
               {t('timeline.manage')}
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={() => props.onManage!('property')}>
+              <DropdownItem onClick={onManageProperty}>
                 {t('timeline.manageItem.property')}
               </DropdownItem>
               <DropdownItem onClick={props.onMember}>
                 {t('timeline.manageItem.member')}
               </DropdownItem>
               <DropdownItem divider />
-              <DropdownItem className="text-danger" onClick={() => props.onManage!('delete')}>
+              <DropdownItem className="text-danger" onClick={onManageDelete}>
                 {t('timeline.manageItem.delete')}
               </DropdownItem>
             </DropdownMenu>

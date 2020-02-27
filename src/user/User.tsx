@@ -54,15 +54,17 @@ const User: React.FC = _ => {
     );
   }
 
+  const onManage = React.useCallback((item: PersonalTimelineManageItem) => {
+    setDialog(item);
+  }, []);
+
   return (
     <>
       <TimelinePageTemplate
         key={key}
         name={username}
         UiComponent={UserPage}
-        onManage={(item: PersonalTimelineManageItem) => {
-          setDialog(item);
-        }}
+        onManage={onManage}
         service={personalTimelineService}
       />
       {dialogElement}

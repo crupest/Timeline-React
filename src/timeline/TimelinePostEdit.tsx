@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Container, Button, Spinner, Row, Col } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -10,32 +10,46 @@ export interface TimelinePostEditProps {
   className?: string;
   onPost: TimelinePostSendCallback;
   onHeightChange?: (height: number) => void;
-  onUnload?: () => void;
 }
 
 const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
   const { t } = useTranslation();
 
-  const [state, setState] = useState<'input' | 'process'>('input');
-  const [text, setText] = useState<string>('');
+  const [state, setState] = React.useState<'input' | 'process'>('input');
+  const [text, setText] = React.useState<string>('');
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (props.onHeightChange) {
       props.onHeightChange(
         document.getElementById('timeline-post-edit-area')!.clientHeight
       );
     }
     return () => {
-      props.onUnload?.();
+      if (props.onHeightChange) {
+        props.onHeightChange(0);
+      }
     };
   });
 
+  const onSend = React.useCallback(() => {
+    setState('process');
+    props.onPost(text).then(
+      _ => {
+        setText('');
+        setState('input');
+      },
+      _ => {
+        pushAlert({
+          type: 'danger',
+          message: t('timeline.sendPostFailed')
+        });
+        setState('input');
+      }
+    );
+  }, [props.onPost]);
+
   return (
-    <Container
-      fluid
-      id="timeline-post-edit-area"
-      className="fixed-bottom bg-light"
-    >
+    <Container fluid className="fixed-bottom bg-light">
       <Row>
         <textarea
           className="col"
@@ -49,25 +63,7 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
           {(() => {
             if (state === 'input') {
               return (
-                <Button
-                  color="primary"
-                  onClick={() => {
-                    setState('process');
-                    props.onPost(text).then(
-                      _ => {
-                        setText('');
-                        setState('input');
-                      },
-                      _ => {
-                        pushAlert({
-                          type: 'danger',
-                          message: t('timeline.sendPostFailed')
-                        });
-                        setState('input');
-                      }
-                    );
-                  }}
-                >
+                <Button color="primary" onClick={onSend}>
                   {t('timeline.send')}
                 </Button>
               );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { Container } from 'reactstrap';
 
@@ -19,11 +19,29 @@ export interface TimelineProps {
 }
 
 const Timeline: React.FC<TimelineProps> = props => {
-  const [indexShowDeleteButton, setIndexShowDeleteButton] = useState<number>(
-    -1
-  );
+  const { posts } = props;
 
-  const posts = props.posts;
+  const [indexShowDeleteButton, setIndexShowDeleteButton] = React.useState<
+    number
+  >(-1);
+
+  const onItemClick = React.useMemo(() => {
+    return posts.map((post, i) => {
+      return () => {
+        setIndexShowDeleteButton(oldIndexShowDeleteButton => {
+          return oldIndexShowDeleteButton !== i && post.deletable ? i : -1;
+        });
+      };
+    });
+  }, [posts]);
+
+  const onItemDelete = React.useMemo(() => {
+    return posts.map((post, i) => {
+      return () => {
+        props.onDelete(i, post.id);
+      };
+    });
+  }, [posts]);
 
   return (
     <div className={clsx('pr-2', props.className)}>
@@ -37,16 +55,8 @@ const Timeline: React.FC<TimelineProps> = props => {
                 key={post.id}
                 current={length - 1 === i}
                 showDeleteButton={indexShowDeleteButton === i}
-                onClick={() => {
-                  if (indexShowDeleteButton !== i && post.deletable) {
-                    setIndexShowDeleteButton(i);
-                  } else {
-                    setIndexShowDeleteButton(-1);
-                  }
-                }}
-                onDelete={() => {
-                  props.onDelete(i, post.id);
-                }}
+                onClick={onItemClick[i]}
+                onDelete={onItemDelete[i]}
               />
             );
           });
