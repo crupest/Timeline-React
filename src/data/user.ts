@@ -169,12 +169,38 @@ export function userLogout(): void {
   userSubject.next(null);
 }
 
-export function useUser(): UserWithToken | null | undefined {
+export function useOptionalUser(): UserWithToken | null | undefined {
   const [user, setUser] = useState<UserWithToken | null | undefined>(
     userSubject.value
   );
   useEffect(() => {
     const sub = user$.subscribe(u => setUser(u));
+    return () => {
+      sub.unsubscribe();
+    };
+  });
+  return user;
+}
+
+export function useUser(): UserWithToken | null {
+  const [user, setUser] = useState<UserWithToken | null>(() => {
+    const initUser = userSubject.value;
+    if (initUser === undefined) {
+      throw new Error(
+        "This is a logic error in user module. Current user can't be undefined in useUser."
+      );
+    }
+    return initUser;
+  });
+  useEffect(() => {
+    const sub = user$.subscribe(u => {
+      if (u === undefined) {
+        throw new Error(
+          "This is a logic error in user module. User emitted can't be undefined later."
+        );
+      }
+      setUser(u);
+    });
     return () => {
       sub.unsubscribe();
     };

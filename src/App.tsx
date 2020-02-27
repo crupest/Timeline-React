@@ -11,7 +11,7 @@ import User from './user/User';
 import TimelinePage from './timeline/TimelinePage';
 import AlertHost from './common/AlertHost';
 
-import { useUser, checkUserLoginState } from './data/user';
+import { checkUserLoginState, useOptionalUser } from './data/user';
 
 const NoMatch: React.FC = () => {
   return (
@@ -28,7 +28,7 @@ const LazyAdmin = React.lazy(() =>
 );
 
 const App: React.FC = _ => {
-  const user = useUser();
+  const user = useOptionalUser();
 
   React.useEffect(() => {
     checkUserLoginState();

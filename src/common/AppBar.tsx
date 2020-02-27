@@ -22,7 +22,9 @@ const AppBar: React.FC<{}> = _ => {
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-  const toggleMenu = (): void => setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = React.useCallback((): void => {
+    setIsMenuOpen(oldIsMenuOpen => !oldIsMenuOpen);
+  }, []);
 
   const isAdministrator = user && user.administrator;
 
