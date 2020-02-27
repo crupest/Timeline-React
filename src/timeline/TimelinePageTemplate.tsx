@@ -32,7 +32,6 @@ export interface TimelinePageTemplateProps<
       'CardComponent'
     >
   >;
-  dialog?: React.ReactElement;
 }
 
 export default function TimelinePageTemplate<
@@ -118,9 +117,7 @@ export default function TimelinePageTemplate<
     setDialog(null);
   };
 
-  if (props.dialog != null) {
-    dialogElement = props.dialog;
-  } else if (dialog === 'property') {
+  if (dialog === 'property') {
     dialogElement = (
       <TimelinePropertyChangeDialog
         open

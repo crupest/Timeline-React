@@ -55,16 +55,18 @@ const User: React.FC = _ => {
   }
 
   return (
-    <TimelinePageTemplate
-      key={key}
-      name={username}
-      UiComponent={UserPage}
-      onManage={(item: PersonalTimelineManageItem) => {
-        setDialog(item);
-      }}
-      service={personalTimelineService}
-      dialog={dialogElement}
-    />
+    <>
+      <TimelinePageTemplate
+        key={key}
+        name={username}
+        UiComponent={UserPage}
+        onManage={(item: PersonalTimelineManageItem) => {
+          setDialog(item);
+        }}
+        service={personalTimelineService}
+      />
+      {dialogElement}
+    </>
   );
 };
 

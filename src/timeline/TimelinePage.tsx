@@ -23,13 +23,15 @@ const TimelinePage: React.FC = _ => {
   }
 
   return (
-    <TimelinePageTemplate
-      name={name}
-      UiComponent={TimelinePageUI}
-      onManage={item => setDialog(item)}
-      service={ordinaryTimelineService}
-      dialog={dialogElement}
-    />
+    <>
+      <TimelinePageTemplate
+        name={name}
+        UiComponent={TimelinePageUI}
+        onManage={item => setDialog(item)}
+        service={ordinaryTimelineService}
+      />
+      {dialogElement}
+    </>
   );
 };
 
