@@ -23,7 +23,7 @@ const translation: TranslationResource = {
       title: '创建时间线！',
       name: '名字',
       nameFormat:
-        '名字只能由字母、数字、下划线（_）和连字符（-）构成，且长度不能超过26.',
+        '名字只能由字母、汉字、数字、下划线（_）和连字符（-）构成，且长度不能超过26.',
       badFormat: '格式错误',
       noEmpty: '不能为空',
       tooLong: '太长了'

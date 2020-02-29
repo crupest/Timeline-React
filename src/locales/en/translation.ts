@@ -22,7 +22,7 @@ const translation: TranslationResource = {
       title: 'Create Timeline!',
       name: 'Name',
       nameFormat:
-        'Name must consist of only letter, digit, hyphen(-) and underline(_) and be no longer than 26.',
+        'Name must consist of only letter including non-English letter, digit, hyphen(-) and underline(_) and be no longer than 26.',
       badFormat: 'Bad format.',
       noEmpty: 'Empty is not allowed.',
       tooLong: 'Too long.'

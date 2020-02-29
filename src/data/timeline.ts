@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import { apiBaseUrl } from '../config';
 import { User, UserAuthInfo, getCurrentUser, UserWithToken } from './user';
+import XRegExp from 'xregexp';
 
 export const kTimelineVisibilities = ['Public', 'Register', 'Private'] as const;
 
@@ -264,3 +265,9 @@ export const ordinaryTimelineService: OrdinaryTimelineService = new TimelineServ
   OrdinaryTimelineInfo,
   OrdinaryTimelineChangePropertyRequest
 >(name => `${apiBaseUrl}/timelines/${name}`);
+
+const timelineNameReg = XRegExp('^[-_\\p{L}]*$', 'u');
+
+export function validateTimelineName(name: string): boolean {
+  return timelineNameReg.test(name);
+}

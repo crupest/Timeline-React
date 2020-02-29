@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import { apiBaseUrl } from '../config';
 import { useUser } from '../data/user';
+import { validateTimelineName } from '../data/timeline';
 
 import OperationDialog from '../common/OperationDialog';
 
@@ -34,7 +35,7 @@ const TimelineCreateDialog: React.FC<TimelineCreateDialogProps> = props => {
               return 'home.createDialog.noEmpty';
             } else if (name.length > 26) {
               return 'home.createDialog.tooLong';
-            } else if (/[^-_a-zA-Z0-9]/.test(name)) {
+            } else if (!validateTimelineName(name)) {
               return 'home.createDialog.badFormat';
             } else {
               return null;
