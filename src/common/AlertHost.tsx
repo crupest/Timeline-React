@@ -24,7 +24,7 @@ export const AutoCloseAlert: React.FC<AutoCloseAlertProps> = props => {
   }, [props.close]);
 
   return (
-    <Alert className="m-3" color={alert.type ?? 'primary'} toggle={close}>
+    <Alert className="m-3" color={alert.type ?? 'primary'} toggle={props.close}>
       {alert.message}
     </Alert>
   );
