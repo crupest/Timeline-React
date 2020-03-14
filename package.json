@@ -15,7 +15,7 @@
     "lodash": "^4.17.15",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "react-hot-loader": "^4.12.14",
+    "react-hot-loader": "^4.12.20",
     "react-i18next": "^11.3.3",
     "react-responsive": "^8.0.3",
     "react-router-dom": "^5.0.1",
