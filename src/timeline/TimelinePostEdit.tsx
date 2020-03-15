@@ -61,7 +61,7 @@ const TimelinePostEditImage: React.FC<TimelinePostEditImageProps> = props => {
           onError={onImgError}
         />
       )}
-      {error != null && <div className="text-error">{t(error)}</div>}
+      {error != null && <div className="text-danger">{t(error)}</div>}
     </>
   );
 };
