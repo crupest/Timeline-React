@@ -1,11 +1,11 @@
 import React from 'react';
-
-import TimelineLogo from '../common/TimelineLogo';
-
-import { TimelineInfo } from '../data/timeline';
-import UserTimelineLogo from '../common/UserTimelineLogo';
 import { Link } from 'react-router-dom';
 import { Spinner, ListGroup, ListGroupItem } from 'reactstrap';
+
+import { TimelineInfo } from '../data/timeline';
+
+import TimelineLogo from '../common/TimelineLogo';
+import UserTimelineLogo from '../common/UserTimelineLogo';
 
 export interface TimelineBoardProps {
   title: string;

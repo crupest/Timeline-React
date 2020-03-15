@@ -55,21 +55,26 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
       className="fixed-bottom bg-light"
     >
       <Row>
-        <textarea
-          className="col"
-          value={text}
-          disabled={state === 'process'}
-          onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
-            setText(event.currentTarget.value);
-          }}
-        />
+        <Col className="px-0">
+          <textarea
+            className="w-100 h-100"
+            value={text}
+            disabled={state === 'process'}
+            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+              setText(event.currentTarget.value);
+            }}
+          />
+        </Col>
         <Col sm="col-auto align-self-end m-1">
           {(() => {
             if (state === 'input') {
               return (
-                <Button color="primary" onClick={onSend}>
-                  {t('timeline.send')}
-                </Button>
+                <>
+                  <i className="fas fa-image d-block text-center large-icon mt-1 mb-2" />
+                  <Button color="primary" onClick={onSend}>
+                    {t('timeline.send')}
+                  </Button>
+                </>
               );
             } else {
               return <Spinner />;
