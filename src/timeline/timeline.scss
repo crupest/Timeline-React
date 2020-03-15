@@ -93,3 +93,8 @@ $timeline-line-node-radius: 35px;
 .timeline-content {
   white-space: pre-line;
 }
+
+.timeline-content-image {
+  max-width: 60%;
+  max-height: 200px;
+}

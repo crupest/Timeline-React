@@ -28,8 +28,8 @@ const TimelineBoard: React.FC<TimelineBoardProps> = props => {
           return (
             <ListGroup>
               {props.timelines.map(t => {
-                const isPersonal = t.name == null;
-                const name = isPersonal ? '@' + t.owner.username : t.name;
+                const isPersonal = t.name.startsWith('@');
+                const name = t.name;
                 return (
                   <ListGroupItem
                     key={name}

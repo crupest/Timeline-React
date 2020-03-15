@@ -41,7 +41,14 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
             src={props.post.author._links.avatar}
             className="avatar rounded float-right float-sm-left mx-2"
           />
-          {props.post.content}
+          {(() => {
+            const { content } = props.post;
+            if (content.type === 'text') {
+              return content.text;
+            } else {
+              return <img src={content.url} className="timeline-content-image"/>;
+            }
+          })()}
         </p>
       </Col>
       {props.showDeleteButton ? (

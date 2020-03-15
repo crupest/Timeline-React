@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ExcludeKey } from '../type-utilities';
-import { PersonalTimelineInfo } from '../data/timeline';
+import { TimelineInfo } from '../data/timeline';
 
 import TimelinePageTemplateUI, {
   TimelinePageTemplateUIProps
@@ -9,7 +9,7 @@ import TimelinePageTemplateUI, {
 import UserInfoCard, { PersonalTimelineManageItem } from './UserInfoCard';
 
 export type UserPageProps = ExcludeKey<
-  TimelinePageTemplateUIProps<PersonalTimelineInfo, PersonalTimelineManageItem>,
+  TimelinePageTemplateUIProps<TimelineInfo, PersonalTimelineManageItem>,
   'CardComponent'
 >;
 

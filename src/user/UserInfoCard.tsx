@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { fromEvent } from 'rxjs';
 
 import {
-  PersonalTimelineInfo,
+  TimelineInfo,
   timelineVisibilityTooltipTranslationMap
 } from '../data/timeline';
 import { TimelineCardComponentProps } from '../timeline/TimelinePageTemplateUI';
@@ -19,7 +19,7 @@ import { TimelineCardComponentProps } from '../timeline/TimelinePageTemplateUI';
 export type PersonalTimelineManageItem = 'avatar' | 'nickname';
 
 export type UserInfoCardProps = TimelineCardComponentProps<
-  PersonalTimelineInfo,
+  TimelineInfo,
   PersonalTimelineManageItem
 >;
 

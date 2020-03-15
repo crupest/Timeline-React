@@ -213,7 +213,10 @@ export default function TimelinePageTemplate<
     content => {
       return service
         .createPost(name, {
-          content: content
+          content: {
+            type: 'text',
+            text: content
+          }
         })
         .then(newPost => {
           setPosts(oldPosts =>

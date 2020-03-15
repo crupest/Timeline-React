@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ExcludeKey } from '../type-utilities';
-import { OrdinaryTimelineInfo } from '../data/timeline';
+import { TimelineInfo } from '../data/timeline';
 
 import TimelinePageTemplateUI, {
   TimelinePageTemplateUIProps
@@ -11,7 +11,7 @@ import TimelineInfoCard, {
 } from './TimelineInfoCard';
 
 export type TimelinePageUIProps = ExcludeKey<
-  TimelinePageTemplateUIProps<OrdinaryTimelineInfo, OrdinaryTimelineManageItem>,
+  TimelinePageTemplateUIProps<TimelineInfo, OrdinaryTimelineManageItem>,
   'CardComponent'
 >;
 

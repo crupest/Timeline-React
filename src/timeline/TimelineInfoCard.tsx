@@ -12,14 +12,14 @@ import { fromEvent } from 'rxjs';
 
 import {
   timelineVisibilityTooltipTranslationMap,
-  OrdinaryTimelineInfo
+  TimelineInfo
 } from '../data/timeline';
 import { TimelineCardComponentProps } from './TimelinePageTemplateUI';
 
 export type OrdinaryTimelineManageItem = 'delete';
 
 export type TimelineInfoCardProps = TimelineCardComponentProps<
-  OrdinaryTimelineInfo,
+  TimelineInfo,
   OrdinaryTimelineManageItem
 >;
 
