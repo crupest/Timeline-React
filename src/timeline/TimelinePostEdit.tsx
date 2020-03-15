@@ -124,7 +124,9 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
 
     props.onPost(req).then(
       _ => {
-        setText('');
+        if (kind === 'text') {
+          setText('');
+        }
         setState('input');
         setKind('text');
       },
