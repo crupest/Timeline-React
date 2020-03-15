@@ -210,22 +210,15 @@ export default function TimelinePageTemplate<
   );
 
   const onPost: TimelinePostSendCallback = React.useCallback(
-    content => {
-      return service
-        .createPost(name, {
-          content: {
-            type: 'text',
-            text: content
-          }
-        })
-        .then(newPost => {
-          setPosts(oldPosts =>
-            concat(oldPosts as TimelinePostInfoEx[], {
-              ...newPost,
-              deletable: true
-            })
-          );
-        });
+    req => {
+      return service.createPost(name, req).then(newPost => {
+        setPosts(oldPosts =>
+          concat(oldPosts as TimelinePostInfoEx[], {
+            ...newPost,
+            deletable: true
+          })
+        );
+      });
     },
     [service]
   );

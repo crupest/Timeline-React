@@ -7,6 +7,7 @@ const translation: TranslationResource = {
     settings: '设置',
     login: '登陆'
   },
+  loadImageError: '加载图片失败',
   home: {
     /*
     guide:

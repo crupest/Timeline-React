@@ -1,6 +1,7 @@
 export default interface TranslationResource {
   welcome: string;
   search: string;
+  loadImageError: string;
   nav: {
     settings: string;
     login: string;
