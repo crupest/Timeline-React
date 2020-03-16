@@ -149,7 +149,7 @@ const Home: React.FC = _ => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <small>公安备案 42112102000124</small>
+          <small className="white-space-no-wrap">公安备案 42112102000124</small>
         </a>
       </footer>
     </>
