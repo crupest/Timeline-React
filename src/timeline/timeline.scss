@@ -1,10 +1,9 @@
 @use 'sass:color';
 
-$timeline-line-width: 8px;
-$timeline-line-color: #0089ff;
-$timeline-line-halo-color: white;
-$timeline-line-current-color: #4f4dff;
-$timeline-line-node-radius: 35px;
+$timeline-line-width: 7px;
+$timeline-line-node-radius: 18px;
+$timeline-line-color: $primary;
+$timeline-line-color-current: #36c2e6;
 
 .timeline-line-area {
   display: flex;
@@ -24,63 +23,73 @@ $timeline-line-node-radius: 35px;
   flex: 0 0 auto;
 }
 
+.timeline-pt-start {
+  padding-top: 18px;
+}
+
 .timeline-line.end {
   flex: 1 1 auto;
 }
 
-@keyframes timeline-line-node-halo {
+@keyframes timeline-line-node-noncurrent {
+  from {
+    background: $timeline-line-color;
+  }
   to {
-    box-shadow: 0 0 5px 3px $timeline-line-halo-color;
+    background: color.adjust($timeline-line-color, $lightness: +10%);
+    box-shadow: 0 0 20px 3px
+      color.adjust($timeline-line-color, $lightness: +10%, $alpha: -0.1);
   }
 }
-@keyframes timeline-line-node-halo-noncurrent {
+@keyframes timeline-line-node-current {
   from {
-    border-color: $timeline-line-color;
+    background: $timeline-line-color-current;
   }
   to {
-    border-color: color.adjust($timeline-line-color, $lightness: +20%);
-  }
-}
-@keyframes timeline-line-node-halo-current {
-  from {
-    border-color: $timeline-line-current-color;
-  }
-  to {
-    border-color: color.adjust($timeline-line-current-color, $lightness: +20%);
+    background: color.adjust($timeline-line-color-current, $lightness: +10%);
+    box-shadow: 0 0 20px 3px
+      color.adjust($timeline-line-color-current, $lightness: +10%, $alpha: -0.1);
   }
 }
 
-.timeline-line-node {
+.timeline-line-node-container {
+  flex: 0 0 auto;
+  position: relative;
   width: $timeline-line-node-radius;
   height: $timeline-line-node-radius;
-  flex: 0 0 auto;
+}
+
+.timeline-line-node {
+  width: $timeline-line-node-radius + 2;
+  height: $timeline-line-node-radius + 2;
+  position: absolute;
+  left: -1px;
+  top: -1px;
   border-radius: 50%;
-  border: $timeline-line-width solid $timeline-line-color;
   box-sizing: border-box;
   z-index: 1;
-  animation: 0.6s infinite alternate;
-  animation-name: timeline-line-node-halo, timeline-line-node-halo-noncurrent;
+  animation: 1s infinite alternate;
+  animation-name: timeline-line-node-noncurrent;
 }
 
 .timeline-line.current-end {
   height: 20px;
   flex: 0 0 auto;
-  background: linear-gradient($timeline-line-current-color, transparent);
+  background: linear-gradient($timeline-line-color-current, transparent);
 }
 
 .current {
   .timeline-line.start {
     background: linear-gradient(
       $timeline-line-color,
-      $timeline-line-current-color
+      $timeline-line-color-current
     );
   }
   .timeline-line-node {
-    border-color: $timeline-line-current-color;
-    animation-name: timeline-line-node-halo, timeline-line-node-halo-current;
+    animation-name: timeline-line-node-current;
   }
   .timeline-line.end {
-    background: $timeline-line-current-color;
+    background: $timeline-line-color-current;
   }
 }
 

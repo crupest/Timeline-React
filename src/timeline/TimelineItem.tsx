@@ -25,11 +25,13 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
     >
       <Col className="timeline-line-area">
         <div className="timeline-line start"></div>
-        <div className="timeline-line-node"></div>
+        <div className="timeline-line-node-container">
+          <div className="timeline-line-node"></div>
+        </div>
         <div className="timeline-line end"></div>
         {current && <div className="timeline-line current-end" />}
       </Col>
-      <Col className="pt-4">
+      <Col className="timeline-pt-start">
         <Row>
           <span className="text-primary">
             {props.post.time.toLocaleString(i18n.languages)}
@@ -46,7 +48,9 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
             if (content.type === 'text') {
               return content.text;
             } else {
-              return <img src={content.url} className="timeline-content-image"/>;
+              return (
+                <img src={content.url} className="timeline-content-image" />
+              );
             }
           })()}
         </p>
