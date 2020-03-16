@@ -51,7 +51,7 @@ const App: React.FC = () => {
           <Route path="/settings">
             <Settings />
           </Route>
-          <Route>
+          <Route path="/about">
             <About />
           </Route>
           <Route path="/timelines/:name">
