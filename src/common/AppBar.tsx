@@ -33,7 +33,7 @@ const AppBar: React.FC<{}> = _ => {
       {user != null ? (
         <NavLink to={`/users/${user.username}`}>
           <img
-            className="avatar small rounded-circle"
+            className="avatar small rounded-circle bg-white"
             src={user._links.avatar}
           />
         </NavLink>

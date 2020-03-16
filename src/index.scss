@@ -33,6 +33,11 @@ small {
   flex-shrink: 0;
 }
 
+.position-lt {
+  left: 0;
+  top: 0;
+}
+
 .position-rb {
   right: 0;
   bottom: 0;
@@ -56,6 +61,10 @@ small {
 
 .mt-appbar {
   margin-top: 56px;
+}
+
+.icon-button {
+  font-size: 20px;
 }
 
 .large-icon {

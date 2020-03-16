@@ -25,13 +25,19 @@ const Timeline: React.FC<TimelineProps> = props => {
     number
   >(-1);
 
-  const onItemClick = React.useMemo(() => {
+  const onItemClick = React.useCallback(() => {
+    setIndexShowDeleteButton(-1);
+  }, []);
+
+  const onToggleDelete = React.useMemo(() => {
     return posts.map((post, i) => {
-      return () => {
-        setIndexShowDeleteButton(oldIndexShowDeleteButton => {
-          return oldIndexShowDeleteButton !== i && post.deletable ? i : -1;
-        });
-      };
+      return post.deletable
+        ? () => {
+            setIndexShowDeleteButton(oldIndexShowDeleteButton => {
+              return oldIndexShowDeleteButton !== i ? i : -1;
+            });
+          }
+        : undefined;
     });
   }, [posts]);
 
@@ -55,8 +61,9 @@ const Timeline: React.FC<TimelineProps> = props => {
                 key={post.id}
                 current={length - 1 === i}
                 showDeleteButton={indexShowDeleteButton === i}
-                onClick={onItemClick[i]}
+                toggleMore={onToggleDelete[i]}
                 onDelete={onItemDelete[i]}
+                onClick={onItemClick}
               />
             );
           });

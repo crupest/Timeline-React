@@ -112,3 +112,7 @@ $timeline-line-color-current: #36c2e6;
   max-width: 100px;
   max-height: 100px;
 }
+
+.mask {
+  background: change-color($color: white, $alpha: 0.8);
+}
