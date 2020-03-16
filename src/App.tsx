@@ -7,6 +7,7 @@ import LoadingPage from './common/LoadingPage';
 import Home from './home/Home';
 import Login from './user/Login';
 import Settings from './settings/Settings';
+import About from './about/About';
 import User from './user/User';
 import TimelinePage from './timeline/TimelinePage';
 import AlertHost from './common/AlertHost';
@@ -49,6 +50,9 @@ const App: React.FC = () => {
           </Route>
           <Route path="/settings">
             <Settings />
+          </Route>
+          <Route>
+            <About />
           </Route>
           <Route path="/timelines/:name">
             <TimelinePage />

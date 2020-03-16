@@ -69,6 +69,18 @@ const AppBar: React.FC<{}> = _ => {
             </NavLink>
           </NavItem>
 
+          <NavItem
+            className={
+              matchPath(history.location.pathname, '/about')
+                ? 'active'
+                : undefined
+            }
+          >
+            <NavLink className="nav-link" to="/about">
+              {t('nav.about')}
+            </NavLink>
+          </NavItem>
+
           {isAdministrator && (
             <NavItem
               className={

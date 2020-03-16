@@ -5,7 +5,8 @@ const translation: TranslationResource = {
   search: '搜索',
   nav: {
     settings: '设置',
-    login: '登陆'
+    login: '登陆',
+    about: '关于'
   },
   chooseImage: '选择一个图片',
   loadImageError: '加载图片失败',

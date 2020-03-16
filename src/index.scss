@@ -2,10 +2,12 @@
 $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/brands';
 
 @import './common/common.scss';
 @import './common/alert.scss';
 @import './home/home.scss';
+@import './about/about.scss';
 @import './timeline/timeline.scss';
 @import './user/user-page.scss';
 

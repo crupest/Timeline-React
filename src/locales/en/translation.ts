@@ -5,7 +5,8 @@ const translation: TranslationResource = {
   search: 'Search',
   nav: {
     settings: 'Settings',
-    login: 'Login'
+    login: 'Login',
+    about: 'About'
   },
   chooseImage: 'Choose a image',
   loadImageError: 'Failed to load image.',

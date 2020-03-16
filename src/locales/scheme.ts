@@ -6,6 +6,7 @@ export default interface TranslationResource {
   nav: {
     settings: string;
     login: string;
+    about: string;
   };
   home: {
     go: string;
