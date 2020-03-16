@@ -7,6 +7,7 @@ const translation: TranslationResource = {
     settings: 'Settings',
     login: 'Login'
   },
+  chooseImage: 'Choose a image',
   loadImageError: 'Failed to load image.',
   home: {
     /*

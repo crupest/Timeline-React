@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { pushAlert } from '../common/alert-service';
 import { CreatePostRequest } from '../data/timeline';
 
+import FileInput from '../common/FileInput';
+
 interface TimelinePostEditImageProps {
   onSelect: (blob: Blob | null) => void;
 }
@@ -52,7 +54,12 @@ const TimelinePostEditImage: React.FC<TimelinePostEditImageProps> = props => {
 
   return (
     <>
-      <input type="file" onChange={onInputChange} accept="image/*" />
+      <FileInput
+        labelText={t('chooseImage')}
+        onChange={onInputChange}
+        accept="image/*"
+        className="mx-3 my-1"
+      />
       {fileUrl && error == null && (
         <img
           src={fileUrl}
