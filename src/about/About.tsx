@@ -32,6 +32,11 @@ const frontendCredits: {
     icon: 'sass'
   },
   {
+    name: 'fontawesome',
+    url: 'https://fontawesome.com',
+    icon: 'font-awesome-flag'
+  },
+  {
     name: 'eslint',
     url: 'https://eslint.org'
   },
