@@ -84,7 +84,7 @@
     "html-webpack-template": "^6.2.0",
     "image-webpack-loader": "^6.0.0",
     "postcss-loader": "^3.0.0",
-    "prettier": "^1.19.1",
+    "prettier": "^2.0.1",
     "sass": "^1.26.3",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.0.0",
