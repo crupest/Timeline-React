@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://crupest.xyz",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.12.1",
+    "@fortawesome/fontawesome-free": "^5.13.0",
     "axios": "^0.19.0",
     "bootstrap": "^4.4.1",
     "classnames": "^2.2.6",
