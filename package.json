@@ -65,7 +65,7 @@
     "@types/webpack": "^4.41.8",
     "@types/webpack-dev-server": "^3.10.1",
     "@types/webpack-env": "^1.14.1",
-    "@types/xregexp": "^3.0.30",
+    "@types/xregexp": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
     "autoprefixer": "^9.7.5",
