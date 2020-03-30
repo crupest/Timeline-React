@@ -13,7 +13,7 @@ import { TimelineInfo } from '../data/timeline';
 import TimelineBoardAreaWithUser from './TimelineBoardAreaWithUser';
 import TimelineCreateDialog from './TimelineCreateDialog';
 
-const Home: React.FC = _ => {
+const Home: React.FC = (_) => {
   const history = useHistory();
 
   const { t } = useTranslation();
@@ -39,7 +39,7 @@ const Home: React.FC = _ => {
       setJoinTimelines(undefined);
       axios
         .get<TimelineInfo[]>(`${apiBaseUrl}/timelines?visibility=public`)
-        .then(res => {
+        .then((res) => {
           if (subscribe) {
             setPublicTimelines(res.data);
           }
@@ -50,7 +50,7 @@ const Home: React.FC = _ => {
         .get<TimelineInfo[]>(
           `${apiBaseUrl}/timelines?relate=${user.username}&relateType=own`
         )
-        .then(res => {
+        .then((res) => {
           if (subscribe) {
             setOwnTimelines(res.data);
           }
@@ -59,7 +59,7 @@ const Home: React.FC = _ => {
         .get<TimelineInfo[]>(
           `${apiBaseUrl}/timelines?relate=${user.username}&relateType=join`
         )
-        .then(res => {
+        .then((res) => {
           if (subscribe) {
             setJoinTimelines(res.data);
           }
@@ -93,7 +93,11 @@ const Home: React.FC = _ => {
   return (
     <>
       <AppBar />
-      <Container fluid style={{ marginTop: '56px' }}>
+      <Container
+        className="home-timeline-area"
+        fluid
+        style={{ marginTop: '56px' }}
+      >
         <Row>
           <Col>
             <SearchInput
