@@ -14,7 +14,7 @@ export interface SearchInputProps {
   additionalButton?: React.ReactNode;
 }
 
-const SearchInput: React.FC<SearchInputProps> = props => {
+const SearchInput: React.FC<SearchInputProps> = (props) => {
   const { t } = useTranslation();
 
   const onInputChange = useCallback(
@@ -42,8 +42,10 @@ const SearchInput: React.FC<SearchInputProps> = props => {
         onKeyPress={onInputKeyPress}
         placeholder={props.placeholder}
       />
-      <div className="mt-2 mt-sm-0 mr-2">{props.additionalButton}</div>
-      <div className="mt-2 mt-sm-0 ml-auto ml-sm-0 order-sm-2">
+      <div className="mt-2 mt-sm-0 order-sm-last ml-sm-2">
+        {props.additionalButton}
+      </div>
+      <div className="mt-2 mt-sm-0 ml-auto ml-sm-2">
         {props.loading ? (
           <Spinner />
         ) : (
