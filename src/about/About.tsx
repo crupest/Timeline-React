@@ -12,42 +12,51 @@ const frontendCredits: {
   {
     name: 'reactjs',
     url: 'https://reactjs.org',
-    icon: 'react'
+    icon: 'react',
   },
   {
     name: 'typescript',
-    url: 'https://www.typescriptlang.org'
+    url: 'https://www.typescriptlang.org',
+  },
+  {
+    name: 'bootstrap',
+    url: 'https://getbootstrap.com',
+    icon: 'bootstrap',
+  },
+  {
+    name: 'reactstrap',
+    url: 'https://reactstrap.github.io',
   },
   {
     name: 'babeljs',
-    url: 'https://babeljs.io'
+    url: 'https://babeljs.io',
   },
   {
     name: 'webpack',
-    url: 'https://webpack.js.org'
+    url: 'https://webpack.js.org',
   },
   {
     name: 'sass',
     url: 'https://sass-lang.com',
-    icon: 'sass'
+    icon: 'sass',
   },
   {
     name: 'fontawesome',
     url: 'https://fontawesome.com',
-    icon: 'font-awesome-flag'
+    icon: 'font-awesome-flag',
   },
   {
     name: 'eslint',
-    url: 'https://eslint.org'
+    url: 'https://eslint.org',
   },
   {
     name: 'prettier',
-    url: 'https://prettier.io'
+    url: 'https://prettier.io',
   },
   {
     name: 'cross-env',
-    url: 'https://github.com/kentcdodds/cross-env'
-  }
+    url: 'https://github.com/kentcdodds/cross-env',
+  },
 ];
 
 const backendCredits: {
@@ -57,13 +66,13 @@ const backendCredits: {
 }[] = [
   {
     name: 'ASP.Net Core',
-    url: 'https://dotnet.microsoft.com/learn/aspnet/what-is-aspnet-core'
+    url: 'https://dotnet.microsoft.com/learn/aspnet/what-is-aspnet-core',
   },
   { name: 'sqlite', url: 'https://sqlite.org' },
   {
     name: 'ImageSharp',
-    url: 'https://github.com/SixLabors/ImageSharp'
-  }
+    url: 'https://github.com/SixLabors/ImageSharp',
+  },
 ];
 
 const About: React.FC = () => {
