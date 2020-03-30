@@ -2,3 +2,12 @@
   width: 1em;
   height: 1em;
 }
+
+.timeline-item {
+  font-size: 1.25em;
+  @extend .my-3;
+  .icon {
+    height: 1.3em;
+    @extend .mr-2;
+  }
+}

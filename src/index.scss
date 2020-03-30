@@ -78,3 +78,11 @@ textarea {
 .white-space-no-wrap {
   white-space: nowrap;
 }
+
+.cru-card {
+  @extend .shadow;
+  @extend .border;
+  @extend .border-primary;
+  @extend .rounded;
+  @extend .bg-light;
+}
