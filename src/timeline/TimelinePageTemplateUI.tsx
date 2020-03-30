@@ -6,7 +6,7 @@ import { getAlertHost } from '../common/alert-service';
 
 import Timeline, {
   TimelinePostInfoEx,
-  TimelineDeleteCallback
+  TimelineDeleteCallback,
 } from './Timeline';
 import AppBar from '../common/AppBar';
 import TimelinePostEdit, { TimelinePostSendCallback } from './TimelinePostEdit';
@@ -39,8 +39,10 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
   const { t } = useTranslation();
 
   const onPostEditHeightChange = React.useCallback((height: number): void => {
-    const element = document.getElementById('page-bottom-space')!;
-    element.style.height = height + 'px';
+    const element = document.getElementById('page-bottom-space');
+    if (element != null) {
+      element.style.height = height + 'px';
+    }
     if (height === 0) {
       const alertHost = getAlertHost();
       if (alertHost != null) {
