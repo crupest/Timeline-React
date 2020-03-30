@@ -115,4 +115,5 @@ $timeline-line-color-current: #36c2e6;
 
 .mask {
   background: change-color($color: white, $alpha: 0.8);
+  z-index: 100;
 }
