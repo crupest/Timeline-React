@@ -4,10 +4,18 @@
 }
 
 .timeline-item {
-  font-size: 1.25em;
-  @extend .my-3;
+  font-size: 1.1em;
+  @extend .my-2;
   .icon {
     height: 1.3em;
     @extend .mr-2;
   }
+}
+
+.timeline-board {
+  @extend .cru-card;
+  @extend .d-flex;
+  @extend .flex-column;
+  @extend .p-3;
+  min-height: 200px;
 }

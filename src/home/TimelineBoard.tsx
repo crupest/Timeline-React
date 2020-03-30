@@ -1,6 +1,7 @@
 import React from 'react';
+import clsx from 'clsx';
 import { Link } from 'react-router-dom';
-import { Spinner, ListGroup, ListGroupItem } from 'reactstrap';
+import { Spinner } from 'reactstrap';
 
 import { TimelineInfo } from '../data/timeline';
 
@@ -8,52 +9,42 @@ import TimelineLogo from '../common/TimelineLogo';
 import UserTimelineLogo from '../common/UserTimelineLogo';
 
 export interface TimelineBoardProps {
-  title: string;
+  title?: string;
   timelines?: TimelineInfo[];
   className?: string;
 }
 
 const TimelineBoard: React.FC<TimelineBoardProps> = props => {
+  const { title, timelines, className } = props;
+
   return (
-    <div className="">
-      <h3 className="text-center">{props.title}</h3>
+    <div className={clsx('timeline-board', className)}>
+      {title != null && <h3 className="text-center">{title}</h3>}
       {(() => {
-        if (props.timelines == null) {
+        if (timelines == null) {
           return (
-            <div className="d-flex justify-content-center align-items-center">
-              <Spinner />
+            <div className="d-flex flex-grow-1 justify-content-center align-items-center">
+              <Spinner color="primary" />
             </div>
           );
         } else {
-          return (
-            <ListGroup>
-              {props.timelines.map(t => {
-                const isPersonal = t.name.startsWith('@');
-                const name = t.name;
-                return (
-                  <ListGroupItem
-                    key={name}
-                    className="d-flex align-items-center"
-                  >
-                    {isPersonal ? (
-                      <UserTimelineLogo className="timeline-item-icon" />
-                    ) : (
-                      <TimelineLogo className="timeline-item-icon" />
-                    )}
-                    <Link
-                      to={
-                        isPersonal
-                          ? `/users/${t.owner.username}`
-                          : `/timelines/${t.name}`
-                      }
-                    >
-                      {name}
-                    </Link>
-                  </ListGroupItem>
-                );
-              })}
-            </ListGroup>
-          );
+          return timelines.map(timeline => {
+            const { name } = timeline;
+            const isPersonal = name.startsWith('@');
+            const url = isPersonal
+              ? `/users/${timeline.owner.username}`
+              : `/timelines/${name}`;
+            return (
+              <div key={name} className="timeline-item">
+                {isPersonal ? (
+                  <UserTimelineLogo className="icon" />
+                ) : (
+                  <TimelineLogo className="icon" />
+                )}
+                <Link to={url}>{name}</Link>
+              </div>
+            );
+          });
         }
       })()}
     </div>
