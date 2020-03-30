@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import clsx from 'clsx';
 import { Spinner, Input, Button } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +11,7 @@ export interface SearchInputProps {
   loading?: boolean;
   buttonText?: string;
   placeholder?: string;
+  additionalButton?: React.ReactNode;
 }
 
 const SearchInput: React.FC<SearchInputProps> = props => {
@@ -32,7 +34,7 @@ const SearchInput: React.FC<SearchInputProps> = props => {
   );
 
   return (
-    <div className="form-inline my-2">
+    <div className={clsx('form-inline my-2', props.className)}>
       <Input
         className="mr-sm-2"
         value={props.value}
@@ -40,19 +42,16 @@ const SearchInput: React.FC<SearchInputProps> = props => {
         onKeyPress={onInputKeyPress}
         placeholder={props.placeholder}
       />
-      <div className="d-sm-none flex-grow-1 width-1px" />
-      {props.loading ? (
-        <Spinner />
-      ) : (
-        <Button
-          outline
-          color="primary"
-          className=" mt-2 mt-sm-0"
-          onClick={props.onButtonClick}
-        >
-          {props.buttonText ?? t('search')}
-        </Button>
-      )}
+      <div className="mt-2 mt-sm-0 mr-2">{props.additionalButton}</div>
+      <div className="mt-2 mt-sm-0 ml-auto ml-sm-0 order-sm-2">
+        {props.loading ? (
+          <Spinner />
+        ) : (
+          <Button outline color="primary" onClick={props.onButtonClick}>
+            {props.buttonText ?? t('search')}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

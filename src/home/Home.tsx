@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router';
-import { Row, Container, Button } from 'reactstrap';
+import { Row, Container, Button, Col } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
@@ -94,30 +94,24 @@ const Home: React.FC = _ => {
     <>
       <AppBar />
       <Container fluid style={{ marginTop: '56px' }}>
-        {(() => {
-          if (user != null) {
-            return (
-              <>
-                <Row className="my-2 px-3 justify-content-end">
+        <Row>
+          <Col>
+            <SearchInput
+              className="justify-content-center"
+              value={navText}
+              onChange={setNavText}
+              onButtonClick={goto}
+              buttonText={t('home.go')}
+              placeholder="@crupest"
+              additionalButton={
+                user != null && (
                   <Button color="success" outline onClick={openCreateDialog}>
                     {t('home.createButton')}
                   </Button>
-                </Row>
-                {dialog === 'create' && (
-                  <TimelineCreateDialog open close={closeDialog} />
-                )}
-              </>
-            );
-          }
-        })()}
-        <Row className="justify-content-center">
-          <SearchInput
-            value={navText}
-            onChange={setNavText}
-            onButtonClick={goto}
-            buttonText={t('home.go')}
-            placeholder="@crupest"
-          />
+                )
+              }
+            />
+          </Col>
         </Row>
         {(() => {
           if (user == null) {
@@ -152,6 +146,7 @@ const Home: React.FC = _ => {
           <small className="white-space-no-wrap">公安备案 42112102000124</small>
         </a>
       </footer>
+      {dialog === 'create' && <TimelineCreateDialog open close={closeDialog} />}
     </>
   );
 };
