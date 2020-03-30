@@ -4,12 +4,13 @@ import { Row, Container, Button, Col } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
+import { apiBaseUrl } from '../config';
+import { useUser } from '../data/user';
+import { TimelineInfo } from '../data/timeline';
+
 import AppBar from '../common/AppBar';
 import SearchInput from '../common/SearchInput';
-import { useUser } from '../data/user';
 import TimelineBoardAreaWithoutUser from './TimelineBoardAreaWithoutUser';
-import { apiBaseUrl } from '../config';
-import { TimelineInfo } from '../data/timeline';
 import TimelineBoardAreaWithUser from './TimelineBoardAreaWithUser';
 import TimelineCreateDialog from './TimelineCreateDialog';
 
@@ -93,11 +94,7 @@ const Home: React.FC = (_) => {
   return (
     <>
       <AppBar />
-      <Container
-        className="home-timeline-area"
-        fluid
-        style={{ marginTop: '56px' }}
-      >
+      <Container fluid style={{ marginTop: '56px' }}>
         <Row>
           <Col>
             <SearchInput

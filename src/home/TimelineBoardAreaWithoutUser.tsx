@@ -9,12 +9,14 @@ interface TimelineBoardAreaWithoutUserProps {
   publicTimelines?: TimelineInfo[];
 }
 
-const TimelineBoardAreaWithoutUser: React.FC<TimelineBoardAreaWithoutUserProps> = props => {
+const TimelineBoardAreaWithoutUser: React.FC<TimelineBoardAreaWithoutUserProps> = (
+  props
+) => {
   const { publicTimelines } = props;
 
   return (
-    <Row className="my-2">
-      <Col>
+    <Row className="my-2 justify-content-center">
+      <Col sm="8" lg="6">
         <TimelineBoard timelines={publicTimelines} />
       </Col>
     </Row>
