@@ -15,7 +15,7 @@ export const timelineVisibilityTooltipTranslationMap: Record<
 > = {
   Public: 'timeline.visibilityTooltip.public',
   Register: 'timeline.visibilityTooltip.register',
-  Private: 'timeline.visibilityTooltip.private'
+  Private: 'timeline.visibilityTooltip.private',
 };
 
 export interface TimelineInfo {
@@ -141,12 +141,12 @@ function processRawTimelinePostInfo(
       if (raw.content.type === 'image' && token != null) {
         return {
           ...raw.content,
-          url: raw.content.url + '?token=' + token
+          url: raw.content.url + '?token=' + token,
         };
       }
       return raw.content;
     })(),
-    time: new Date(raw.time)
+    time: new Date(raw.time),
   };
 }
 
@@ -174,13 +174,13 @@ export class TimelineServiceTemplate<
 
     return axios
       .patch<TTimeline>(`${this.urlResolver(name)}?token=${user.token}`, req)
-      .then(res => res.data);
+      .then((res) => res.data);
   }
 
   fetch(name: string): Promise<TTimeline> {
     return axios
       .get<TTimeline>(`${this.urlResolver(name)}`)
-      .then(res => res.data);
+      .then((res) => res.data);
   }
 
   fetchPosts(name: string): Promise<TimelinePostInfo[]> {
@@ -191,7 +191,7 @@ export class TimelineServiceTemplate<
           ? `${this.urlResolver(name)}/posts`
           : `${this.urlResolver(name)}/posts?token=${token}`
       )
-      .then(res => res.data.map(p => processRawTimelinePostInfo(p)));
+      .then((res) => res.data.map((p) => processRawTimelinePostInfo(p, token)));
   }
 
   createPost(
@@ -202,20 +202,20 @@ export class TimelineServiceTemplate<
 
     const rawReq: Promise<RawCreatePostRequest> = new Promise<
       RawCreatePostRequestContent
-    >(resolve => {
+    >((resolve) => {
       if (request.content.type === 'image') {
-        base64(request.content.data).then(d =>
+        base64(request.content.data).then((d) =>
           resolve({
             ...request.content,
-            data: d
+            data: d,
           } as RawCreatePostRequestImageContent)
         );
       } else {
         resolve(request.content);
       }
-    }).then(content => {
+    }).then((content) => {
       const rawReq: RawCreatePostRequest = {
-        content
+        content,
       };
       if (request.time != null) {
         rawReq.time = request.time.toISOString();
@@ -224,13 +224,13 @@ export class TimelineServiceTemplate<
     });
 
     return rawReq
-      .then(req =>
+      .then((req) =>
         axios.post<RawTimelinePostInfo>(
           `${this.urlResolver(name)}/posts?token=${user.token}`,
           req
         )
       )
-      .then(res => processRawTimelinePostInfo(res.data));
+      .then((res) => processRawTimelinePostInfo(res.data, user.token));
   }
 
   deletePost(name: string, id: number): Promise<void> {
@@ -258,7 +258,7 @@ export class TimelineServiceTemplate<
   }
 
   isMemberOf(username: string, timeline: TTimeline): boolean {
-    return timeline.members.findIndex(m => m.username == username) >= 0;
+    return timeline.members.findIndex((m) => m.username == username) >= 0;
   }
 
   hasReadPermission(
@@ -325,7 +325,7 @@ export type PersonalTimelineService = TimelineServiceTemplate<
 export const personalTimelineService: PersonalTimelineService = new TimelineServiceTemplate<
   TimelineInfo,
   PersonalTimelineChangePropertyRequest
->(name => `${apiBaseUrl}/timelines/@${name}`);
+>((name) => `${apiBaseUrl}/timelines/@${name}`);
 
 export type OrdinaryTimelineService = TimelineServiceTemplate<
   TimelineInfo,
@@ -335,7 +335,7 @@ export type OrdinaryTimelineService = TimelineServiceTemplate<
 export const ordinaryTimelineService: OrdinaryTimelineService = new TimelineServiceTemplate<
   TimelineInfo,
   TimelineChangePropertyRequest
->(name => `${apiBaseUrl}/timelines/${name}`);
+>((name) => `${apiBaseUrl}/timelines/${name}`);
 
 const timelineNameReg = XRegExp('^[-_\\p{L}]*$', 'u');
 
