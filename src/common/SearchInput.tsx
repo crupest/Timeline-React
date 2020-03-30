@@ -42,10 +42,10 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
         onKeyPress={onInputKeyPress}
         placeholder={props.placeholder}
       />
-      <div className="mt-2 mt-sm-0 order-sm-last ml-sm-2">
+      <div className="mt-2 mt-sm-0 order-sm-last ml-sm-3">
         {props.additionalButton}
       </div>
-      <div className="mt-2 mt-sm-0 ml-auto ml-sm-2">
+      <div className="mt-2 mt-sm-0 ml-auto ml-sm-0">
         {props.loading ? (
           <Spinner />
         ) : (
