@@ -6,7 +6,7 @@ const translation: TranslationResource = {
   nav: {
     settings: 'Settings',
     login: 'Login',
-    about: 'About'
+    about: 'About',
   },
   chooseImage: 'Choose a image',
   loadImageError: 'Failed to load image.',
@@ -23,8 +23,8 @@ const translation: TranslationResource = {
         'Name must consist of only letter including non-English letter, digit, hyphen(-) and underline(_) and be no longer than 26.',
       badFormat: 'Bad format.',
       noEmpty: 'Empty is not allowed.',
-      tooLong: 'Too long.'
-    }
+      tooLong: 'Too long.',
+    },
   },
   operationDialog: {
     confirm: 'Confirm',
@@ -32,7 +32,7 @@ const translation: TranslationResource = {
     ok: 'OK!',
     processing: 'Processing...',
     success: 'Success!',
-    error: 'An error occured.'
+    error: 'An error occured.',
   },
   timeline: {
     messageCantSee: 'Sorry, you are not allowed to see this timeline.😅',
@@ -45,38 +45,38 @@ const translation: TranslationResource = {
     visibility: {
       public: 'public to everyone',
       register: 'only registed people can see',
-      private: 'only members can see'
+      private: 'only members can see',
     },
     visibilityTooltip: {
       public:
         'Everyone including those without accounts can see content of the timeline.',
       register:
         'Only those who have an account and logined can see content of the timeline.',
-      private: 'Only members of this timeline can see content of the timeline.'
+      private: 'Only members of this timeline can see content of the timeline.',
     },
     dialogChangeProperty: {
       title: 'Change Timeline Properties',
       visibility: 'Visibility',
-      description: 'Description'
+      description: 'Description',
     },
     member: {
       alreadyMember: 'The user is already a member.',
       add: 'Add',
-      remove: 'Remove'
+      remove: 'Remove',
     },
     manageItem: {
       nickname: 'Nickname',
       avatar: 'Avatar',
       property: 'Timeline Property',
       member: 'Timeline Member',
-      delete: 'Delete Timeline'
+      delete: 'Delete Timeline',
     },
     deleteDialog: {
       title: 'Delete Timeline',
       inputPrompt:
         'This is a dangerous action. If you are sure to delete timeline<1>{{name}}</1>, please input its name below and click confirm button.',
-      notMatch: 'Name does not match.'
-    }
+      notMatch: 'Name does not match.',
+    },
   },
   user: {
     username: 'username',
@@ -86,18 +86,18 @@ const translation: TranslationResource = {
     welcomeBack: 'Welcome back!',
     verifyTokenFailed: 'User login info is expired. Please login again!',
     verifyTokenFailedNetwork:
-      'Verifying user login info failed. Please check your network and refresh page!'
+      'Verifying user login info failed. Please check your network and refresh page!',
   },
   login: {
     emptyUsername: "Username can't be empty.",
     emptyPassword: "Password can't be empty.",
     badCredential: 'Username or password is invalid.',
-    alreadyLogin: 'Already login! Redirect to home page in 3s!'
+    alreadyLogin: 'Already login! Redirect to home page in 3s!',
   },
   userPage: {
     dialogChangeNickname: {
       title: 'Change Nickname',
-      inputLabel: 'New nickname'
+      inputLabel: 'New nickname',
     },
     dialogChangeAvatar: {
       title: 'Change Avatar',
@@ -108,15 +108,15 @@ const translation: TranslationResource = {
         select: 'Please select a picture.',
         loadingFile: 'Loading the file...',
         decoding: 'Decoding picture...',
-        errorNotSquare: 'The image is not a square.'
+        errorNotSquare: 'The image is not a square.',
       },
-      upload: 'upload'
-    }
+      upload: 'upload',
+    },
   },
   settings: {
     subheaders: {
       account: 'Account',
-      customization: 'Customization'
+      customization: 'Customization',
     },
     languagePrimary: 'Choose display language.',
     languageSecondary:
@@ -132,12 +132,36 @@ const translation: TranslationResource = {
       inputRetypeNewPassword: 'Retype new password',
       errorEmptyOldPassword: "Old password can't be empty.",
       errorEmptyNewPassword: "New password can't be empty.",
-      errorRetypeNotMatch: 'Password retyped does not match.'
-    }
+      errorRetypeNotMatch: 'Password retyped does not match.',
+    },
+  },
+  about: {
+    author: {
+      title: 'Site Developer',
+      fullname: 'Fullname: ',
+      nickname: 'Nickname: ',
+      introduction: 'Introduction: ',
+      introductionContent: 'A programmer coding based on coincidence',
+      links: 'Links: ',
+    },
+    site: {
+      title: 'Site Information',
+      content:
+        'The name of this site is <1>Timeline</1>, which is a Web App with <3>timeline</3> as its core concept. Its frontend and backend are both developed by <5>me</5>, and open source on GitHub. It is relatively easy to deploy it on your own server, which is also one of my goals. Welcome to comment anything in GitHub repository.',
+      frontendRepo: 'Frontend GitHub Repo',
+      backendRepo: 'Backend GitHub Repo',
+    },
+    credits: {
+      title: 'Credits',
+      content:
+        'Timeline is works standing on shoulders of gaints. Special appreciation for many open source projects listed below or not. Related licenses could be found in GitHub repository.',
+      frontend: 'Frontend: ',
+      backend: 'Backend: ',
+    },
   },
   admin: {
-    title: 'admin'
-  }
+    title: 'admin',
+  },
 };
 
 export default translation;

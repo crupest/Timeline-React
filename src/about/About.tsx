@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 
 import authorAvatarUrl from './author-avatar.png';
 
@@ -76,12 +77,14 @@ const backendCredits: {
 ];
 
 const About: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <>
       <AppBar />
       <div className="mt-appbar px-2 mb-4">
         <div className="container mt-4 py-3 shadow border border-primary rounded bg-light">
-          <h4 id="author-info">网站作者</h4>
+          <h4 id="author-info">{t('about.author.title')}</h4>
           <div>
             <div className="d-flex">
               <img
@@ -90,20 +93,21 @@ const About: React.FC = () => {
               />
               <div>
                 <p>
-                  <small>姓名：</small>
+                  <small>{t('about.author.fullname')}</small>
                   <span className="text-primary">杨宇千</span>
                 </p>
                 <p>
-                  <small>昵称：</small>
+                  <small>{t('about.author.nickname')}</small>
                   <span className="text-primary">crupest</span>
                 </p>
                 <p>
-                  <small>简介：</small>一个基于巧合编程的代码爱好者。
+                  <small>{t('about.author.introduction')}</small>
+                  {t('about.author.introductionContent')}
                 </p>
               </div>
             </div>
             <p>
-              <small>链接：</small>
+              <small>{t('about.author.links')}</small>
               <a
                 href="https://github.com/crupest"
                 target="_blank"
@@ -122,13 +126,12 @@ const About: React.FC = () => {
           </div>
         </div>
         <div className="container mt-4 py-3 shadow border border-primary rounded bg-light">
-          <h4>网站信息</h4>
+          <h4>{t('about.site.title')}</h4>
           <p>
-            这个网站的名字叫 <span className="text-primary">Timeline</span>{' '}
-            ，是一个以<b>时间线</b>为核心概念的 Web App . 它的前端和后端都是由
-            <a href="#author-info">我</a>开发，并且在 GitHub
-            上开源。大家可以相对轻松的把它们部署在自己的服务器上，这也是我的目标之一。欢迎大家前往
-            GitHub 仓库提出任何意见。
+            <Trans i18nKey="about.site.content">
+              0<span className="text-primary">1</span>2<b>3</b>4
+              <a href="#author-info">5</a>6
+            </Trans>
           </p>
           <p>
             <a
@@ -136,7 +139,7 @@ const About: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              前端 GitHub 仓库
+              {t('about.site.frontendRepo')}
             </a>
           </p>
           <p>
@@ -145,18 +148,14 @@ const About: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              后端 GitHub 仓库
+              {t('about.site.backendRepo')}
             </a>
           </p>
         </div>
         <div className="container mt-4 py-3 shadow border border-primary rounded bg-light">
-          <h4>鸣谢</h4>
-          <p>
-            Timeline
-            是站在巨人肩膀上的作品，感谢以下列出的和其他未列出的许多开源项目，相关
-            License 请在 GitHub 仓库中查看。
-          </p>
-          <p>前端：</p>
+          <h4>{t('about.credits.title')}</h4>
+          <p>{t('about.credits.content')}</p>
+          <p>{t('about.credits.frontend')}</p>
           <ul>
             {frontendCredits.map((item, index) => {
               return (
@@ -172,7 +171,7 @@ const About: React.FC = () => {
             })}
             <li>...</li>
           </ul>
-          <p>后端：</p>
+          <p>{t('about.credits.backend')}</p>
           <ul>
             {backendCredits.map((item, index) => {
               return (

@@ -125,6 +125,28 @@ export default interface TranslationResource {
       errorRetypeNotMatch: string;
     };
   };
+  about: {
+    author: {
+      title: string;
+      fullname: string;
+      nickname: string;
+      introduction: string;
+      introductionContent: string;
+      links: string;
+    };
+    site: {
+      title: string;
+      content: string;
+      frontendRepo: string;
+      backendRepo: string;
+    };
+    credits: {
+      title: string;
+      content: string;
+      frontend: string;
+      backend: string;
+    };
+  };
   admin: {
     title: string;
   };
