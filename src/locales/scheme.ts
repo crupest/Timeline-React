@@ -13,10 +13,6 @@ export default interface TranslationResource {
     allTimeline: string;
     joinTimeline: string;
     ownTimeline: string;
-    /*
-    guide: string;
-    description: string;
-    */
     createButton: string;
     createDialog: {
       title: string;
