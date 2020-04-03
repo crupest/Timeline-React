@@ -21,7 +21,7 @@
     "react-router-dom": "^5.0.1",
     "reactstrap": "^8.4.1",
     "regenerator-runtime": "^0.13.5",
-    "rxjs": "^6.5.3",
+    "rxjs": "^6.5.5",
     "xregexp": "^4.3.0"
   },
   "scripts": {
