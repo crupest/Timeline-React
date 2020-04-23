@@ -64,7 +64,7 @@
     "@types/reactstrap": "^8.4.2",
     "@types/webpack": "^4.41.12",
     "@types/webpack-dev-server": "^3.10.1",
-    "@types/webpack-env": "^1.14.1",
+    "@types/webpack-env": "^1.15.2",
     "@types/xregexp": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
