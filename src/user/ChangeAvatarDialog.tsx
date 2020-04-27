@@ -188,14 +188,12 @@ const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = (props) => {
             <>
               <ModalBody className="container">
                 <Row className="justify-content-center">
-                  <div className="d-flex justify-content-center change-avatar-img">
-                    <ImageCropper
-                      clip={clip}
-                      onChange={setClip}
-                      imageUrl={fileUrl}
-                      imageElementCallback={setCropImgElement}
-                    />
-                  </div>
+                  <ImageCropper
+                    clip={clip}
+                    onChange={setClip}
+                    imageUrl={fileUrl}
+                    imageElementCallback={setCropImgElement}
+                  />
                 </Row>
                 <Row>{t('userPage.dialogChangeAvatar.prompt.crop')}</Row>
               </ModalBody>

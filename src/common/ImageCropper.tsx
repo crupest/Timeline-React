@@ -190,31 +190,32 @@ const ImageCropper = (props: ImageCropperProps): React.ReactElement => {
   );
 
   // fuck!!! I just can't find a better way to implement this in pure css
-  const imgStyle: React.CSSProperties | undefined = (() => {
+  const containerStyle: React.CSSProperties = (() => {
     if (imageInfo == null) {
-      return undefined;
+      return { width: '100%', paddingTop: '100%', height: 0 };
     } else {
       if (imageInfo.ratio > 1) {
         return {
-          height: '100%',
+          width: 100 / imageInfo.ratio + '%',
+          paddingTop: '100%',
+          height: 0,
         };
       } else {
         return {
           width: '100%',
+          paddingTop: 100 * imageInfo.ratio + '%',
+          height: 0,
         };
       }
     }
   })();
 
   return (
-    <div className={clsx('image-cropper-container', className)}>
-      <img
-        ref={onImageRef}
-        style={imgStyle}
-        src={imageUrl}
-        onLoad={onImageLoad}
-        alt="to crop"
-      />
+    <div
+      className={clsx('image-cropper-container', className)}
+      style={containerStyle}
+    >
+      <img ref={onImageRef} src={imageUrl} onLoad={onImageLoad} alt="to crop" />
       <div className="image-cropper-mask-container">
         <div
           className="image-cropper-mask"
