@@ -11,7 +11,7 @@ import ChangeAvatarDialog from './ChangeAvatarDialog';
 import TimelinePageTemplate from '../timeline/TimelinePageTemplate';
 import { PersonalTimelineManageItem } from './UserInfoCard';
 
-const User: React.FC = _ => {
+const User: React.FC = (_) => {
   const { username } = useParams<{ username: string }>();
 
   const user = useUser();
@@ -30,9 +30,9 @@ const User: React.FC = _ => {
       <ChangeNicknameDialog
         open
         close={closeDialogHandler}
-        onProcess={newNickname => {
+        onProcess={(newNickname) => {
           const p = changeNickname(user!.token, username, newNickname);
-          return p.then(_ => {
+          return p.then((_) => {
             setKey(key + 1);
           });
         }}
@@ -43,9 +43,9 @@ const User: React.FC = _ => {
       <ChangeAvatarDialog
         open
         close={closeDialogHandler}
-        process={file => {
+        process={(file) => {
           return changeAvatar(user!.token, username, file, file.type).then(
-            _ => {
+            (_) => {
               setKey(key + 1);
             }
           );

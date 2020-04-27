@@ -259,7 +259,7 @@ const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = (props) => {
             <>
               <ModalBody className="container">
                 {createPreviewRow()}
-                <Row>{t('userPage.dialogChangeAvatar.prompt.uploading')}</Row>;
+                <Row>{t('userPage.dialogChangeAvatar.prompt.uploading')}</Row>
               </ModalBody>
               <ModalFooter></ModalFooter>
             </>
