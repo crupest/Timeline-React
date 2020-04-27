@@ -55,6 +55,10 @@ const frontendCredits: {
     url: 'https://prettier.io',
   },
   {
+    name: 'pepjs',
+    url: 'https://github.com/jquery/PEP',
+  },
+  {
     name: 'cross-env',
     url: 'https://github.com/kentcdodds/cross-env',
   },
