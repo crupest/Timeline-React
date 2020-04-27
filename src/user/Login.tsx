@@ -30,7 +30,10 @@ const Login: React.FC = (_) => {
 
   useEffect(() => {
     if (user != null) {
-      setTimeout(() => history.push('/'), 3000);
+      const id = setTimeout(() => history.push('/'), 3000);
+      return () => {
+        clearTimeout(id);
+      };
     }
   }, [history, user]);
 
