@@ -11,7 +11,7 @@ import { extractStatusCode, extractErrorCode } from '../data/common';
 import {
   TimelineServiceTemplate,
   TimelineInfo,
-  TimelineChangePropertyRequest
+  TimelineChangePropertyRequest,
 } from '../data/timeline';
 
 import { TimelinePostInfoEx, TimelineDeleteCallback } from './Timeline';
@@ -63,24 +63,28 @@ export default function TimelinePageTemplate<
   React.useEffect(() => {
     let subscribe = true;
     service.fetch(name).then(
-      ti => {
+      (ti) => {
         if (subscribe) {
           setTimeline(ti);
           if (!service.hasReadPermission(user, ti)) {
             setPosts('forbid');
           } else {
             service.fetchPosts(name).then(
-              data => {
+              (data) => {
                 if (subscribe) {
                   setPosts(
-                    data.map(post => ({
+                    data.map((post) => ({
                       ...post,
-                      deletable: service.hasModifyPostPermission(user, ti, post)
+                      deletable: service.hasModifyPostPermission(
+                        user,
+                        ti,
+                        post
+                      ),
                     }))
                   );
                 }
               },
-              error => {
+              (error) => {
                 if (subscribe) {
                   setError(error.toString());
                 }
@@ -105,7 +109,7 @@ export default function TimelinePageTemplate<
     return () => {
       subscribe = false;
     };
-  }, [name]);
+  }, [name, service, user, t]);
 
   React.useEffect(() => {
     if (posts != null) {
@@ -129,10 +133,10 @@ export default function TimelinePageTemplate<
         close={closeDialog}
         oldInfo={{
           visibility: timeline!.visibility,
-          description: timeline!.description
+          description: timeline!.description,
         }}
-        onProcess={req => {
-          return service.changeProperty(name, req).then(newTimeline => {
+        onProcess={(req) => {
+          return service.changeProperty(name, req).then((newTimeline) => {
             setTimeline(newTimeline);
           });
         }}
@@ -147,8 +151,8 @@ export default function TimelinePageTemplate<
         edit={
           service.hasManagePermission(user, timeline!)
             ? {
-                onCheckUser: u => {
-                  return fetchUser(u).catch(e => {
+                onCheckUser: (u) => {
+                  return fetchUser(u).catch((e) => {
                     if (
                       extractStatusCode(e) === 404 ||
                       extractErrorCode(e) === 11020101
@@ -159,25 +163,25 @@ export default function TimelinePageTemplate<
                     }
                   });
                 },
-                onAddUser: u => {
-                  return service.addMember(name, u.username).then(_ => {
+                onAddUser: (u) => {
+                  return service.addMember(name, u.username).then((_) => {
                     setTimeline({
                       ...timeline!,
-                      members: concat(timeline!.members, u)
+                      members: concat(timeline!.members, u),
                     });
                   });
                 },
-                onRemoveUser: u => {
-                  service.removeMember(name, u).then(_ => {
+                onRemoveUser: (u) => {
+                  service.removeMember(name, u).then((_) => {
                     setTimeline({
                       ...timeline!,
                       members: without(
                         timeline!.members,
-                        timeline!.members.find(m => m.username === u)
-                      )
+                        timeline!.members.find((m) => m.username === u)
+                      ),
                     });
                   });
-                }
+                },
               }
             : null
         }
@@ -190,8 +194,8 @@ export default function TimelinePageTemplate<
   const onDelete: TimelineDeleteCallback = React.useCallback(
     (index, id) => {
       service.deletePost(name, id).then(
-        _ => {
-          setPosts(oldPosts =>
+        (_) => {
+          setPosts((oldPosts) =>
             without(
               oldPosts as TimelinePostInfoEx[],
               (oldPosts as TimelinePostInfoEx[])[index]
@@ -201,37 +205,39 @@ export default function TimelinePageTemplate<
         () => {
           pushAlert({
             type: 'danger',
-            message: t('timeline.deletePostFailed')
+            message: t('timeline.deletePostFailed'),
           });
         }
       );
     },
-    [service]
+    [service, name, t]
   );
 
   const onPost: TimelinePostSendCallback = React.useCallback(
-    req => {
-      return service.createPost(name, req).then(newPost => {
-        setPosts(oldPosts =>
+    (req) => {
+      return service.createPost(name, req).then((newPost) => {
+        setPosts((oldPosts) =>
           concat(oldPosts as TimelinePostInfoEx[], {
             ...newPost,
-            deletable: true
+            deletable: true,
           })
         );
       });
     },
-    [service]
+    [service, name]
   );
+
+  const onManageProp = props.onManage;
 
   const onManage = React.useCallback(
     (item: 'property' | TManageItem) => {
       if (item === 'property') {
         setDialog(item);
       } else {
-        props.onManage(item);
+        onManageProp(item);
       }
     },
-    [props.onManage]
+    [onManageProp]
   );
 
   const onMember = React.useCallback(() => {

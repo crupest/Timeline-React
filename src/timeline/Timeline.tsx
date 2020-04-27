@@ -18,8 +18,8 @@ export interface TimelineProps {
   onDelete: TimelineDeleteCallback;
 }
 
-const Timeline: React.FC<TimelineProps> = props => {
-  const { posts } = props;
+const Timeline: React.FC<TimelineProps> = (props) => {
+  const { posts, onDelete } = props;
 
   const [indexShowDeleteButton, setIndexShowDeleteButton] = React.useState<
     number
@@ -33,7 +33,7 @@ const Timeline: React.FC<TimelineProps> = props => {
     return posts.map((post, i) => {
       return post.deletable
         ? () => {
-            setIndexShowDeleteButton(oldIndexShowDeleteButton => {
+            setIndexShowDeleteButton((oldIndexShowDeleteButton) => {
               return oldIndexShowDeleteButton !== i ? i : -1;
             });
           }
@@ -44,10 +44,10 @@ const Timeline: React.FC<TimelineProps> = props => {
   const onItemDelete = React.useMemo(() => {
     return posts.map((post, i) => {
       return () => {
-        props.onDelete(i, post.id);
+        onDelete(i, post.id);
       };
     });
-  }, [posts]);
+  }, [posts, onDelete]);
 
   return (
     <div className={clsx('pr-2', props.className)}>

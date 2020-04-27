@@ -15,22 +15,24 @@ export interface SearchInputProps {
 }
 
 const SearchInput: React.FC<SearchInputProps> = (props) => {
+  const { onChange, onButtonClick } = props;
+
   const { t } = useTranslation();
 
   const onInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      props.onChange(event.currentTarget.value);
+      onChange(event.currentTarget.value);
     },
-    [props.onChange]
+    [onChange]
   );
 
   const onInputKeyPress = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>): void => {
       if (event.key === 'Enter') {
-        props.onButtonClick();
+        onButtonClick();
       }
     },
-    [props.onButtonClick]
+    [onButtonClick]
   );
 
   return (

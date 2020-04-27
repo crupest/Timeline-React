@@ -12,10 +12,10 @@ import {
   Form,
   FormFeedback,
   Spinner,
-  Button
+  Button,
 } from 'reactstrap';
 
-const Login: React.FC = _ => {
+const Login: React.FC = (_) => {
   const { t } = useTranslation();
   const history = useHistory();
   const [username, setUsername] = useState<string>('');
@@ -32,7 +32,7 @@ const Login: React.FC = _ => {
     if (user != null) {
       setTimeout(() => history.push('/'), 3000);
     }
-  }, []);
+  }, [history, user]);
 
   if (user != null) {
     return (
@@ -54,18 +54,18 @@ const Login: React.FC = _ => {
     userLogin(
       {
         username: username,
-        password: password
+        password: password,
       },
       rememberMe
     ).then(
-      _ => {
+      (_) => {
         if (history.length === 0) {
           history.push('/');
         } else {
           history.goBack();
         }
       },
-      e => {
+      (e) => {
         setProcess(false);
         setError(e.message);
       }
@@ -84,7 +84,7 @@ const Login: React.FC = _ => {
             <Input
               id="username"
               disabled={process}
-              onChange={e => {
+              onChange={(e) => {
                 setUsername(e.target.value);
                 setUsernameDirty(true);
               }}
@@ -101,7 +101,7 @@ const Login: React.FC = _ => {
               id="password"
               type="password"
               disabled={process}
-              onChange={e => {
+              onChange={(e) => {
                 setPassword(e.target.value);
                 setPasswordDirty(true);
               }}
@@ -117,7 +117,7 @@ const Login: React.FC = _ => {
               id="remember-me"
               type="checkbox"
               checked={rememberMe}
-              onChange={e => {
+              onChange={(e) => {
                 const v = (e.target as HTMLInputElement).checked;
                 setRememberMe(v);
               }}

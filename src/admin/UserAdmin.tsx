@@ -8,7 +8,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Spinner,
-  Button
+  Button,
 } from 'reactstrap';
 import axios from 'axios';
 
@@ -46,7 +46,7 @@ function changeUsername(
   token: string
 ): Promise<void> {
   return axios.patch(`${apiBaseUrl}/users/${oldUsername}?token=${token}`, {
-    username: newUsername
+    username: newUsername,
   });
 }
 
@@ -56,7 +56,7 @@ function changePassword(
   token: string
 ): Promise<void> {
   return axios.patch(`${apiBaseUrl}/users/${username}?token=${token}`, {
-    password: newPassword
+    password: newPassword,
   });
 }
 
@@ -66,7 +66,7 @@ function changePermission(
   token: string
 ): Promise<void> {
   return axios.patch(`${apiBaseUrl}/users/${username}?token=${token}`, {
-    administrator: newPermission
+    administrator: newPermission,
   });
 }
 
@@ -91,7 +91,7 @@ interface UserCardProps {
   user: User;
 }
 
-const UserItem: React.FC<UserCardProps> = props => {
+const UserItem: React.FC<UserCardProps> = (props) => {
   const user = props.user;
 
   const createClickCallback = (item: ContextMenuItem): (() => void) => {
@@ -149,7 +149,7 @@ interface CreateUserDialogProps extends DialogProps {
   process: (user: CreateUserInfo) => Promise<void>;
 }
 
-const CreateUserDialog: React.FC<CreateUserDialogProps> = props => {
+const CreateUserDialog: React.FC<CreateUserDialogProps> = (props) => {
   return (
     <OperationDialog
       title="Create"
@@ -158,13 +158,13 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = props => {
       inputScheme={[
         { type: 'text', label: 'Username' },
         { type: 'text', label: 'Password' },
-        { type: 'bool', label: 'Administrator' }
+        { type: 'bool', label: 'Administrator' },
       ]}
       onProcess={([username, password, administrator]) =>
         props.process({
           username: username as string,
           password: password as string,
-          administrator: administrator as boolean
+          administrator: administrator as boolean,
         })
       }
       close={props.close}
@@ -173,7 +173,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = props => {
   );
 };
 
-const UsernameLabel: React.FC = props => {
+const UsernameLabel: React.FC = (props) => {
   return <span style={{ color: 'blue' }}>{props.children}</span>;
 };
 
@@ -182,7 +182,7 @@ interface UserDeleteDialogProps extends DialogProps {
   process: () => Promise<void>;
 }
 
-const UserDeleteDialog: React.FC<UserDeleteDialogProps> = props => {
+const UserDeleteDialog: React.FC<UserDeleteDialogProps> = (props) => {
   return (
     <OperationDialog
       open={props.open}
@@ -206,9 +206,9 @@ interface UserModifyDialogProps<T> extends DialogProps {
   process: (value: T) => Promise<void>;
 }
 
-const UserChangeUsernameDialog: React.FC<UserModifyDialogProps<
-  string
->> = props => {
+const UserChangeUsernameDialog: React.FC<UserModifyDialogProps<string>> = (
+  props
+) => {
   return (
     <OperationDialog
       open={props.open}
@@ -230,9 +230,9 @@ const UserChangeUsernameDialog: React.FC<UserModifyDialogProps<
   );
 };
 
-const UserChangePasswordDialog: React.FC<UserModifyDialogProps<
-  string
->> = props => {
+const UserChangePasswordDialog: React.FC<UserModifyDialogProps<string>> = (
+  props
+) => {
   return (
     <OperationDialog
       open={props.open}
@@ -260,7 +260,9 @@ interface UserChangePermissionDialogProps extends DialogProps {
   process: () => Promise<void>;
 }
 
-const UserChangePermissionDialog: React.FC<UserChangePermissionDialogProps> = props => {
+const UserChangePermissionDialog: React.FC<UserChangePermissionDialogProps> = (
+  props
+) => {
   return (
     <OperationDialog
       open={props.open}
@@ -287,7 +289,7 @@ interface UserAdminProps {
   user: UserWithToken;
 }
 
-const UserAdmin: React.FC<UserAdminProps> = props => {
+const UserAdmin: React.FC<UserAdminProps> = (props) => {
   type DialogInfo =
     | null
     | {
@@ -315,7 +317,7 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
 
   useEffect(() => {
     let subscribe = true;
-    fetchUserList(props.user.token).then(us => {
+    fetchUserList(props.user.token).then((us) => {
       if (subscribe) {
         setUsers(us);
       }
@@ -323,7 +325,7 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
     return () => {
       subscribe = false;
     };
-  }, []);
+  }, [props.user]);
 
   let dialogNode: React.ReactNode;
   if (dialog)
@@ -333,9 +335,9 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
           <CreateUserDialog
             open
             close={() => setDialog(null)}
-            process={async user => {
+            process={async (user) => {
               const u = await createUser(user, token);
-              setUsers(oldUsers => [...oldUsers!, u]);
+              setUsers((oldUsers) => [...oldUsers!, u]);
             }}
           />
         );
@@ -348,8 +350,8 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
             username={dialog.username}
             process={async () => {
               await deleteUser(dialog.username, token);
-              setUsers(oldUsers =>
-                oldUsers!.filter(u => u.username !== dialog.username)
+              setUsers((oldUsers) =>
+                oldUsers!.filter((u) => u.username !== dialog.username)
               );
             }}
           />
@@ -361,12 +363,12 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
             open
             close={() => setDialog(null)}
             username={dialog.username}
-            process={async newUsername => {
+            process={async (newUsername) => {
               await changeUsername(dialog.username, newUsername, token);
-              setUsers(oldUsers => {
+              setUsers((oldUsers) => {
                 const users = oldUsers!.slice();
                 users.find(
-                  u => u.username === dialog.username
+                  (u) => u.username === dialog.username
                 )!.username = newUsername;
                 return users;
               });
@@ -380,7 +382,7 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
             open
             close={() => setDialog(null)}
             username={dialog.username}
-            process={async newPassword => {
+            process={async (newPassword) => {
               await changePassword(dialog.username, newPassword, token);
             }}
           />
@@ -396,10 +398,10 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
             newPermission={newPermission}
             process={async () => {
               await changePermission(dialog.username, newPermission, token);
-              setUsers(oldUsers => {
+              setUsers((oldUsers) => {
                 const users = oldUsers!.slice();
                 users.find(
-                  u => u.username === dialog.username
+                  (u) => u.username === dialog.username
                 )!.administrator = newPermission;
                 return users;
               });
@@ -411,16 +413,16 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
     }
 
   if (users) {
-    const userComponents = users.map(user => {
+    const userComponents = users.map((user) => {
       return (
         <UserItem
           key={user.username}
           user={user}
-          onContextMenu={item => {
+          onContextMenu={(item) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const dialogInfo: any = {
               type: item,
-              username: user.username
+              username: user.username,
             };
             if (item === 'changepermission') {
               dialogInfo.newPermission = !user.administrator;
@@ -437,7 +439,7 @@ const UserAdmin: React.FC<UserAdminProps> = props => {
           color="success"
           onClick={() =>
             setDialog({
-              type: 'create'
+              type: 'create',
             })
           }
           className="align-self-end"

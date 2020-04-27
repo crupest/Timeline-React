@@ -12,7 +12,8 @@ interface TimelinePostEditImageProps {
   onSelect: (blob: Blob | null) => void;
 }
 
-const TimelinePostEditImage: React.FC<TimelinePostEditImageProps> = props => {
+const TimelinePostEditImage: React.FC<TimelinePostEditImageProps> = (props) => {
+  const { onSelect } = props;
   const { t } = useTranslation();
 
   const [file, setFile] = React.useState<File | null>(null);
@@ -30,7 +31,7 @@ const TimelinePostEditImage: React.FC<TimelinePostEditImageProps> = props => {
   }, [file]);
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = React.useCallback(
-    e => {
+    (e) => {
       const files = e.target.files;
       if (files == null || files.length === 0) {
         setFile(null);
@@ -38,15 +39,15 @@ const TimelinePostEditImage: React.FC<TimelinePostEditImageProps> = props => {
       } else {
         setFile(files[0]);
       }
-      props.onSelect(null);
+      onSelect(null);
       setError(null);
     },
-    []
+    [onSelect]
   );
 
   const onImgLoad = React.useCallback(() => {
-    props.onSelect(file);
-  }, [props.onSelect, file]);
+    onSelect(file);
+  }, [onSelect, file]);
 
   const onImgError = React.useCallback(() => {
     setError('loadImageError');
@@ -83,7 +84,9 @@ export interface TimelinePostEditProps {
   onHeightChange?: (height: number) => void;
 }
 
-const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
+const TimelinePostEdit: React.FC<TimelinePostEditProps> = (props) => {
+  const { onPost } = props;
+
   const { t } = useTranslation();
 
   const [state, setState] = React.useState<'input' | 'process'>('input');
@@ -107,7 +110,7 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
   });
 
   const toggleKind = React.useCallback(() => {
-    setKind(oldKind => (oldKind === 'text' ? 'image' : 'text'));
+    setKind((oldKind) => (oldKind === 'text' ? 'image' : 'text'));
     setImageBlob(null);
   }, []);
 
@@ -119,33 +122,33 @@ const TimelinePostEdit: React.FC<TimelinePostEditProps> = props => {
         ? {
             content: {
               type: 'text',
-              text: text
-            }
+              text: text,
+            },
           }
         : {
             content: {
               type: 'image',
-              data: imageBlob!
-            }
+              data: imageBlob!,
+            },
           };
 
-    props.onPost(req).then(
-      _ => {
+    onPost(req).then(
+      (_) => {
         if (kind === 'text') {
           setText('');
         }
         setState('input');
         setKind('text');
       },
-      _ => {
+      (_) => {
         pushAlert({
           type: 'danger',
-          message: t('timeline.sendPostFailed')
+          message: t('timeline.sendPostFailed'),
         });
         setState('input');
       }
     );
-  }, [kind, text, imageBlob, props.onPost]);
+  }, [onPost, kind, text, imageBlob, t]);
 
   const onImageSelect = React.useCallback((blob: Blob | null) => {
     setImageBlob(blob);

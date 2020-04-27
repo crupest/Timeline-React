@@ -7,7 +7,7 @@ import {
   alertService,
   AlertInfoEx,
   kAlertHostId,
-  AlertInfo
+  AlertInfo,
 } from './alert-service';
 
 interface AutoCloseAlertProps {
@@ -15,7 +15,7 @@ interface AutoCloseAlertProps {
   close: () => void;
 }
 
-export const AutoCloseAlert: React.FC<AutoCloseAlertProps> = props => {
+export const AutoCloseAlert: React.FC<AutoCloseAlertProps> = (props) => {
   const { alert } = props;
 
   React.useEffect(() => {
@@ -44,12 +44,12 @@ export const AlertHost: React.FC = () => {
     const alertEx: AlertInfoExEx = {
       ...alert,
       close: () => {
-        setAlerts(oldAlerts => {
+        setAlerts((oldAlerts) => {
           return without(oldAlerts, alertEx);
         });
-      }
+      },
     };
-    setAlerts(oldAlerts => {
+    setAlerts((oldAlerts) => {
       return concat(oldAlerts, alertEx);
     });
   }, []);
@@ -59,11 +59,11 @@ export const AlertHost: React.FC = () => {
     return () => {
       alertService.unregisterConsumer(consume);
     };
-  }, []);
+  }, [consume]);
 
   return (
     <div id={kAlertHostId} className="alert-container">
-      {alerts.map(alert => {
+      {alerts.map((alert) => {
         return (
           <AutoCloseAlert key={alert.id} alert={alert} close={alert.close} />
         );

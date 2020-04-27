@@ -5,14 +5,14 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Button
+  Button,
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 import { fromEvent } from 'rxjs';
 
 import {
   timelineVisibilityTooltipTranslationMap,
-  TimelineInfo
+  TimelineInfo,
 } from '../data/timeline';
 import { TimelineCardComponentProps } from './TimelinePageTemplateUI';
 
@@ -23,15 +23,17 @@ export type TimelineInfoCardProps = TimelineCardComponentProps<
   OrdinaryTimelineManageItem
 >;
 
-const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
+const TimelineInfoCard: React.FC<TimelineInfoCardProps> = (props) => {
+  const { onHeight, onManage } = props;
+
   const { t } = useTranslation();
 
   const containerId = 'timeline-info-card';
   const notifyHeight = React.useCallback((): void => {
-    if (props.onHeight) {
-      props.onHeight(document.getElementById(containerId)!.clientHeight);
+    if (onHeight) {
+      onHeight(document.getElementById(containerId)!.clientHeight);
     }
-  }, [props.onHeight]);
+  }, [onHeight]);
 
   React.useEffect(() => {
     const subscription = fromEvent(window, 'resize').subscribe(notifyHeight);
@@ -42,17 +44,16 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = props => {
     false
   );
   const toggleManageDropdown = React.useCallback(
-    (): void => setManageDropdownOpen(old => !old),
+    (): void => setManageDropdownOpen((old) => !old),
     []
   );
   const onManageProperty = React.useCallback(
-    (): void => props.onManage!('property'),
-    []
+    (): void => onManage!('property'),
+    [onManage]
   );
-  const onManageDelete = React.useCallback(
-    (): void => props.onManage!('delete'),
-    []
-  );
+  const onManageDelete = React.useCallback((): void => onManage!('delete'), [
+    onManage,
+  ]);
 
   return (
     <div
