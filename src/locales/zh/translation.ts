@@ -27,6 +27,9 @@ const translation: TranslationResource = {
     },
   },
   operationDialog: {
+    retry: '重试',
+    nextStep: '下一步',
+    previousStep: '上一步',
     confirm: '确定',
     cancel: '取消',
     ok: '好的！',
@@ -99,14 +102,13 @@ const translation: TranslationResource = {
     },
     dialogChangeAvatar: {
       title: '修改头像',
-      prompt:
-        '目前你必须手动把图片裁剪成方形才能将其上传为头像。将来会添加一个剪切组件，所以请期待吧！😅',
       previewImgAlt: '预览',
-      imgPrompt: {
+      prompt: {
         select: '请选择一个图片',
-        loadingFile: '加载文件...',
-        decoding: '解码图片...',
-        errorNotSquare: '图片不是正方形。',
+        crop: '请裁剪图片',
+        processingCrop: '正在裁剪图片',
+        uploading: '正在上传',
+        preview: '请预览图片',
       },
       upload: '上传',
     },

@@ -5,230 +5,301 @@ import {
   ModalHeader,
   Row,
   Button,
-  Spinner,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from 'reactstrap';
+import { AxiosError } from 'axios';
+
+import ImageCropper, { Clip, applyClipToImage } from '../common/ImageCropper';
 
 export interface ChangeAvatarDialogProps {
   open: boolean;
   close: () => void;
-  process: (file: File) => Promise<void>;
+  process: (blob: Blob) => Promise<void>;
 }
 
-const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = props => {
+const ChangeAvatarDialog: React.FC<ChangeAvatarDialogProps> = (props) => {
   const { t } = useTranslation();
 
-  const [file, setFile] = useState<File | null>(null);
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [imageState, setImageState] = useState<'decode' | 'error' | 'ok'>(
-    'decode'
-  );
-  const [uploadState, setUploadState] = useState<'no' | 'doing' | 'done'>('no');
-  const [message, setMessage] = useState<{
-    type: 'normal' | 'error';
-    message: string | { type: 'custom'; text: string };
-  } | null>({
-    type: 'normal',
-    message: 'userPage.dialogChangeAvatar.imgPrompt.select'
-  });
+  const [file, setFile] = React.useState<File | null>(null);
+  const [fileUrl, setFileUrl] = React.useState<string | null>(null);
+  const [clip, setClip] = React.useState<Clip | null>(null);
+  const [
+    cropImgElement,
+    setCropImgElement,
+  ] = React.useState<HTMLImageElement | null>(null);
+  const [resultBlob, setResultBlob] = React.useState<Blob | null>(null);
+  const [resultUrl, setResultUrl] = React.useState<string | null>(null);
 
-  const state = (():
-    | { type: 'input'; image: boolean; valid: boolean }
-    | { type: 'process'; processType: 'readfile' | 'decode' | 'upload' }
-    | { type: 'done' } => {
-    if (file == null) {
-      return {
-        type: 'input',
-        image: false,
-        valid: false
-      };
-    } else {
-      if (fileUrl == null) {
-        return {
-          type: 'process',
-          processType: 'readfile'
-        };
-      } else {
-        switch (imageState) {
-          case 'decode':
-            return {
-              type: 'process',
-              processType: 'decode'
-            };
-          case 'error':
-            return {
-              type: 'input',
-              image: true,
-              valid: false
-            };
-          case 'ok':
-            switch (uploadState) {
-              case 'no':
-                return {
-                  type: 'input',
-                  image: true,
-                  valid: true
-                };
-              case 'doing':
-                return {
-                  type: 'process',
-                  processType: 'upload'
-                };
-              case 'done':
-                return { type: 'done' };
-            }
-        }
-      }
+  const [state, setState] = React.useState<
+    | 'select'
+    | 'crop'
+    | 'processcrop'
+    | 'preview'
+    | 'uploading'
+    | 'success'
+    | 'error'
+  >('select');
+
+  const [message, setMessage] = useState<
+    string | { type: 'custom'; text: string } | null
+  >('userPage.dialogChangeAvatar.prompt.select');
+
+  const trueMessage =
+    message == null
+      ? null
+      : typeof message === 'string'
+      ? t(message)
+      : message.text;
+
+  const closeDialog = props.close;
+
+  const toggle = React.useCallback((): void => {
+    if (!(state === 'uploading')) {
+      closeDialog();
     }
-  })();
-
-  const trueProcess =
-    state.type === 'process' && state.processType === 'upload';
-
-  const toggle = (): void => {
-    if (!trueProcess) {
-      props.close();
-    }
-  };
+  }, [state, closeDialog]);
 
   useEffect(() => {
     if (file != null) {
       const url = URL.createObjectURL(file);
+      setClip(null);
       setFileUrl(url);
-      setMessage({
-        type: 'normal',
-        message: 'userPage.dialogChangeAvatar.imgPrompt.decoding'
-      });
+      setState('crop');
       return () => {
         URL.revokeObjectURL(url);
       };
+    } else {
+      setFileUrl(null);
+      setState('select');
     }
   }, [file]);
+
+  React.useEffect(() => {
+    if (resultBlob != null) {
+      const url = URL.createObjectURL(resultBlob);
+      setResultUrl(url);
+      setState('preview');
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setResultUrl(null);
+    }
+  }, [resultBlob]);
+
+  const onSelectFile = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void => {
+      const files = e.target.files;
+      if (files == null || files.length === 0) {
+        setFile(null);
+      } else {
+        setFile(files[0]);
+      }
+    },
+    []
+  );
+
+  const onCropNext = React.useCallback(() => {
+    if (
+      cropImgElement == null ||
+      clip == null ||
+      clip.width === 0 ||
+      file == null
+    ) {
+      throw new Error('Invalid state.');
+    }
+
+    setState('processcrop');
+    applyClipToImage(cropImgElement, clip, file.type).then((b) => {
+      setResultBlob(b);
+    });
+  }, [cropImgElement, clip, file]);
+
+  const onCropPrevious = React.useCallback(() => {
+    setFile(null);
+    setState('select');
+  }, []);
+
+  const onPreviewPrevious = React.useCallback(() => {
+    setResultBlob(null);
+    setState('crop');
+  }, []);
+
+  const process = props.process;
+
+  const upload = React.useCallback(() => {
+    if (resultBlob == null) {
+      throw new Error('Invalid state.');
+    }
+
+    setState('uploading');
+    process(resultBlob).then(
+      () => {
+        setState('success');
+      },
+      (e: unknown) => {
+        setState('error');
+        setMessage({ type: 'custom', text: (e as AxiosError).message });
+      }
+    );
+  }, [resultBlob, process]);
+
+  const createPreviewRow = (): React.ReactElement => {
+    if (resultUrl == null) {
+      throw new Error('Invalid state.');
+    }
+    return (
+      <Row className="justify-content-center">
+        <img
+          className="change-avatar-img"
+          src={resultUrl}
+          alt={t('userPage.dialogChangeAvatar.previewImgAlt')}
+        />
+      </Row>
+    );
+  };
 
   return (
     <Modal isOpen={props.open} toggle={toggle}>
       <ModalHeader> {t('userPage.dialogChangeAvatar.title')}</ModalHeader>
-      <ModalBody className="container">
-        {state.type === 'done' ? (
-          <Row className="p-4 text-success">{t('operationDialog.success')}</Row>
-        ) : (
-          <>
-            <Row>{t('userPage.dialogChangeAvatar.prompt')}</Row>
-            {!trueProcess && (
-              <Row>
-                <input
-                  type="file"
-                  onChange={e => {
-                    const files = e.target.files;
-                    setImageState('decode');
-                    if (files == null || files.length === 0) {
-                      setFile(null);
-                      setMessage({
-                        type: 'normal',
-                        message: 'userPage.dialogChangeAvatar.imgPrompt.select'
-                      });
-                    } else {
-                      setFile(files[0]);
-                      setMessage({
-                        type: 'normal',
-                        message:
-                          'userPage.dialogChangeAvatar.imgPrompt.loadingFile'
-                      });
-                    }
-                  }}
-                  accept="image/*"
-                />
-              </Row>
-            )}
-            {fileUrl != null && (
-              <Row>
-                <img
-                  className="avatar large"
-                  onLoad={e => {
-                    const image = e.currentTarget;
-                    const valid = image.naturalWidth === image.naturalHeight;
-                    setImageState(valid ? 'ok' : 'error');
-                    setMessage(
-                      valid
-                        ? null
-                        : {
-                            type: 'error',
-                            message:
-                              'userPage.dialogChangeAvatar.imgPrompt.errorNotSquare'
-                          }
-                    );
-                  }}
-                  src={fileUrl}
-                  alt={t('userPage.dialogChangeAvatar.previewImgAlt')}
-                />
-              </Row>
-            )}
-            {(() => {
-              if (message != null) {
-                return (
-                  <Row
-                    className={
-                      message.type === 'error' ? 'text-danger' : undefined
-                    }
-                  >
-                    {typeof message.message === 'string'
-                      ? t(message.message)
-                      : message.message.text}
-                  </Row>
-                );
-              }
-            })()}
-          </>
-        )}
-      </ModalBody>
-      <ModalFooter>
-        {(() => {
-          if (state.type === 'done') {
-            return (
-              <Button color="success" onClick={toggle}>
-                {t('operationDialog.ok')}
-              </Button>
-            );
-          } else if (state.type === 'input' && state.valid) {
-            return (
-              <>
+      {(() => {
+        if (state === 'select') {
+          return (
+            <>
+              <ModalBody className="container">
+                <Row>{t('userPage.dialogChangeAvatar.prompt.select')}</Row>
+                <Row>
+                  <input type="file" accept="image/*" onChange={onSelectFile} />
+                </Row>
+              </ModalBody>
+              <ModalFooter>
                 <Button color="secondary" onClick={toggle}>
                   {t('operationDialog.cancel')}
                 </Button>
+              </ModalFooter>
+            </>
+          );
+        } else if (state === 'crop') {
+          if (fileUrl == null) {
+            throw new Error('Invalid state.');
+          }
+          return (
+            <>
+              <ModalBody className="container">
+                <Row className="justify-content-center">
+                  <div className="d-flex justify-content-center change-avatar-img">
+                    <ImageCropper
+                      clip={clip}
+                      onChange={setClip}
+                      imageUrl={fileUrl}
+                      imageElementCallback={setCropImgElement}
+                    />
+                  </div>
+                </Row>
+                <Row>{t('userPage.dialogChangeAvatar.prompt.crop')}</Row>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={toggle}>
+                  {t('operationDialog.cancel')}
+                </Button>
+                <Button color="secondary" onClick={onCropPrevious}>
+                  {t('operationDialog.previousStep')}
+                </Button>
                 <Button
                   color="primary"
-                  onClick={() => {
-                    setUploadState('doing');
-                    props.process(file!).then(
-                      () => {
-                        setUploadState('done');
-                      },
-                      (e: unknown) => {
-                        setUploadState('no');
-                        setMessage({
-                          type: 'error',
-                          message: { type: 'custom', text: e as string }
-                        });
-                      }
-                    );
-                  }}
+                  onClick={onCropNext}
+                  disabled={
+                    cropImgElement == null || clip == null || clip.width === 0
+                  }
                 >
+                  {t('operationDialog.nextStep')}
+                </Button>
+              </ModalFooter>
+            </>
+          );
+        } else if (state === 'processcrop') {
+          return (
+            <>
+              <ModalBody className="container">
+                <Row>
+                  {t('userPage.dialogChangeAvatar.prompt.processingCrop')}
+                </Row>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={toggle}>
+                  {t('operationDialog.cancel')}
+                </Button>
+                <Button color="secondary" onClick={onPreviewPrevious}>
+                  {t('operationDialog.previousStep')}
+                </Button>
+              </ModalFooter>
+            </>
+          );
+        } else if (state === 'preview') {
+          return (
+            <>
+              <ModalBody className="container">
+                {createPreviewRow()}
+                <Row>{t('userPage.dialogChangeAvatar.prompt.preview')}</Row>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={toggle}>
+                  {t('operationDialog.cancel')}
+                </Button>
+                <Button color="secondary" onClick={onPreviewPrevious}>
+                  {t('operationDialog.previousStep')}
+                </Button>
+                <Button color="primary" onClick={upload}>
                   {t('userPage.dialogChangeAvatar.upload')}
                 </Button>
-              </>
-            );
-          } else if (trueProcess) {
-            return <Spinner color="primary" type="grow" />;
-          } else {
-            return (
-              <Button color="secondary" onClick={toggle}>
-                {t('operationDialog.cancel')}
-              </Button>
-            );
-          }
-        })()}
-      </ModalFooter>
+              </ModalFooter>
+            </>
+          );
+        } else if (state === 'uploading') {
+          return (
+            <>
+              <ModalBody className="container">
+                {createPreviewRow()}
+                <Row>{t('userPage.dialogChangeAvatar.prompt.uploading')}</Row>;
+              </ModalBody>
+              <ModalFooter></ModalFooter>
+            </>
+          );
+        } else if (state === 'success') {
+          return (
+            <>
+              <ModalBody className="container">
+                <Row className="p-4 text-success">
+                  {t('operationDialog.success')}
+                </Row>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="success" onClick={toggle}>
+                  {t('operationDialog.ok')}
+                </Button>
+              </ModalFooter>
+            </>
+          );
+        } else {
+          return (
+            <>
+              <ModalBody className="container">
+                {createPreviewRow()}
+                <Row className="text-danger">{trueMessage}</Row>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={toggle}>
+                  {t('operationDialog.cancel')}
+                </Button>
+                <Button color="primary" onClick={upload}>
+                  {t('operationDialog.retry')}
+                </Button>
+              </ModalFooter>
+            </>
+          );
+        }
+      })()}
     </Modal>
   );
 };

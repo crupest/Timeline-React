@@ -27,6 +27,9 @@ const translation: TranslationResource = {
     },
   },
   operationDialog: {
+    retry: 'Retry',
+    nextStep: 'Next',
+    previousStep: 'Previous',
     confirm: 'Confirm',
     cancel: 'Cancel',
     ok: 'OK!',
@@ -101,14 +104,13 @@ const translation: TranslationResource = {
     },
     dialogChangeAvatar: {
       title: 'Change Avatar',
-      prompt:
-        'Currently you must manually crop the image into a square. Then you can upload it as avatar. A cropper component will be added in the future. So looking forward to it!😅',
       previewImgAlt: 'preview',
-      imgPrompt: {
+      prompt: {
         select: 'Please select a picture.',
-        loadingFile: 'Loading the file...',
-        decoding: 'Decoding picture...',
-        errorNotSquare: 'The image is not a square.',
+        crop: 'Please crop the picture.',
+        processingCrop: 'Cropping picture...',
+        uploading: 'Uploading...',
+        preview: 'Please preview avatar',
       },
       upload: 'upload',
     },

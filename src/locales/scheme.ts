@@ -24,6 +24,9 @@ export default interface TranslationResource {
     };
   };
   operationDialog: {
+    retry: string;
+    nextStep: string;
+    previousStep: string;
     confirm: string;
     cancel: string;
     ok: string;
@@ -94,13 +97,13 @@ export default interface TranslationResource {
     };
     dialogChangeAvatar: {
       title: string;
-      prompt: string;
       previewImgAlt: string;
-      imgPrompt: {
+      prompt: {
         select: string;
-        loadingFile: string;
-        decoding: string;
-        errorNotSquare: string;
+        crop: string;
+        processingCrop: string;
+        preview: string;
+        uploading: string;
       };
       upload: string;
     };

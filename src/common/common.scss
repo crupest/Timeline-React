@@ -1,0 +1,30 @@
+.image-cropper-container {
+  position: relative;
+  display: flex;
+  user-select: none;
+}
+
+.image-cropper-mask-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.image-cropper-mask {
+  position: absolute;
+  box-shadow: 0 0 0 10000px rgba(255, 255, 255, 80%);
+  touch-action: none;
+}
+
+.image-cropper-handler {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: black solid 2px;
+  border-radius: 50%;
+  background: white;
+  touch-action: none;
+}
