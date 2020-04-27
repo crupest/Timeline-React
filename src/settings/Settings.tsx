@@ -10,7 +10,7 @@ import { useUser, userLogout } from '../data/user';
 
 import AppBar from '../common/AppBar';
 import OperationDialog, {
-  OperationInputErrorInfo
+  OperationInputErrorInfo,
 } from '../common/OperationDialog';
 
 interface ChangePasswordDialogProps {
@@ -27,7 +27,7 @@ async function changePassword(
   try {
     await axios.post(url, {
       oldPassword,
-      newPassword
+      newPassword,
     });
   } catch (e) {
     const error = e as AxiosError;
@@ -43,7 +43,7 @@ async function changePassword(
   }
 }
 
-const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
+const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = (props) => {
   const user = useUser()!;
   const history = useHistory();
   const { t } = useTranslation();
@@ -61,10 +61,10 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
           type: 'text',
           label: t('settings.dialogChangePassword.inputOldPassword'),
           password: true,
-          validator: v =>
+          validator: (v) =>
             v === ''
               ? 'settings.dialogChangePassword.errorEmptyOldPassword'
-              : null
+              : null,
         },
         {
           type: 'text',
@@ -84,7 +84,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
               }
             }
             return error;
-          }
+          },
         },
         {
           type: 'text',
@@ -93,8 +93,8 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
           validator: (v, values) =>
             v !== values[1]
               ? 'settings.dialogChangePassword.errorRetypeNotMatch'
-              : null
-        }
+              : null,
+        },
       ]}
       onProcess={async ([oldPassword, newPassword]) => {
         await changePassword(
@@ -115,7 +115,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = props => {
   );
 };
 
-const Settings: React.FC = _ => {
+const Settings: React.FC = (_) => {
   const { i18n, t } = useTranslation();
   const user = useUser();
   const history = useHistory();
@@ -130,6 +130,17 @@ const Settings: React.FC = _ => {
       <Container fluid style={{ marginTop: '56px' }}>
         {user ? (
           <>
+            <Row className="border-bottom p-3">
+              <Col className="col-12">
+                <h5
+                  onClick={() => {
+                    history.push(`/users/${user.username}`);
+                  }}
+                >
+                  {t('settings.gotoSelf')}
+                </h5>
+              </Col>
+            </Row>
             <Row className="border-bottom p-3">
               <Col className="col-12">
                 <h5
@@ -164,7 +175,7 @@ const Settings: React.FC = _ => {
             <Input
               type="select"
               value={language}
-              onChange={e => {
+              onChange={(e) => {
                 i18n.changeLanguage(e.target.value);
               }}
             >

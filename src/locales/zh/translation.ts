@@ -123,6 +123,7 @@ const translation: TranslationResource = {
       '您的语言偏好将会存储在本地，下次浏览时将自动使用上次保存的语言选项。',
     changePassword: '更改账号的密码。',
     logout: '注销此账号。',
+    gotoSelf: '点击前往个人时间线修改昵称和头像！',
     dialogChangePassword: {
       title: '修改密码',
       prompt:

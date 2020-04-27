@@ -117,6 +117,7 @@ export default interface TranslationResource {
     languageSecondary: string;
     changePassword: string;
     logout: string;
+    gotoSelf: string;
     dialogChangePassword: {
       title: string;
       prompt: string;

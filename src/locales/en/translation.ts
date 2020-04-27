@@ -125,6 +125,8 @@ const translation: TranslationResource = {
       'You language preference will be saved locally. Next time you visit this page, last language option will be used.',
     changePassword: "Change account's password.",
     logout: 'Log out this account.',
+    gotoSelf:
+      'Click here to go to timeline of myself to change nickname and avatar.',
     dialogChangePassword: {
       title: 'Change Password',
       prompt:
