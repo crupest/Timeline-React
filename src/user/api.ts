@@ -50,12 +50,14 @@ export function useAvatarVersion(): number | undefined {
   return version;
 }
 
-export function useVersionedAvatarUrl(url: string | undefined): string | null {
+export function useOptionalVersionedAvatarUrl(
+  url: string | undefined
+): string | undefined {
   const avatarVersion = useAvatarVersion();
   return React.useMemo(
     () =>
       url == null
-        ? null
+        ? undefined
         : updateQueryString(
             'v',
             avatarVersion == null ? null : avatarVersion + '',

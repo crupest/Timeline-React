@@ -14,7 +14,7 @@ import {
   TimelineInfo,
   timelineVisibilityTooltipTranslationMap,
 } from '../data/timeline';
-import { useAvatarVersion } from './api';
+import { useAvatarVersion, useAvatarUrlWithGivenVersion } from './api';
 import { useUser } from '../data/user';
 
 import { TimelineCardComponentProps } from '../timeline/TimelinePageTemplateUI';
@@ -29,8 +29,15 @@ export type UserInfoCardProps = TimelineCardComponentProps<
 const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
   const { onHeight, onManage } = props;
   const { t } = useTranslation();
-  const avatarVersion = useAvatarVersion();
   const user = useUser();
+
+  const avatarVersion = useAvatarVersion();
+  const avatarUrl = useAvatarUrlWithGivenVersion(
+    user != null && user.username === props.timeline.owner.username
+      ? avatarVersion
+      : undefined,
+    props.timeline.owner._links.avatar
+  );
 
   const notifyHeight = React.useCallback((): void => {
     if (onHeight) {
@@ -62,19 +69,13 @@ const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
     [onManage]
   );
 
-  const av =
-    user != null && user.username === props.timeline.owner.username
-      ? avatarVersion
-      : undefined;
-
   return (
     <div
       id="user-info-card"
       className={clsx('rounded border bg-light', props.className)}
     >
       <img
-        key={av}
-        src={props.timeline.owner._links.avatar}
+        src={avatarUrl}
         onLoad={notifyHeight}
         className="avatar large rounded-circle float-left"
       />

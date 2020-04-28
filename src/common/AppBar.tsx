@@ -6,14 +6,14 @@ import { useMediaQuery } from 'react-responsive';
 import { useTranslation } from 'react-i18next';
 
 import { useUser } from '../data/user';
-import { useVersionedAvatarUrl } from '../user/api';
+import { useOptionalVersionedAvatarUrl } from '../user/api';
 
 import TimelineLogo from './TimelineLogo';
 
 const AppBar: React.FC<{}> = (_) => {
   const history = useHistory();
   const user = useUser();
-  const avatarUrl = useVersionedAvatarUrl(user?._links?.avatar);
+  const avatarUrl = useOptionalVersionedAvatarUrl(user?._links?.avatar);
 
   const { t } = useTranslation();
 
@@ -37,7 +37,7 @@ const AppBar: React.FC<{}> = (_) => {
         <NavLink to={`/users/${user.username}`}>
           <img
             className="avatar small rounded-circle bg-white"
-            src={avatarUrl!}
+            src={avatarUrl}
           />
         </NavLink>
       ) : (
