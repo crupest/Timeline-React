@@ -66,6 +66,7 @@ const User: React.FC = (_) => {
         UiComponent={UserPage}
         onManage={onManage}
         service={personalTimelineService}
+        notFoundI18nKey="timeline.userNotExist"
       />
       {dialogElement}
     </>

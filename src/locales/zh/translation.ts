@@ -40,6 +40,7 @@ const translation: TranslationResource = {
   timeline: {
     messageCantSee: '不好意思，你没有权限查看这个时间线。😅',
     userNotExist: '该用户不存在！',
+    timelineNotExist: '该时间线不存在！',
     manage: '管理',
     memberButton: '成员',
     send: '发送',

@@ -29,6 +29,7 @@ const TimelinePage: React.FC = _ => {
         UiComponent={TimelinePageUI}
         onManage={item => setDialog(item)}
         service={ordinaryTimelineService}
+        notFoundI18nKey="timeline.timelineNotExist"
       />
       {dialogElement}
     </>

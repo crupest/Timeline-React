@@ -37,6 +37,7 @@ export default interface TranslationResource {
   timeline: {
     messageCantSee: string;
     userNotExist: string;
+    timelineNotExist: string;
     manage: string;
     memberButton: string;
     send: string;

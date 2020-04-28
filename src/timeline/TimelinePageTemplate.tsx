@@ -34,6 +34,7 @@ export interface TimelinePageTemplateProps<
     >
   >;
   dataVersion?: number;
+  notFoundI18nKey: string;
 }
 
 export default function TimelinePageTemplate<
@@ -100,7 +101,7 @@ export default function TimelinePageTemplate<
             extractStatusCode(error) === 404 ||
             extractErrorCode(error) === 11020101
           ) {
-            setError(t('timeline.userNotExist'));
+            setError(t(props.notFoundI18nKey));
           } else {
             setError(error.toString());
           }
@@ -110,7 +111,7 @@ export default function TimelinePageTemplate<
     return () => {
       subscribe = false;
     };
-  }, [name, service, user, t, props.dataVersion]);
+  }, [name, service, user, t, props.dataVersion, props.notFoundI18nKey]);
 
   React.useEffect(() => {
     if (posts != null) {
