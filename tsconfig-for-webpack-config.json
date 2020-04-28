@@ -7,6 +7,7 @@
   "include": [
     "webpack.common.ts",
     "webpack.config.dev.ts",
-    "webpack.config.prod.ts"
+    "webpack.config.prod.ts",
+    "webpack.config.prod.dev.ts"
   ]
 }
