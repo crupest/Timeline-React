@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { apiBaseUrl } from '../config';
 import { User } from '../data/user';
+import { updateQueryString } from '../helper';
 
 export function changeNickname(
   token: string,
@@ -17,7 +18,7 @@ export function changeNickname(
     .then((res) => res.data);
 }
 
-const avatarVersionSubject = new BehaviorSubject<number>(0);
+const avatarVersionSubject = new BehaviorSubject<number | undefined>(undefined);
 
 export function changeAvatar(
   token: string,
@@ -32,17 +33,44 @@ export function changeAvatar(
       },
     })
     .then(() => {
-      avatarVersionSubject.next(avatarVersionSubject.value + 1);
+      avatarVersionSubject.next((avatarVersionSubject.value ?? 0) + 1);
     });
 }
 
-export const avatarVersion$: Observable<number> = avatarVersionSubject;
+export const avatarVersion$: Observable<
+  number | undefined
+> = avatarVersionSubject;
 
-export function useAvatarVersion(): number {
-  const [version, setVersion] = React.useState<number>(0);
+export function useAvatarVersion(): number | undefined {
+  const [version, setVersion] = React.useState<number | undefined>();
   React.useEffect(() => {
     const subscription = avatarVersion$.subscribe((v) => setVersion(v));
     return () => subscription.unsubscribe();
   }, []);
   return version;
+}
+
+export function useVersionedAvatarUrl(url: string | undefined): string | null {
+  const avatarVersion = useAvatarVersion();
+  return React.useMemo(
+    () =>
+      url == null
+        ? null
+        : updateQueryString(
+            'v',
+            avatarVersion == null ? null : avatarVersion + '',
+            url
+          ),
+    [avatarVersion, url]
+  );
+}
+
+export function useAvatarUrlWithGivenVersion(
+  version: number | null | undefined,
+  url: string
+): string {
+  return React.useMemo(
+    () => updateQueryString('v', version == null ? null : version + '', url),
+    [version, url]
+  );
 }

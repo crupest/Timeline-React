@@ -5,6 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 import { TimelinePostInfo } from '../data/timeline';
+import { useAvatarUrlWithGivenVersion } from '../user/api';
 
 export interface TimelineItemProps {
   post: TimelinePostInfo;
@@ -22,6 +23,11 @@ const TimelineItem: React.FC<TimelineItemProps> = (props) => {
   const current = props.current === true;
 
   const { toggleMore: toggleDelete } = props;
+
+  const avatarUrl = useAvatarUrlWithGivenVersion(
+    props.avatarVersion,
+    props.post.author._links.avatar
+  );
 
   const onOpenMore = React.useMemo<
     React.MouseEventHandler<HTMLElement> | undefined
@@ -75,11 +81,7 @@ const TimelineItem: React.FC<TimelineItemProps> = (props) => {
             className="float-right float-sm-left mx-2"
             to={'/users/' + props.post.author.username}
           >
-            <img
-              key={props.avatarVersion}
-              src={props.post.author._links.avatar}
-              className="avatar rounded"
-            />
+            <img src={avatarUrl} className="avatar rounded" />
           </Link>
           {(() => {
             const { content } = props.post;
