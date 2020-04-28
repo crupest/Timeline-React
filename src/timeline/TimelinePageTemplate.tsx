@@ -33,6 +33,7 @@ export interface TimelinePageTemplateProps<
       'CardComponent'
     >
   >;
+  dataVersion?: number;
 }
 
 export default function TimelinePageTemplate<
@@ -109,7 +110,7 @@ export default function TimelinePageTemplate<
     return () => {
       subscribe = false;
     };
-  }, [name, service, user, t]);
+  }, [name, service, user, t, props.dataVersion]);
 
   React.useEffect(() => {
     if (posts != null) {

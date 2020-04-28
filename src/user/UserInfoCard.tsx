@@ -14,6 +14,9 @@ import {
   TimelineInfo,
   timelineVisibilityTooltipTranslationMap,
 } from '../data/timeline';
+import { useAvatarVersion } from './api';
+import { useUser } from '../data/user';
+
 import { TimelineCardComponentProps } from '../timeline/TimelinePageTemplateUI';
 
 export type PersonalTimelineManageItem = 'avatar' | 'nickname';
@@ -26,6 +29,8 @@ export type UserInfoCardProps = TimelineCardComponentProps<
 const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
   const { onHeight, onManage } = props;
   const { t } = useTranslation();
+  const avatarVersion = useAvatarVersion();
+  const user = useUser();
 
   const notifyHeight = React.useCallback((): void => {
     if (onHeight) {
@@ -57,12 +62,18 @@ const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
     [onManage]
   );
 
+  const av =
+    user != null && user.username === props.timeline.owner.username
+      ? avatarVersion
+      : undefined;
+
   return (
     <div
       id="user-info-card"
       className={clsx('rounded border bg-light', props.className)}
     >
       <img
+        key={av}
         src={props.timeline.owner._links.avatar}
         onLoad={notifyHeight}
         className="avatar large rounded-circle float-left"

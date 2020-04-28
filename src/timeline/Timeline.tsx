@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import { Container } from 'reactstrap';
 
 import { TimelinePostInfo } from '../data/timeline';
+import { useUser } from '../data/user';
+import { useAvatarVersion } from '../user/api';
 
 import TimelineItem from './TimelineItem';
 
@@ -19,6 +21,9 @@ export interface TimelineProps {
 }
 
 const Timeline: React.FC<TimelineProps> = (props) => {
+  const user = useUser();
+  const avatarVersion = useAvatarVersion();
+
   const { posts, onDelete } = props;
 
   const [indexShowDeleteButton, setIndexShowDeleteButton] = React.useState<
@@ -55,6 +60,11 @@ const Timeline: React.FC<TimelineProps> = (props) => {
         {(() => {
           const length = posts.length;
           return posts.map((post, i) => {
+            const av: number | undefined =
+              user != null && user.username === post.author.username
+                ? avatarVersion
+                : undefined;
+
             return (
               <TimelineItem
                 post={post}
@@ -64,6 +74,7 @@ const Timeline: React.FC<TimelineProps> = (props) => {
                 toggleMore={onToggleDelete[i]}
                 onDelete={onItemDelete[i]}
                 onClick={onItemClick}
+                avatarVersion={av}
               />
             );
           });

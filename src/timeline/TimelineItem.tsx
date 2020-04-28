@@ -13,9 +13,10 @@ export interface TimelineItemProps {
   toggleMore?: () => void;
   onDelete?: () => void;
   onClick?: () => void;
+  avatarVersion?: number;
 }
 
-const TimelineItem: React.FC<TimelineItemProps> = props => {
+const TimelineItem: React.FC<TimelineItemProps> = (props) => {
   const { i18n } = useTranslation();
 
   const current = props.current === true;
@@ -28,7 +29,7 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
     if (toggleDelete == null) {
       return undefined;
     } else {
-      return e => {
+      return (e) => {
         toggleDelete();
         e.stopPropagation();
       };
@@ -75,6 +76,7 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
             to={'/users/' + props.post.author.username}
           >
             <img
+              key={props.avatarVersion}
               src={props.post.author._links.avatar}
               className="avatar rounded"
             />
@@ -101,9 +103,7 @@ const TimelineItem: React.FC<TimelineItemProps> = props => {
             onClick={props.onDelete}
           />
         </div>
-      ) : (
-        undefined
-      )}
+      ) : undefined}
     </Row>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router';
 
 import { useUser } from '../data/user';
-import { changeNickname, changeAvatar } from './http';
+import { changeNickname, changeAvatar } from './api';
 import { personalTimelineService } from '../data/timeline';
 
 import UserPage from './UserPage';
@@ -61,7 +61,7 @@ const User: React.FC = (_) => {
   return (
     <>
       <TimelinePageTemplate
-        key={key}
+        dataVersion={key}
         name={username}
         UiComponent={UserPage}
         onManage={onManage}
