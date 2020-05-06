@@ -17,7 +17,7 @@ const User: React.FC = (_) => {
   const user = useUser();
 
   const [dialog, setDialog] = useState<null | PersonalTimelineManageItem>(null);
-  const [key, setKey] = useState<number>(0);
+  const [dataKey, setDataKey] = useState<number>(0);
 
   let dialogElement: React.ReactElement | undefined;
 
@@ -33,7 +33,7 @@ const User: React.FC = (_) => {
         onProcess={(newNickname) => {
           const p = changeNickname(user!.token, username, newNickname);
           return p.then((_) => {
-            setKey(key + 1);
+            setDataKey(dataKey + 1);
           });
         }}
       />
@@ -43,13 +43,7 @@ const User: React.FC = (_) => {
       <ChangeAvatarDialog
         open
         close={closeDialogHandler}
-        process={(file) => {
-          return changeAvatar(user!.token, username, file, file.type).then(
-            (_) => {
-              setKey(key + 1);
-            }
-          );
-        }}
+        process={(file) => changeAvatar(user!.token, username, file, file.type)}
       />
     );
   }
@@ -61,7 +55,7 @@ const User: React.FC = (_) => {
   return (
     <>
       <TimelinePageTemplate
-        dataVersion={key}
+        dataVersion={dataKey}
         name={username}
         UiComponent={UserPage}
         onManage={onManage}
