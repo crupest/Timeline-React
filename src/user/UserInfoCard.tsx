@@ -72,12 +72,12 @@ const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
   return (
     <div
       id="user-info-card"
-      className={clsx('rounded border bg-light', props.className)}
+      className={clsx('rounded border bg-light p-2', props.className)}
     >
       <img
         src={avatarUrl}
         onLoad={notifyHeight}
-        className="avatar large rounded-circle float-left"
+        className="avatar large mr-2 mb-2 rounded-circle float-left"
       />
       <div>
         {props.timeline.owner.nickname}
@@ -89,7 +89,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
       <small className="mt-1 d-block">
         {t(timelineVisibilityTooltipTranslationMap[props.timeline.visibility])}
       </small>
-      <div className="text-right">
+      <div className="text-right mt-2">
         {props.onManage != null ? (
           <Dropdown isOpen={manageDropdownOpen} toggle={toggleManageDropdown}>
             <DropdownToggle outline color="primary">

@@ -58,9 +58,9 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = (props) => {
   return (
     <div
       id={containerId}
-      className={clsx('rounded border bg-light', props.className)}
+      className={clsx('rounded border p-2 bg-light', props.className)}
     >
-      <h3 className="text-primary mx-3 my-2 d-inline-block align-middle">
+      <h3 className="text-primary mx-3 d-inline-block align-middle">
         {props.timeline.name}
       </h3>
       <div className="d-inline-block align-middle">
@@ -78,7 +78,7 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = (props) => {
       <small className="mt-1 d-block">
         {t(timelineVisibilityTooltipTranslationMap[props.timeline.visibility])}
       </small>
-      <div className="text-right">
+      <div className="text-right mt-2">
         {props.onManage != null ? (
           <Dropdown isOpen={manageDropdownOpen} toggle={toggleManageDropdown}>
             <DropdownToggle outline color="primary">
