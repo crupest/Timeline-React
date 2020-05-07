@@ -75,6 +75,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
     <div
       ref={containerRef}
       className={clsx('rounded border bg-light p-2', props.className)}
+      onTransitionEnd={notifyHeight}
     >
       <img
         src={avatarUrl}

@@ -72,8 +72,6 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
     setInfoCardCollapse(collapse);
   }, []);
 
-  const pageMarginTop = infoCardCollapse ? 56 : 56 + cardHeight;
-
   let body: React.ReactElement;
 
   if (props.error != null) {
@@ -139,7 +137,7 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
     <>
       <AppBar />
       <div
-        style={{ marginTop: pageMarginTop }}
+        style={{ marginTop: 56 + cardHeight }}
         className="timeline-page-container"
       >
         {body}

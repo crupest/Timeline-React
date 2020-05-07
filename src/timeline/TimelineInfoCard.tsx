@@ -28,10 +28,11 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = (props) => {
 
   const { t } = useTranslation();
 
-  const containerId = 'timeline-info-card';
+  const containerRef = React.useRef<HTMLDivElement>(null!);
+
   const notifyHeight = React.useCallback((): void => {
     if (onHeight) {
-      onHeight(document.getElementById(containerId)!.clientHeight);
+      onHeight(containerRef.current.getBoundingClientRect().height);
     }
   }, [onHeight]);
 
@@ -57,8 +58,9 @@ const TimelineInfoCard: React.FC<TimelineInfoCardProps> = (props) => {
 
   return (
     <div
-      id={containerId}
+      ref={containerRef}
       className={clsx('rounded border p-2 bg-light', props.className)}
+      onTransitionEnd={notifyHeight}
     >
       <h3 className="text-primary mx-3 d-inline-block align-middle">
         {props.timeline.name}
