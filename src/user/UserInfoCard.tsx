@@ -39,9 +39,11 @@ const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
     props.timeline.owner._links.avatar
   );
 
+  const containerRef = React.useRef<HTMLDivElement>(null!);
+
   const notifyHeight = React.useCallback((): void => {
     if (onHeight) {
-      onHeight(document.getElementById('user-info-card')!.clientHeight);
+      onHeight(containerRef.current.getBoundingClientRect().height);
     }
   }, [onHeight]);
 
@@ -71,7 +73,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = (props) => {
 
   return (
     <div
-      id="user-info-card"
+      ref={containerRef}
       className={clsx('rounded border bg-light p-2', props.className)}
     >
       <img

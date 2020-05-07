@@ -10,6 +10,7 @@ import Timeline, {
 } from './Timeline';
 import AppBar from '../common/AppBar';
 import TimelinePostEdit, { TimelinePostSendCallback } from './TimelinePostEdit';
+import CollapseButton from '../common/CollapseButton';
 
 export interface TimelineCardComponentProps<TTimeline, TManageItems> {
   timeline: TTimeline;
@@ -38,10 +39,12 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
 ): React.ReactElement | null {
   const { t } = useTranslation();
 
+  const bottomSpaceRef = React.useRef<HTMLDivElement | null>(null);
+
   const onPostEditHeightChange = React.useCallback((height: number): void => {
-    const element = document.getElementById('page-bottom-space');
-    if (element != null) {
-      element.style.height = height + 'px';
+    const { current: bottomSpaceDiv } = bottomSpaceRef;
+    if (bottomSpaceDiv != null) {
+      bottomSpaceDiv.style.height = height + 'px';
     }
     if (height === 0) {
       const alertHost = getAlertHost();
@@ -56,10 +59,20 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
     }
   }, []);
 
+  const [cardHeight, setCardHeight] = React.useState<number>(0);
+
   const onCardHeightChange = React.useCallback((height: number) => {
-    const element = document.getElementById('page-container')!;
-    element.style.marginTop = 56 + 1 + height + 'px';
+    setCardHeight(height);
   }, []);
+
+  const [infoCardCollapse, setInfoCardCollapse] = React.useState<boolean>(
+    false
+  );
+  const toggleInfoCardCollapse = React.useCallback((collapse) => {
+    setInfoCardCollapse(collapse);
+  }, []);
+
+  const pageMarginTop = infoCardCollapse ? 56 : 56 + cardHeight;
 
   let body: React.ReactElement;
 
@@ -81,7 +94,7 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
             timelineBody = (
               <>
                 {timelineBody}
-                <div id="page-bottom-space" className="flex-fix-length" />
+                <div ref={bottomSpaceRef} className="flex-fix-length" />
                 <TimelinePostEdit
                   onPost={props.onPost}
                   onHeightChange={onPostEditHeightChange}
@@ -97,13 +110,23 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
 
       body = (
         <>
-          <CardComponent
-            timeline={props.timeline}
-            onManage={props.onManage}
-            onMember={props.onMember}
-            onHeight={onCardHeightChange}
-            className="fixed-top mt-appbar"
-          />
+          <div
+            className="fixed-top mt-appbar info-card-container"
+            data-collapse={infoCardCollapse ? 'true' : 'false'}
+          >
+            <CollapseButton
+              collapse={infoCardCollapse}
+              toggle={toggleInfoCardCollapse}
+              className="float-right m-1 info-card-collapse-button"
+            />
+            <CardComponent
+              timeline={props.timeline}
+              onManage={props.onManage}
+              onMember={props.onMember}
+              onHeight={onCardHeightChange}
+              className="info-card-content"
+            />
+          </div>
           {timelineBody}
         </>
       );
@@ -115,7 +138,10 @@ export default function TimelinePageTemplateUI<TTimeline, TEditItems>(
   return (
     <>
       <AppBar />
-      <div id="page-container" className="mt-appbar">
+      <div
+        style={{ marginTop: pageMarginTop }}
+        className="timeline-page-container"
+      >
         {body}
       </div>
     </>

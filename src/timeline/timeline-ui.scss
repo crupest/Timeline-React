@@ -1,0 +1,27 @@
+.info-card-container {
+  transition: border-radius 1s;
+}
+
+.info-card-container[data-collapse='true'] {
+  border-radius: 50%;
+}
+
+.info-card-container .info-card-collapse-button {
+  position: relative;
+  z-index: 1;
+}
+
+.info-card-container .info-card-content {
+  width: 100%;
+  position: absolute;
+  transform-origin: right top;
+  transition: transform 1s;
+}
+
+.info-card-container[data-collapse='true'] .info-card-content {
+  transform: scale(0);
+}
+
+.timeline-page-container {
+  transition: margin-top 1s;
+}
