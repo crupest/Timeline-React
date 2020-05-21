@@ -65,7 +65,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/reactstrap": "^8.4.2",
     "@types/webpack": "^4.41.13",
-    "@types/webpack-dev-server": "^3.10.1",
+    "@types/webpack-dev-server": "^3.11.0",
     "@types/webpack-env": "^1.15.2",
     "@types/xregexp": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
