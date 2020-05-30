@@ -64,7 +64,7 @@
     "@types/react-responsive": "^8.0.2",
     "@types/react-router-dom": "^5.1.5",
     "@types/reactstrap": "^8.4.2",
-    "@types/webpack": "^4.41.14",
+    "@types/webpack": "^4.41.15",
     "@types/webpack-dev-server": "^3.11.0",
     "@types/webpack-env": "^1.15.2",
     "@types/xregexp": "^4.3.0",
